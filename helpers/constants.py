@@ -1,13 +1,15 @@
 from os import environ
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
-    TOKEN = environ["TOKEN"]
-    HOST = environ["DEFINE_API_URI"]
-    MONGO = environ["MONGO_URI"]
-    KEY = environ["API_KEY"]
+    MONGO=environ['MONGO']
+    KEY=environ['KEY']
+    HOST=environ['HOST']
+    TOKEN=environ['TOKEN']
 
-
-REPLIES = [ 
+REPLIES = ( 
     "Noooooo!!",
     "Nope.",
     "I'm sorry Dave, I'm afraid I can't do that.",
@@ -25,7 +27,7 @@ REPLIES = [
     "NEGATORY.",
     "Nuh-uh.",
     "Not in my house!",
-]
+)
 
 FAIL_REPLIES = (
     "I looked far and wide but nothing was found.",
