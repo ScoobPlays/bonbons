@@ -33,7 +33,6 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(description=content)
         embed.set_footer(text=f"Message from {author}")
-        print('palceholder')
         embed.set_author(name=f'{ctx.author}', icon_url=ctx.author.display_avatar)
         embed.timestamp=datetime.utcnow()
         await ctx.send(embed=embed)
