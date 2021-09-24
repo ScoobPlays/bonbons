@@ -11,8 +11,8 @@ import requests
 
 class Reddit(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command()
     async def meme(self, ctx):
@@ -24,5 +24,5 @@ class Reddit(commands.Cog):
       await ctx.send(embed=em)
 
 
-def setup(client):
-    client.add_cog(Reddit(client))
+def setup(bot):
+    bot.add_cog(Reddit(bot))
