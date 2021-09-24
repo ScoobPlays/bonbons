@@ -1,0 +1,73 @@
+from datetime import datetime
+import discord
+from discord.ext import commands
+import random
+import aiohttp
+
+class Fun(commands.Cog):
+    
+    def __init__(self, client):
+        self.client = client
+        self.last_msg = None
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message: discord.Message):
+      self.last_msg = message
+
+    @commands.command(aliases=['s'], help='Says whatever you want for you!')
+    async def say(self, ctx, *, message):
+      embed=discord.Embed(description = f'{message}', color=ctx.author.color)
+      embed.set_author(name=f'{ctx.author.name}', icon_url = ctx.author.display_avatar)
+      embed.timestamp = datetime.utcnow()
+      await ctx.send(embed=embed)
+
+    @commands.command(help='Snipes a message that was recently deleted!')
+    async def snipe(self, ctx: commands.Context):
+        """A command to snipe delete messages."""
+        if not self.last_msg:
+            await ctx.send("There is no message to snipe!")
+            return
+
+        author = self.last_msg.author
+        content = self.last_msg.content
+
+        embed = discord.Embed(description=content)
+        embed.set_footer(text=f"Message from {author}")
+        embed.set_author(name=f'{ctx.author}', icon_url=ctx.author.display_avatar)
+        embed.timestamp=datetime.utcnow()
+        await ctx.send(embed=embed)
+
+    @commands.command(help='Does a luck % for you!')
+    async def luck(self, ctx, *, lucky_on):
+      randome=random.randint(0, 100)
+
+      random_day = ['tomorrow is', 'next week is', 'this Friday is', 'this Monday is', 'next year is', 'in 2050 is']
+      rng_day = random.choice(random_day)
+
+      embed=discord.Embed(description=f'Your luck of getting **{lucky_on}** {rng_day} **{randome}**%', color=ctx.author.color)
+      await ctx.send(embed=embed)
+
+    @commands.command(help='This bots token.. :eyes:')
+    async def token(self, ctx):
+      async with aiohttp.ClientSession() as cs:
+        async with cs.get("https://some-random-api.ml/bottoken") as r:
+          data = await r.json()
+          
+          emb = discord.Embed(description=data["token"])
+          emb.set_author(name=f'{ctx.author.name}#{ctx.author.discriminator}', icon_url=f'{ctx.author.display_avatar}')
+          emb.timestamp=datetime.utcnow()
+          await ctx.send(embed=emb)
+
+    @commands.command(help='Gives a joke!')
+    async def joke(self, ctx):
+      async with aiohttp.ClientSession() as cs:
+        async with cs.get(f"https://some-random-api.ml/joke") as r:
+          data = await r.json()
+          await ctx.send(data['joke'])
+
+    @commands.command(aliases=['roll'])
+    async def dice(ctx):
+      await ctx.send(f"You rolled a **{random.randint(1, 6)}**!")
+
+def setup(client):
+  client.add_cog(Fun(client)) 
