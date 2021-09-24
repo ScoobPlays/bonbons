@@ -9,8 +9,8 @@ def restart_bot():
   os.execv(sys.executable, ['python'] + sys.argv)
 
 class Owner(commands.Cog):
-    def __init__(self, client):
-      self.client = client
+    def __init__(self, bot):
+      self.bot = bot
   
     @commands.command(aliases=['eval', 'run'])
     async def _eval(self, ctx, *, code: codeblock_converter):
@@ -21,10 +21,10 @@ class Owner(commands.Cog):
     @commands.is_owner()
     async def restart(self, ctx):
       await ctx.message.delete()
-      embed=discord.Embed(title='Restarting 🕛', description=f'Approximate time to restart is `{random.randint(2, 5)}.{random.randint(2, 9)}` seconds.')
+      embed=discord.Embed(title='Restarting 🕛', description="happy? :')")
       await ctx.send(embed=embed)
       print('Restarting...')
       restart_bot()
       
-def setup(client):
-  client.add_cog(Owner(client))
+def setup(bot):
+  bot.add_cog(Owner(bot))
