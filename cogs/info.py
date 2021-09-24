@@ -6,8 +6,8 @@ import platform
 
 class Information(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, clibotent):
+        self.bot = bot
 
     @commands.command(aliases=['av'])
     async def avatar(self, ctx, *, member : commands.MemberConverter=None):
@@ -96,5 +96,5 @@ class Information(commands.Cog):
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
 
-def setup(client):
-    client.add_cog(Information(client))
+def setup(bot):
+    bot.add_cog(Information(bot))
