@@ -8,33 +8,33 @@ from datetime import datetime
 from keep_alive import keep_alive
 
 token = os.environ['token']
-client = commands.Bot(command_prefix=commands.when_mentioned_or('.'),case_insensitive=True, intents = discord.Intents.all())
-client.remove_command("help")
-client.launch_time = datetime.utcnow() #variables & etc
+bot = commands.Bot(command_prefix=commands.when_mentioned_or('.'),case_insensitive=True, intents = discord.Intents.all())
+bot.remove_command("help")
+bot.launch_time = datetime.utcnow() #variables & etc
 
-@client.event
+@bot.event
 async def on_ready(): #events
-  print(f'Bot is ready to be used! Ping: {round(client.latency * 1000)}')
-  await client.change_presence(status=discord.Status.dnd)
+  print(f'Bot is ready to be used! Ping: {round(bot.latency * 1000)}')
+  await bot.change_presence(status=discord.Status.dnd)
 
   for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
-      client.load_extension(f'cogs.{filename[:-3]}')
+      bot.load_extension(f'cogs.{filename[:-3]}')
 
-@client.command(aliases=['ping', 'uptime'], hidden=True) #stats command for ping & uptime
+@bot.command(aliases=['ping', 'uptime'], hidden=True) #stats command for ping & uptime
 async def stats(ctx):
-  delta_uptime = datetime.utcnow() - client.launch_time
+  delta_uptime = datetime.utcnow() - bot.launch_time
   hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
   minutes, seconds = divmod(remainder, 60)
   days, hours = divmod(hours, 24)
   embed=discord.Embed(title='Bot Statistics')
-  embed.add_field(name='Uptime/Latency', value=f'`{hours}h, {minutes}m, {seconds}s` `{round(client.latency * 1000)}ms`', inline=False)
+  embed.add_field(name='Uptime/Latency', value=f'`{hours}h, {minutes}m, {seconds}s` `{round(bot.latency * 1000)}ms`', inline=False)
   embed.add_field(name='Python', value=f"`{platform.python_version()}`")
   embed.add_field(name='Module', value=f"`Py-Cord 2.0`")
   embed.timestamp = datetime.utcnow()
   await ctx.send(embed=embed)
 
-@client.command(aliases=['hex', 'colour'])
+@bot.command(aliases=['hex', 'colour'])
 async def color(ctx, inputcolor=''):
     if inputcolor == '':
         randgb = lambda: random.randint(0, 255)
@@ -77,6 +77,6 @@ async def color(ctx, inputcolor=''):
 keep_alive() #Keep alive method for replit ^^
 os.environ.setdefault('JISHAKU_NO_UNDERSCORE', '1') #Jishaku envs
 os.environ.setdefault('JISHAKU_HIDE', '1')
-client.load_extension('jishaku')
+bot.load_extension('jishaku')
 
-client.run(token) #running the bot
+bot.run(token) #running the bot
