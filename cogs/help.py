@@ -6,8 +6,8 @@ import humanize
 from discord.ext.commands import BucketType
 
 class Help(commands.Cog):
-  def __init__(self, client):
-    self.client = client
+  def __init__(self, bot):
+    self.bot = bot
 
   @commands.command()
   @commands.cooldown(1,20, BucketType.user) 
@@ -55,5 +55,5 @@ class Help(commands.Cog):
     embeds = [info, mod, websites, fun, developer]
     await paginator.run(embeds)
 
-def setup(client):
-  client.add_cog(Help(client))
+def setup(bot):
+  bot.add_cog(Help(bot))
