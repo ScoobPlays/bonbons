@@ -5,8 +5,8 @@ from datetime import datetime
 
 class Moderation(commands.Cog):
 
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command(aliases=['nickname', 'n'])
     @commands.has_permissions(manage_nicknames=True)
@@ -90,5 +90,5 @@ class Moderation(commands.Cog):
           await ctx.send(f"{user.name}#{user.discriminator} was unbanned.")
           return	
 
-def setup(client):
-   client.add_cog(Moderation(client))
+def setup(bot):
+   bot.add_cog(Moderation(bot))
