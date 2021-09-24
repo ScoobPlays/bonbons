@@ -6,8 +6,8 @@ from datetime import datetime
 import base64
 
 class APIs(commands.Cog):
-  def __init__(self, client):
-    self.client=client
+  def __init__(self, bot):
+    self.bot=bot
   
   @commands.command(aliases=['wiki'])
   async def wikipedia(ctx, *, query: str):
@@ -66,5 +66,5 @@ class APIs(commands.Cog):
     embed.timestamp=datetime.utcnow()
     await ctx.send(embed=embed)
 
-def setup(client):
-  client.add_cog(APIs(client))
+def setup(bot):
+  bot.add_cog(APIs(bot))
