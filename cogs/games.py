@@ -5,9 +5,9 @@ from discordTogether import DiscordTogether
 
 class Games(commands.Cog):
     
-    def __init__(self, client):
-        self.client = client
-        self.togetherControl = DiscordTogether(client)
+    def __init__(self, bot):
+        self.bot = bot
+        self.togetherControl = DiscordTogether(bot)
 
     @commands.command(name='fishing', help='Opens a Fishing game.')
     async def _fishing(self, ctx):
@@ -50,5 +50,5 @@ class Games(commands.Cog):
       except:
         await ctx.reply("You must be in a VC to use this command.")
 
-def setup(client):
-  client.add_cog(Games(client)) 
+def setup(bot):
+  bot.add_cog(Games(bot)) 
