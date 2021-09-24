@@ -5,7 +5,6 @@ import random
 from PIL import Image
 from discord.ext import commands
 from datetime import datetime
-from keep_alive import keep_alive
 
 token = os.environ['token']
 bot = commands.Bot(command_prefix=commands.when_mentioned_or('.'),case_insensitive=True, intents = discord.Intents.all())
@@ -74,7 +73,6 @@ async def color(ctx, inputcolor=''):
           await ctx.send(embed=embed)
           return
 
-keep_alive() #Keep alive method for replit ^^
 os.environ.setdefault('JISHAKU_NO_UNDERSCORE', '1') #Jishaku envs
 os.environ.setdefault('JISHAKU_HIDE', '1')
 bot.load_extension('jishaku')
