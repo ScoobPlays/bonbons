@@ -65,6 +65,7 @@ class APIs(commands.Cog):
     embed.set_footer(icon_url=ctx.author.display_avatar)
     embed.timestamp=datetime.utcnow()
     await ctx.send(embed=embed)
+    print('placeholder')
 
 def setup(bot):
   bot.add_cog(APIs(bot))
