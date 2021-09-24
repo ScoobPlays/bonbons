@@ -6,8 +6,8 @@ import aiohttp
 
 class Miscellaneous(commands.Cog):
 
-    def __init__(self, client):
-      self.client = client
+    def __init__(self, bot):
+      self.bot = bot
     
     @commands.command(help='Ships you with a member!')
     async def ship(self, ctx, bride: discord.Member, groom: discord.Member):
@@ -100,5 +100,5 @@ class Miscellaneous(commands.Cog):
       embed=discord.Embed(description=f'You thanked {member.mention}!')
       await ctx.send(embed=embed)
 
-def setup(client):
-    client.add_cog(Miscellaneous(client))
+def setup(bot):
+    bot.add_cog(Miscellaneous(bot))
