@@ -6,8 +6,8 @@ import aiohttp
 
 class Fun(commands.Cog):
     
-    def __init__(self, client):
-        self.client = client
+    def __init__(self, bot):
+        self.bot = bot
         self.last_msg = None
 
     @commands.Cog.listener()
@@ -69,5 +69,5 @@ class Fun(commands.Cog):
     async def dice(ctx):
       await ctx.send(f"You rolled a **{random.randint(1, 6)}**!")
 
-def setup(client):
-  client.add_cog(Fun(client)) 
+def setup(bot):
+  bot.add_cog(Fun(bot)) 
