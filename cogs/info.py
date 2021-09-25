@@ -6,7 +6,7 @@ import platform
 
 class Information(commands.Cog):
 
-    def __init__(self, clibotent):
+    def __init__(self, bot):
         self.bot = bot
 
     @commands.command(aliases=['av'])
@@ -24,7 +24,7 @@ class Information(commands.Cog):
 
       embed=discord.Embed(color=ctx.author.color)
       embed.set_author(name=f'{ctx.guild.name}', icon_url = ctx.guild.icon.url)
-      embed.add_field(name=f'Server Created At', value=f'<t:{int(ctx.guild.created_at.timestamp())}:D>', inline=True)
+      embed.add_field(name=f'Server Created At', value=f'<t:{int(ctx.guild.created_at.timestamp())}:D> (<t:{int(ctx.guild.created_at.timestamp())}:R>)', inline=True)
       embed.add_field(name=f'Members', value=f'{str(ctx.guild.member_count)}', inline=True)
       embed.add_field(name=f'Channels', value=f'{len(ctx.guild.channels)}', inline=True)
       embed.add_field(name=f'Region', value=f'{ctx.guild.region}', inline=True)
@@ -35,25 +35,40 @@ class Information(commands.Cog):
       embed.set_thumbnail(url=ctx.guild.icon.url)
       await ctx.send(embed=embed)
 
-    @commands.command(help='Fetches the amount of members in the guild.')
+    @commands.command()
     @commands.guild_only()
     async def membercount(self, ctx):
       embed=discord.Embed(title=f'Members', description=f'{len(ctx.guild.members)}')
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
 
-    @commands.command(aliases=["userinfo"], help='Gives you info about a user.')
+    @commands.command(aliases=["userinfo"])
     async def whois(self, ctx, member: commands.MemberConverter=None):
+
       if member == None:
         member = ctx.author
 
+      if len(member.roles) > 1:
+        role_string = ', '.join([r.mention for r in member.roles][1:])
+  
+      if member.bot:
+        embed = discord.Embed(description=f"{member.mention}", color=member.color)
+        embed.set_thumbnail(url=member.display_avatar)
+        embed.set_author(name=f'{member.name}#{member.discriminator}', icon_url=f'{member.display_avatar}')
+        embed.add_field(name="Account Created At", value=f'<t:{int(member.created_at.timestamp())}:D> (<t:{int(member.created_at.timestamp())}:R>)')
+        embed.add_field(name="Joined Server At", value=f'<t:{int(member.joined_at.timestamp())}:D> (<t:{int(member.joined_at.timestamp())}:R>')
+        embed.add_field(name="Roles [{}]\n \n".format(len(member.roles)-1), value=role_string, inline=False)
+        embed.add_field(name=f'Bot', value="True")
+        embed.add_field(name=f'Status', value=f'{member.activity}')
+        embed.set_footer(text=f'User ID: {member.id}')
+        embed.timestamp = datetime.utcnow()
+        await ctx.send(embed=embed)
+        
       embed = discord.Embed(description=f"{member.mention}", color=member.color)
       embed.set_thumbnail(url=member.display_avatar)
       embed.set_author(name=f'{member.name}#{member.discriminator}', icon_url=f'{member.display_avatar}')
-      embed.add_field(name="Account Created At", value=f'<t:{int(member.created_at.timestamp())}:D>')
-      embed.add_field(name="Joined Server At", value=f'<t:{int(member.joined_at.timestamp())}:D>')
-      if len(member.roles) > 1:
-            role_string = ', '.join([r.mention for r in member.roles][1:])
+      embed.add_field(name="Account Created At", value=f'<t:{int(member.created_at.timestamp())}:D> (<t:{int(member.created_at.timestamp())}:R>)')
+      embed.add_field(name="Joined Server At", value=f'<t:{int(member.joined_at.timestamp())}:D> (<t:{int(member.joined_at.timestamp())}:R>')
       embed.add_field(name="Roles [{}]\n \n".format(len(member.roles)-1), value=role_string, inline=False)
       embed.add_field(name=f'Status', value=f'{member.activity}')
       embed.set_footer(text=f'User ID: {member.id}')
@@ -64,7 +79,7 @@ class Information(commands.Cog):
     async def spotify(self, ctx, member: commands.MemberConverter=None):
       if member == None:
         member = ctx.author
-        pass
+
       for activity in member.activities:
           if isinstance(activity, Spotify):
             embed = discord.Embed(title = f"{member.name}'s Spotify", color = ctx.author.color)
