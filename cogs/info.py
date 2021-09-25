@@ -11,8 +11,10 @@ class Information(commands.Cog):
 
     @commands.command(aliases=['av'])
     async def avatar(self, ctx, *, member : commands.MemberConverter=None):
+
       if member == None:
         member = ctx.author
+
       embed=discord.Embed(color=ctx.author.color)
       embed.set_image(url=member.display_avatar)
       embed.timestamp = datetime.utcnow()
@@ -24,7 +26,7 @@ class Information(commands.Cog):
 
       embed=discord.Embed(color=ctx.author.color)
       embed.set_author(name=f'{ctx.guild.name}', icon_url = ctx.guild.icon.url)
-      embed.add_field(name=f'Server Created At', value=f'<t:{int(ctx.guild.created_at.timestamp())}:D> (<t:{int(ctx.guild.created_at.timestamp())}:R>)', inline=True)
+      embed.add_field(name=f'Server Created At', value=f'<t:{int(ctx.guild.created_at.timestamp())}:D> (<t:{int(ctx.guild.created_at.timestamp())}:R>)', inline=False)
       embed.add_field(name=f'Members', value=f'{str(ctx.guild.member_count)}', inline=True)
       embed.add_field(name=f'Channels', value=f'{len(ctx.guild.channels)}', inline=True)
       embed.add_field(name=f'Region', value=f'{ctx.guild.region}', inline=True)
@@ -50,19 +52,6 @@ class Information(commands.Cog):
 
       if len(member.roles) > 1:
         role_string = ', '.join([r.mention for r in member.roles][1:])
-  
-      if member.bot:
-        embed = discord.Embed(description=f"{member.mention}", color=member.color)
-        embed.set_thumbnail(url=member.display_avatar)
-        embed.set_author(name=f'{member.name}#{member.discriminator}', icon_url=f'{member.display_avatar}')
-        embed.add_field(name="Account Created At", value=f'<t:{int(member.created_at.timestamp())}:D> (<t:{int(member.created_at.timestamp())}:R>)')
-        embed.add_field(name="Joined Server At", value=f'<t:{int(member.joined_at.timestamp())}:D> (<t:{int(member.joined_at.timestamp())}:R>')
-        embed.add_field(name="Roles [{}]\n \n".format(len(member.roles)-1), value=role_string, inline=False)
-        embed.add_field(name=f'Bot', value="True")
-        embed.add_field(name=f'Status', value=f'{member.activity}')
-        embed.set_footer(text=f'User ID: {member.id}')
-        embed.timestamp = datetime.utcnow()
-        await ctx.send(embed=embed)
         
       embed = discord.Embed(description=f"{member.mention}", color=member.color)
       embed.set_thumbnail(url=member.display_avatar)
@@ -70,6 +59,7 @@ class Information(commands.Cog):
       embed.add_field(name="Account Created At", value=f'<t:{int(member.created_at.timestamp())}:D> (<t:{int(member.created_at.timestamp())}:R>)')
       embed.add_field(name="Joined Server At", value=f'<t:{int(member.joined_at.timestamp())}:D> (<t:{int(member.joined_at.timestamp())}:R>')
       embed.add_field(name="Roles [{}]\n \n".format(len(member.roles)-1), value=role_string, inline=False)
+      embed.add_field(name=f'Is Bot', value=member.bot)
       embed.add_field(name=f'Status', value=f'{member.activity}')
       embed.set_footer(text=f'User ID: {member.id}')
       embed.timestamp = datetime.utcnow()
@@ -77,11 +67,14 @@ class Information(commands.Cog):
 
     @commands.command(help='Fetches your spotify activity/status. (if you have one)')
     async def spotify(self, ctx, member: commands.MemberConverter=None):
+
       if member == None:
         member = ctx.author
 
       for activity in member.activities:
+
           if isinstance(activity, Spotify):
+
             embed = discord.Embed(title = f"{member.name}'s Spotify", color = ctx.author.color)
             embed.set_thumbnail(url=activity.album_cover_url)
             embed.set_author(name=f'{member.name}#{member.discriminator}', icon_url=f'{member.display_avatar}')
@@ -95,9 +88,9 @@ class Information(commands.Cog):
     @commands.command(help='Gives you info about a role.')
     @commands.guild_only()
     async def roleinfo(self, ctx, role: commands.RoleConverter=None):
+
       if role == None:
         role = ctx.author.top_role
-        pass
 
       embed = discord.Embed(description=f"{role.mention}", color=role.color)
       embed.set_author(name=f'{ctx.author.name}#{ctx.author.discriminator}', icon_url=f'{ctx.author.display_avatar}')
