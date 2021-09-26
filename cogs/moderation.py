@@ -28,26 +28,33 @@ class Moderation(commands.Cog):
        embed.timestamp = datetime.utcnow() 
        await ctx.send(embed=embed)
 
-    @commands.command(aliases=['clear'], help='Purges an amount of messages.')
+    @commands.command(aliases=['clear', 'clean'])
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, amount:int = 2):
-       await ctx.channel.purge(limit=amount)
+      
+      await ctx.channel.purge(limit=amount)
 
     @commands.command(help='Adds/Removes a role from a member.')
     @commands.has_permissions(manage_roles=True)
     async def role(self, ctx, member: commands.MemberConverter=None, *, role: commands.RoleConverter):
 
       if role in member.roles:
+
         await member.remove_roles(role)
         embed=discord.Embed(title='Role removed!', description=f'Removed {role.mention} from {member.mention}.')
         embed.timestamp=datetime.utcnow()
         await ctx.send(embed=embed)
+        
       else:
         await member.add_roles(role)
         embed=discord.Embed(title='Role added!', description=f'Added {role.mention} to {member.mention}.')
         embed.timestamp=datetime.utcnow()
         await ctx.send(embed=embed)
-    
+
+    ######################
+    #  Removed Commands  #
+    ######################
+
     @commands.command(help="Mutes the specified user!")
     @commands.is_owner()
     async def mute(self,ctx, member: commands.MemberConverter, *, reason=None):
