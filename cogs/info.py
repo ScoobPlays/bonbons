@@ -4,6 +4,8 @@ from datetime import datetime
 from discord import Spotify
 import platform
 
+hm = datetime.utcnow()
+
 class Information(commands.Cog):
 
     def __init__(self, bot):
@@ -101,6 +103,21 @@ class Information(commands.Cog):
       embed.add_field(name='Hoisted', value=f"{role.hoist}")
       embed.add_field(name='Mentionable', value=f"{role.mentionable}")
       embed.set_footer(text=f'Role ID: {role.id}')
+      embed.timestamp = datetime.utcnow()
+      await ctx.send(embed=embed)
+
+    @commands.command(aliases=['ping', 'uptime']) #stats command for ping & uptime
+    async def stats(self, ctx):
+      
+      delta_uptime = datetime.utcnow() - hm
+      hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+      minutes, seconds = divmod(remainder, 60)
+      days, hours = divmod(hours, 24)
+
+      embed=discord.Embed(title='Bot Statistics')
+      embed.add_field(name='Uptime & Latency', value=f'`{hours}:{minutes}:{seconds}` `{round(self.bot.latency * 1000)}ms`', inline=False)
+      embed.add_field(name='Python', value=f"`{platform.python_version()}`")
+      embed.add_field(name='Module', value=f"`Py-Cord 2.0`")
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
 
