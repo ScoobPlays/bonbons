@@ -2,6 +2,7 @@ from discord.ext import commands
 import random
 import discord
 from datetime import datetime
+import base64
 import aiohttp
 
 class Miscellaneous(commands.Cog):
@@ -36,6 +37,7 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(help='Kisses a user! :flushed:')
     async def kiss(self, ctx, member: commands.MemberConverter):  
+
       embed=discord.Embed(title=f'{ctx.author.name} kissed {member.name}')
       embed.set_image(url='https://tenor.com/view/kiss2-gif-21770023')
       await ctx.send(embed=embed)
@@ -52,16 +54,21 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(help='Spanks a user! :flushed:')
     async def spank(self, ctx, member: commands.MemberConverter):  
+
       await ctx.channel.send(f'{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590')
 
     @commands.command(help='Slaps a user!')
     async def slap(self, ctx, member: commands.MemberConverter):  
+
       await ctx.channel.send(f'{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299')
 
     @commands.command(help='Winks at a user!')
     async def wink(self, ctx, member: commands.MemberConverter):
+
       async with aiohttp.ClientSession() as cs:
+
         async with cs.get("https://some-random-api.ml/animu/wink") as r:
+
           data = await r.json()
           emb = discord.Embed(title = f'{ctx.author.name} winked at {member.display_name}')
           emb.set_image(url=data["link"])
@@ -69,8 +76,11 @@ class Miscellaneous(commands.Cog):
      
     @commands.command(help='Pats a user!')
     async def pat(self, ctx, member: commands.MemberConverter):
+
       async with aiohttp.ClientSession() as cs:
+
         async with cs.get("https://some-random-api.ml/animu/pat") as r:
+
           data = await r.json()
           emb = discord.Embed(title = f'{ctx.author.name} patted {member.display_name}')
           emb.set_image(url=data["link"])
@@ -78,8 +88,11 @@ class Miscellaneous(commands.Cog):
 
     @commands.command(help='Hugs a user.')
     async def hug(self, ctx, member: commands.MemberConverter):
+
       async with aiohttp.ClientSession() as cs:
+
         async with cs.get("https://some-random-api.ml/animu/hug") as r:
+
           data = await r.json()
           emb = discord.Embed(title = f'{ctx.author.name} hugged {member.display_name}')
           emb.set_image(url=data["link"])
@@ -87,17 +100,38 @@ class Miscellaneous(commands.Cog):
 
     @commands.command()
     async def thank(self, ctx, member: commands.MemberConverter=None, *, reason=None):
+
       if member is None:
-        embed=discord.Embed(description='Please mention a user to thank.')
-        await ctx.send(embed=embed)
-        pass
-        return
+        embed=discord.Embed(description='Please mention a user to thank.', delete_after=5)
+        return await ctx.send(embed=embed)
+
       if reason is None:
-        embed=discord.Embed(description='Please add a reason.')
-        await ctx.send(embed=embed)
-        pass
-        return
+        embed=discord.Embed(description='Please add a reason.', delete_after=5)
+        return await ctx.send(embed=embed)
+
       embed=discord.Embed(description=f'You thanked {member.mention}!')
+      await ctx.send(embed=embed)
+
+    @commands.command()
+    async def endgame(self, ctx):
+      await ctx.send("https://www.youtube.com/watch?v=dE1P4zDhhqw")
+
+    @commands.command()
+    async def encode(self, ctx, text):
+      message_bytes = text.encode('ascii')
+      base64_bytes = base64.b64encode(message_bytes)
+      base64_message = base64_bytes.decode('ascii')
+      embed=discord.Embed(title='✅ Message Was Encoded')
+      embed.add_field(name='Output:', value=base64_message)
+      await ctx.send(embed=embed)
+
+    @commands.command()
+    async def decode(self, ctx, text):
+      base64_bytes = text.encode('ascii')
+      message_bytes = base64.b64decode(base64_bytes)
+      message = message_bytes.decode('ascii')
+      embed=discord.Embed(title='✅ Message Was Encoded')
+      embed.add_field(name='Output:', value=message)
       await ctx.send(embed=embed)
 
 def setup(bot):
