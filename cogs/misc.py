@@ -117,24 +117,6 @@ class Miscellaneous(commands.Cog):
     async def endgame(self, ctx):
       await ctx.send("https://www.youtube.com/watch?v=dE1P4zDhhqw")
 
-    @commands.command()
-    async def encode(self, ctx, text):
-      message_bytes = text.encode('ascii')
-      base64_bytes = base64.b64encode(message_bytes)
-      base64_message = base64_bytes.decode('ascii')
-      embed=discord.Embed(title='✅ Message Was Encoded')
-      embed.add_field(name='Output:', value=base64_message)
-      await ctx.send(embed=embed)
-
-    @commands.command()
-    async def decode(self, ctx, text):
-      base64_bytes = text.encode('ascii')
-      message_bytes = base64.b64decode(base64_bytes)
-      message = message_bytes.decode('ascii')
-      embed=discord.Embed(title='✅ Message Was Encoded')
-      embed.add_field(name='Output:', value=message)
-      await ctx.send(embed=embed)
-
     @commands.command(aliases=['hex', 'colour'])
     async def color(self, ctx, inputcolor=''):
       
@@ -176,6 +158,40 @@ class Miscellaneous(commands.Cog):
         else:
           embed=discord.Embed(description='Make sure you entered the correct code or format. `(#7289DA)`', color=ctx.author.color)
           await ctx.send(embed=embed)
-          
+
+    @commands.command()
+    async def encode(self, ctx, *, text):
+      message_bytes = text.encode('ascii')
+      base64_bytes = base64.b64encode(message_bytes)
+      base64_message = base64_bytes.decode('ascii')
+      embed=discord.Embed(title='✅ Message Was Encoded')
+      embed.add_field(name='Output:', value=base64_message)
+      await ctx.send(embed=embed)
+
+    @encode.error
+    async def encode_error(self, ctx, error):
+      embed=discord.Embed(
+        title="Encoding Error",
+        description="Sorry, I couldn't encode that message."
+        )
+      await ctx.send(embed=embed)
+
+    @commands.command()
+    async def decode(self, ctx, *, text):
+      base64_bytes = text.encode('ascii')
+      message_bytes = base64.b64decode(base64_bytes)
+      message = message_bytes.decode('ascii')
+      embed=discord.Embed(title='✅ Message Was Encoded')
+      embed.add_field(name='Output:', value=message)
+      await ctx.send(embed=embed)
+
+    @decode.error
+    async def decode_error(self, ctx, error):
+      embed=discord.Embed(
+        title="Decoding Error",
+        description="Sorry, I couldn't decode that message."
+        )
+      await ctx.send(embed=embed)
+   
 def setup(bot):
     bot.add_cog(Miscellaneous(bot))
