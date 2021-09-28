@@ -11,7 +11,7 @@ class Fun(commands.Cog):
         self.last_msg = None
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message: discord.Message):
+    async def on_message_delete(self, message: discord.Message): #on msg delete for snipe command
       self.last_msg = message
 
     @commands.command(aliases=['s'], help='Says whatever you want for you!')
@@ -22,20 +22,24 @@ class Fun(commands.Cog):
       await ctx.send(embed=embed)
 
     @commands.command(help='Snipes a message that was recently deleted!')
-    async def snipe(self, ctx: commands.Context):
-        """A command to snipe delete messages."""
-        if not self.last_msg:
-            await ctx.send("There is no message to snipe!")
-            return
+    async def snipe(self, ctx):
+      embed = discord.Embed(description=f"{self.last_msg.content}")
+      embed.set_footer(text=f"Message from {self.last_msg.author}")
+      embed.set_author(name=f'{self.last_msg.author}', icon_url=self.last_msg.author.display_avatar)
+      embed.timestamp=datetime.utcnow()
+      await ctx.send(embed=embed)
 
-        author = self.last_msg.author
-        content = self.last_msg.content
+    @snipe.error
+    async def snipe_error(self, ctx, error):
 
-        embed = discord.Embed(description=content)
-        embed.set_footer(text=f"Message from {author}")
-        embed.set_author(name=f'{ctx.author}', icon_url=ctx.author.display_avatar)
-        embed.timestamp=datetime.utcnow()
-        await ctx.send(embed=embed)
+      embed=discord.Embed(
+        title='Error',
+        description='Sorry, I couldn\'t find the most recently deleted message or the deleted message was an Image, Embed or File.'
+      )
+
+      embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
+      embed.set_timestamp=datetime.utcnow()
+      await ctx.send(embed=embed)
 
     @commands.command(help='Does a luck % for you!')
     async def luck(self, ctx, *, lucky_on):
@@ -45,6 +49,7 @@ class Fun(commands.Cog):
       rng_day = random.choice(random_day)
 
       embed=discord.Embed(description=f'Your luck of getting **{lucky_on}** {rng_day} **{randome}**%', color=ctx.author.color)
+      embed.set_timestamp=datetime.utcnow()
       await ctx.send(embed=embed)
 
     @commands.command(help='This bots token.. :eyes:')
@@ -66,8 +71,8 @@ class Fun(commands.Cog):
           await ctx.send(data['joke'])
 
     @commands.command(aliases=['roll'])
-    async def dice(ctx):
-      await ctx.send(f"You rolled a **{random.randint(1, 6)}**!")
+    async def dice(self, ctx):
+      await ctx.send(f"You rolled a {random.randint(1, 6)}!")
 
 def setup(bot):
   bot.add_cog(Fun(bot)) 
