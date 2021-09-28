@@ -5,9 +5,6 @@ import sys
 import random
 from jishaku.codeblocks import codeblock_converter
 
-list = ["y u click", "imagine clicking", "ok", "owo", "uwu", "OWOWOWOOW", "y u click.. d- do you like me? :flushed:"]
-sano = random.choice(list)
-
 def restart_bot(): 
   os.execv(sys.executable, ['python'] + sys.argv)
 
@@ -22,7 +19,7 @@ class Owner(commands.Cog):
 
     @commands.command(aliases=['rs'], hidden=True)
     async def restart(self, ctx):
-      embed=discord.Embed(title='Restarting 🕛', description=f'||{sano}||')
+      embed=discord.Embed(title='Restarting', description=f'Restarting the bot.')
       await ctx.send(embed=embed)
       print('Restarting...')
       restart_bot()
