@@ -13,11 +13,11 @@ class Owner(commands.Cog):
       self.bot = bot
   
     @commands.command(aliases=['eval', 'run'])
-    async def _eval(self, ctx, *, code: codeblock_converter):
+    async def evaluate(self, ctx, *, code: codeblock_converter):
       cog = self.bot.get_cog("Jishaku")
       await cog.jsk_python(ctx, argument=code)
 
-    @commands.command(aliases=['rs'], hidden=True)
+    @commands.command(aliases=['rs', 'shut', 'shutdown', 'fuckoff'])
     async def restart(self, ctx):
       embed=discord.Embed(title='Restarting', description=f'Restarting the bot.')
       await ctx.send(embed=embed)
