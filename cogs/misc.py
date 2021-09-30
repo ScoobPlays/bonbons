@@ -115,6 +115,28 @@ class Miscellaneous(commands.Cog):
         description="Sorry, I couldn't decode that message."
         )
       await ctx.send(embed=embed)
-   
+
+    @commands.command(aliases=['s'], help='Says whatever you want for you!')
+    async def say(self, ctx, *, message):
+      embed=discord.Embed(description = f'{message}', color=ctx.author.color)
+      embed.set_author(name=f'{ctx.author.name}', icon_url = ctx.author.display_avatar)
+      embed.timestamp = datetime.utcnow()
+      await ctx.send(embed=embed)
+
+    @commands.command(description='Says whatever you want using a webhook.')
+    async def echo(self, ctx, *, text):
+      webhook = await ctx.channel.create_webhook(name=ctx.author.name, avatar=ctx.author.avatar)
+      await ctx.message.delete()
+      await webhook.send(text)
+      await webhook.delete()
+
+    @echo.error
+    async def echo_error(self, ctx, error):
+      embed=discord.Embed(
+        title="Error",
+        description="Sorry, I couldn't echo that message."
+        )
+      await ctx.send(embed=embed)
+
 def setup(bot):
     bot.add_cog(Miscellaneous(bot))
