@@ -3,18 +3,21 @@ import discord
 from discord.ext import commands
 import random
 import aiohttp
+from discordTogether import DiscordTogether
+
 
 class Fun(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
         self.last_msg = None
+        self.togetherControl = DiscordTogether(bot)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message): #on msg delete for snipe command
       self.last_msg = message
 
-    @commands.command(help='Snipes a message that was recently deleted!')
+    @commands.command(help='Snipes the most recently deleted message.')
     async def snipe(self, ctx):
       embed = discord.Embed(description=f"{self.last_msg.content}")
       embed.set_footer(text=f"Message from {self.last_msg.author}")
@@ -34,7 +37,7 @@ class Fun(commands.Cog):
       embed.set_timestamp=datetime.utcnow()
       await ctx.send(embed=embed)
 
-    @commands.command(help='Does a luck % for you!')
+    @commands.command()
     async def luck(self, ctx, *, lucky_on):
       randome=random.randint(0, 100)
 
@@ -45,7 +48,7 @@ class Fun(commands.Cog):
       embed.set_timestamp=datetime.utcnow()
       await ctx.send(embed=embed)
 
-    @commands.command(help='This bots token.. :eyes:')
+    @commands.command(help='Generates a random token.')
     async def token(self, ctx):
       async with aiohttp.ClientSession() as cs:
         async with cs.get("https://some-random-api.ml/bottoken") as r:
@@ -67,5 +70,46 @@ class Fun(commands.Cog):
     async def dice(self, ctx):
       await ctx.send(f"You rolled a {random.randint(1, 6)}!")
 
+    @commands.command(name='fishing', help='Opens a Fishing game.')
+    async def _fishing(self, ctx):
+      try:
+        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'fishing')
+        await ctx.send(f"{link}")
+      except:
+        await ctx.reply("You must be in a VC to use this command.")
+
+    @commands.command(name='youtube', help='Starts a Youtube activity.')
+    async def _youtube(self, ctx):
+      try:
+        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'youtube')
+        await ctx.send(f"{link}")
+      except:
+        await ctx.reply("You must be in a VC to use this command.")
+
+    @commands.command(name='poker', help='Opens a Poker game.')
+    async def _poker(self, ctx):
+      try:
+        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'poker')
+        await ctx.send(f"{link}")
+      except:
+        await ctx.reply("You must be in a VC to use this command.")
+
+    @commands.command(name='betrayal', help='Opens a Betrayal game.')
+    async def _betrayal(self, ctx):
+      try:
+        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'betrayal')
+        await ctx.send(f"{link}")
+        
+      except:
+        await ctx.reply("You must be in a VC to use this command.")
+    
+    @commands.command(name='chess', help='Opens a Chess game.')
+    async def _chess(self, ctx):
+      try:
+        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'poker')
+        await ctx.send(f"{link}")
+      except:
+        await ctx.reply("You must be in a VC to use this command.")
+
 def setup(bot):
-  bot.add_cog(Fun(bot)) 
+  bot.add_cog(Fun(bot))
