@@ -14,13 +14,6 @@ class Fun(commands.Cog):
     async def on_message_delete(self, message: discord.Message): #on msg delete for snipe command
       self.last_msg = message
 
-    @commands.command(aliases=['s'], help='Says whatever you want for you!')
-    async def say(self, ctx, *, message):
-      embed=discord.Embed(description = f'{message}', color=ctx.author.color)
-      embed.set_author(name=f'{ctx.author.name}', icon_url = ctx.author.display_avatar)
-      embed.timestamp = datetime.utcnow()
-      await ctx.send(embed=embed)
-
     @commands.command(help='Snipes a message that was recently deleted!')
     async def snipe(self, ctx):
       embed = discord.Embed(description=f"{self.last_msg.content}")
