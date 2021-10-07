@@ -5,6 +5,7 @@ from datetime import datetime
 from keep_alive import keep_alive
 import inspect
 import io
+import json
 import textwrap
 import traceback
 from contextlib import redirect_stdout
@@ -13,18 +14,16 @@ from contextlib import redirect_stdout
 # light_blue = #96daff
 
 token = os.environ['token']
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('.'), case_insensitive=True, intents = discord.Intents.all(), allowed_mentions=discord.AllowedMentions(everyone=False, roles=False))     
+bot = commands.Bot(
+  command_prefix=commands.when_mentioned_or('.'),
+  case_insensitive=True,
+  intents = discord.Intents.all(),
+  allowed_mentions=discord.AllowedMentions(everyone=False, roles=False)
+  )     
 
 @bot.event
 async def on_ready():
-
   print(f'Bot is ready to be used! Ping: {round(bot.latency * 1000)}')
-  channel = bot.get_channel(893419641953734667)
-  await channel.send(embed=discord.Embed(title='Bot Is Online', description=f"Ping: {int(bot.latency*1000)}ms"))
-
-  for filename in os.listdir('./cogs'):
-    if filename.endswith('.py'):
-      bot.load_extension(f'cogs.{filename[:-3]}')
 
 @bot.command(hidden=True, aliases=['eval', 'evaluate'])
 async def run(ctx, *, code):
@@ -118,6 +117,17 @@ async def run(ctx, *, code):
         await ctx.message.add_reaction('\u2049')  # x
     else:
         await ctx.message.add_reaction('\u2705')
+
+#@bot.command()
+#async def testing(ctx):
+ # with open("testing.json", "a+") as f:
+  #  ids = json.dump(ctx.author.id)
+   # data = json.load(f)
+    #await ctx.send(data)
+    
+for filename in os.listdir('./cogs'):
+  if filename.endswith('.py'):
+    bot.load_extension(f'cogs.{filename[:-3]}')
 
 keep_alive()
 os.environ.setdefault('JISHAKU_NO_UNDERSCORE', '1')
