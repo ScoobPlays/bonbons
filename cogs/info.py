@@ -2,9 +2,6 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from discord import Spotify
-import platform
-
-hm = datetime.utcnow()
 
 class Information(commands.Cog):
 
@@ -69,7 +66,7 @@ class Information(commands.Cog):
 
       if member == None:
         member = ctx.author
-
+      
       for activity in member.activities:
 
           if isinstance(activity, Spotify):
@@ -83,6 +80,7 @@ class Information(commands.Cog):
             embed.set_footer(text=f"Track ID: {activity.track_id}")            
             embed.timestamp=datetime.utcnow()
             await ctx.send(embed=embed)
+
 
     @commands.command(help='Gives you info about a role.')
     @commands.guild_only()
@@ -103,18 +101,14 @@ class Information(commands.Cog):
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
 
-    @commands.command(aliases=['ping', 'uptime']) #stats command for ping & uptime
-    async def stats(self, ctx):
-      
-      delta_uptime = datetime.utcnow() - hm
-      hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
-      minutes, seconds = divmod(remainder, 60)
-      days, hours = divmod(hours, 24)
+    @commands.command()
+    async def ping(self, ctx):
 
-      embed=discord.Embed(title='Bot Information')
-      embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/888309915620372491/ee8c4ed341cb7cb954eefc7f08b879ec.png?size=1024")
-      embed.add_field(name='Statistics', value=f"• Ping: {round(self.bot.latency * 1000)}ms\n• Uptime: {hours}h, {minutes}m, {seconds}s\n• Servers: {len(self.bot.guilds)}\n• Users: {len(self.bot.users)}\n• PyVersion: {platform.python_version()}")
-      embed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar)
+      embed=discord.Embed(
+        title='Ponged!',
+        description=f'Ping: {round(self.bot.latency * 1000)}ms'
+        )
+        
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
 
