@@ -45,10 +45,8 @@ class Roles(commands.Cog):
 
       embed=discord.Embed(
         title='Error',
-        description='Did you type the role name correctly?'
+        description='Please type the role name correctly!'
       )
-      embed.add_field(name='Syntax', value=f'{prefix}role <role>')
-      embed.add_field(name='Roles', value='<@&895210078133710929>')
       embed.timestamp=datetime.utcnow()
       await ctx.send(embed=embed)
     
