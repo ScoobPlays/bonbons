@@ -19,7 +19,7 @@ class Events(commands.Cog):
       roles = [member_role]
 
       await member.add_roles(*roles)
-      await channel.send(embed=discord.Embed(title='Welcome!', description=f'{member.mention} joined! Hope you stay!!').set_footer(text=member, icon_url=member.display_avatar))
+      await channel.send(embed=discord.Embed(title='Welcome!', description=f'{member.mention} joined! Hope you stay!!', color=discord.Color.green()).set_footer(text=member, icon_url=member.display_avatar))
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -30,7 +30,7 @@ class Events(commands.Cog):
       channel = guild.get_channel(880387280576061450)
 
 
-      await channel.send(embed=discord.Embed(title='Goodbye!', description=f'{member.mention} left.. :cry:').set_footer(text=member, icon_url=member.display_avatar))
+      await channel.send(embed=discord.Embed(title='Goodbye!', description=f'{member.mention} left.. :cry:', color=discord.Color.green()).set_footer(text=member, icon_url=member.display_avatar))
 
 def setup(bot):
   bot.add_cog(Events(bot))
