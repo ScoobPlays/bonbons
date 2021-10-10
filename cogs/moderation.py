@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
-from discord.utils import get
 from datetime import datetime
+import asyncio
 
 class Moderation(commands.Cog):
 
@@ -27,6 +27,30 @@ class Moderation(commands.Cog):
        embed.set_author(name=f'{ctx.author}', icon_url = ctx.author.display_avatar)
        embed.timestamp = datetime.utcnow() 
        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def massnick(self, ctx, *, nick=None):
+      
+      embed=discord.Embed(
+        title=f'Changing nicknames for {ctx.guild.member_count} members...',
+        color=discord.Color.red()
+      )
+      send = await ctx.send(embed=embed)
+
+      done=discord.Embed(
+        title=f'Changed nicknames for {ctx.guild.member_count} members!',
+        color=discord.Color.green()
+      )
+
+      try:
+        for member in ctx.guild.members:
+          await member.edit(nick=nick)
+          print(f"Changing {member}'s nickname...")
+      
+      except discord.Forbidden:
+        print(f"Couldn't change {member}'s nick.")
+        await send.edit(embed=done)
+        pass
 
     @commands.command(aliases=['clear', 'clean'], help='Purges an amount of messages for you.')
     @commands.has_permissions(manage_messages=True)
