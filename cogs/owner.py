@@ -15,6 +15,7 @@ class Owner(commands.Cog):
       self.bot = bot
   
     @commands.command(aliases=['rs', 'shutdown'])
+    @commands.is_owner()
     async def restart(self, ctx):
       embed=discord.Embed(title='Restarting...', color=discord.Color.red())
       await ctx.send(embed=embed)
@@ -36,6 +37,18 @@ class Owner(commands.Cog):
       embed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar)
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.is_owner()
+    async def idku(self, ctx, member: commands.MemberConverter):
+      """Kicks a member for not explicitly reading my status"""
+      
+      try:
+        await member.send("Sorry, I don't know you.")
+        await member.kick()
+
+      except discord.Forbidden:
+        pass
 
 def setup(bot):
   bot.add_cog(Owner(bot))
