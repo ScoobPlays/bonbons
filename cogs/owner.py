@@ -39,16 +39,19 @@ class Owner(commands.Cog):
       await ctx.send(embed=embed)
 
     @commands.command()
-    @commands.is_owner()
-    async def idku(self, ctx, member: commands.MemberConverter):
-      """Kicks a member for not explicitly reading my status"""
-      
-      try:
-        await member.send("Sorry, I don't know you.")
-        await member.kick()
-
-      except discord.Forbidden:
-        pass
+    async def help(self, ctx):
+      embed=discord.Embed(
+        title='Help Page',
+        color=discord.Color.green()
+        )
+      embed.add_field(name='Main', value="`kiss`, `bonk`, `spank`, `slap`, `wink`, `pat`, `hug`")
+      embed.add_field(name='Misc', value="`say`, `luck`, `encode`, `decode`, `wiki`, `mincraft`, `dog`, `cat`, `snipe`, `color`, `token`, `joke`, `dice`, `fishing`, `youtube`, `poker`, `betrayal`, `chess`")
+      embed.add_field(name='Information', value="`membercount`, `userinfo`, `serverinfo`, `roleinfo`, `spotify`, `avatar`")
+      embed.add_field(name='Utility', value="`ping`, `nick`, `massnick`, `ban`, `unban`, `clean`")
+      embed.add_field(name='Other', value="`stats`, `run`, `jsk`, `restart`")
+      embed.timestamp=datetime.utcnow()
+      embed.set_footer(text=f"Commands: {len(self.bot.commands)}", icon_url=ctx.author.display_avatar)
+      await ctx.send(embed=embed)
 
 def setup(bot):
   bot.add_cog(Owner(bot))
