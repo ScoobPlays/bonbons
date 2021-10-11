@@ -1,13 +1,7 @@
-import discord, os, inspect, io
+import discord, os, inspect, io, textwrap, traceback
 from discord.ext import commands, tasks
-#from datetime import datetime
 from keep_alive import keep_alive
-import textwrap
-import traceback
 from contextlib import redirect_stdout
-
-# gold = #fff1b6
-# light_blue = #96daff
 
 token = os.environ['token']
 bot = commands.Bot(
@@ -16,6 +10,7 @@ bot = commands.Bot(
   intents = discord.Intents.all(),
   allowed_mentions=discord.AllowedMentions(everyone=False, roles=False)
   )     
+bot.remove_command("help")
 
 @bot.event
 async def on_ready():
@@ -24,51 +19,21 @@ async def on_ready():
 @tasks.loop(seconds=1000)
 async def member_stats():
   guild = bot.get_guild(880030618275155998)
-
   online_channel = guild.get_channel(895606651728584725)
-  offline_channel = guild.get_channel(895606862437826641)
-  idle_channel = guild.get_channel(895606765142556722)
-  dnd_channel = guild.get_channel(895606807093985301)
 
   online_members = 0
-  offline_members = 0
-  idle_members = 0
-  dnd_members = 0
 
   for member in guild.members:
-
     if member.status == discord.Status.online:
       online_members += 1
       await online_channel.edit(name=f'Online: {online_members}')
 
-    if member.status == discord.Status.offline:
-      offline_members += 1
-      await offline_channel.edit(name=f'Offline: {offline_members}')
-
-
-    if member.status == discord.Status.idle:
-      idle_members += 1
-      await idle_channel.edit(name=f'Idle: {idle_members}')
-
-    if member.status == discord.Status.dnd:
-      dnd_members += 1
-      await dnd_channel.edit(name=f'DnD: {dnd_members}')
 
 @member_stats.before_loop
 async def before_ms():
   await bot.wait_until_ready()
 
 member_stats.start()
-
-@bot.command(hidden=True, aliases=['rf'], description="Refreshes the bot.")
-@commands.is_owner()
-async def refresh(ctx):
-  try:
-    member_stats.start()
-  except Exception as e:
-    print(e)
-  finally:
-    member_stats.start()
 
 @bot.command(hidden=True, aliases=['eval', 'evaluate'])
 @commands.is_owner()
@@ -164,13 +129,6 @@ async def run(ctx, *, code):
     else:
         await ctx.message.add_reaction('\u2705')
 
-#@bot.command()
-#async def testing(ctx):
- # with open("testing.json", "a+") as f:
-  #  ids = json.dump(ctx.author.id)
-   # data = json.load(f)
-    #await ctx.send(data)
-    
 for filename in os.listdir('./cogs'):
   if filename.endswith('.py'):
     bot.load_extension(f'cogs.{filename[:-3]}')
