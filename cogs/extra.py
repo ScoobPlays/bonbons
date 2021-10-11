@@ -70,69 +70,46 @@ class Extra(commands.Cog):
 
   @commands.command(help='Kisses a user! :flushed:')
   async def kiss(self, ctx, member: commands.MemberConverter):
-
-      if ctx.author == member:
-        return await ctx.send('owo *kisses*')
-
-      await ctx.send(f"{ctx.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627")
+    await ctx.send(f"{ctx.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627")
 
 
   @commands.command(help='Bonks a user!')
   async def bonk(self, ctx, member: commands.MemberConverter):
-
-      bonkis = ['https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380', 'https://tenor.com/view/lol-gif-21667170', 'https://tenor.com/view/azura-bonk-azura-bonk-gif-21733152']
-      bonkiuwu = random.choice(bonkis)
-      await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
+    bonkis = ['https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380', 'https://tenor.com/view/lol-gif-21667170', 'https://tenor.com/view/azura-bonk-azura-bonk-gif-21733152']
+    bonkiuwu = random.choice(bonkis)
+    await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
 
   @commands.command(help='Spanks a user! :flushed:')
-  async def spank(self, ctx, member: commands.MemberConverter):  
-
-      await ctx.send(f'{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590')
+  async def spank(self, ctx, member: commands.MemberConverter):
+    await ctx.send(f'{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590')
 
   @commands.command(help='Slaps a user!')
   async def slap(self, ctx, member: commands.MemberConverter):  
-
-      await ctx.channel.send(f'{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299')
+    await ctx.send(f'{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299')
 
   @commands.command(help='Winks at a user!')
   async def wink(self, ctx, member: commands.MemberConverter):
-
-      async with aiohttp.ClientSession() as cs:
-
-        async with cs.get("https://some-random-api.ml/animu/wink") as r:
-
-          data = await r.json()
-          emb = discord.Embed(title = f'{ctx.author.name} winked at {member.display_name}!')
-          emb.set_image(url=data["link"])
-          await ctx.send(embed=emb)
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get("https://some-random-api.ml/animu/wink") as r:
+        data = await r.json()
+        image = data["link"]
+        await ctx.send(f'{ctx.author.mention} winked at {member.mention}!!\n{image}')
      
   @commands.command(help='Pats a user!')
   async def pat(self, ctx, member: commands.MemberConverter):
-
-      if ctx.author == member:
-        return await ctx.send('aww *pats*')
-
-      async with aiohttp.ClientSession() as cs:
-        async with cs.get("https://some-random-api.ml/animu/pat") as r:
-          data = await r.json()
-          emb = discord.Embed(title = f'{ctx.author.name} patted {member.display_name}!!')
-          emb.set_image(url=data["link"])
-          await ctx.send(embed=emb)
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get("https://some-random-api.ml/animu/pat") as r:
+        data = await r.json()
+        image = data["link"]
+        await ctx.send(f"{ctx.author.mention} patted {member.mention}!!\n{image}")
 
   @commands.command(help='Hugs a user.')
   async def hug(self, ctx, member: commands.MemberConverter):
-
-      if ctx.author == member:
-        return await ctx.send('uwu *hugs*')
-
-      async with aiohttp.ClientSession() as cs:
-
-        async with cs.get("https://some-random-api.ml/animu/hug") as r:
-
-          data = await r.json()
-          emb = discord.Embed(title = f'{ctx.author.name} hugged {member.display_name}')
-          emb.set_image(url=data["link"])
-          await ctx.send(embed=emb)
+    async with aiohttp.ClientSession() as cs:
+      async with cs.get("https://some-random-api.ml/animu/hug") as r:
+        data = await r.json()
+        image = data["link"]
+        await ctx.send(f'{ctx.author.mention} hugged {member.mention}!!\n{image}')
 
 def setup(bot):
   bot.add_cog(Extra(bot))
