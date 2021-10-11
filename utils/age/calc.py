@@ -4,20 +4,20 @@ operation_question = input('Operation: ')
 
 if operation_question == '+':
   print(first_input + second_input)
-  pass
+  return
 
 if operation_question == '-':
   print(first_input - second_input)
-  pass
+  return
 
 if operation_question == '*':
   print(first_input * second_input)
-  pass
+  return
 
 if operation_question == '/':
   print(first_input / second_input)
-  pass
+  return
 
 if operation_question == '//':
   print(first_input // second_input)
-  pass
+  return
