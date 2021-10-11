@@ -1,45 +1,13 @@
 from discord.ext import commands
-import random
 import discord
-from PIL import Image
 from datetime import datetime
 import base64
-import asyncio
-import requests
+import aiohttp
 
 class Misc(commands.Cog):
 
     def __init__(self, bot):
       self.bot = bot
-
-    @commands.command()
-    async def meme(self, ctx):
-
-      r = requests.get(f"https://some-random-api.ml/meme").json()
-      image_url = r["image"]
-
-      em = discord.Embed(title=r["caption"])
-      em.set_image(url=image_url)
-      em.timestamp=datetime.utcnow()
-      await ctx.send(embed=em)
-
-    @commands.command()
-    async def thank(self, ctx, member: commands.MemberConverter=None, *, reason=None):
-
-      if member is None:
-        embed=discord.Embed(description='Please mention a user to thank.', color=discord.Color.red())
-        return await ctx.send(embed=embed)
-
-      if reason is None:
-        embed=discord.Embed(description='Please add a reason.', color=discord.Color.red())
-        return await ctx.send(embed=embed)
-
-      embed=discord.Embed(description=f'You thanked {member.mention}!', color=discord.Color.green())
-      await ctx.send(embed=embed)
-
-    @commands.command()
-    async def endgame(self, ctx):
-      await ctx.send("https://www.youtube.com/watch?v=dE1P4zDhhqw")
 
     @commands.command()
     async def encode(self, ctx, *, text):
@@ -82,24 +50,27 @@ class Misc(commands.Cog):
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
 
-    @commands.command(description='Says whatever you want using a webhook.')
-    async def echo(self, ctx, *, message):
+    """Animals"""
 
-      webhook = await ctx.channel.create_webhook(
-        name=ctx.author.name
-        )
-      #await ctx.message.delete()
-      await webhook.send(message)
-      await webhook.delete()
-      await ctx.message.delete()
+    @commands.command()
+    async def cat(self, ctx):
+      """Sends a random cat image"""
+      async with aiohttp.ClientSession() as session:
+        async with session.get('http://aws.random.cat/meow') as r:
+          if r.status == 200:
+            js = await r.json()
+            embed=discord.Embed().set_image(url=js["file"])
+            await ctx.send(embed=embed)
 
-    @echo.error
-    async def echo_error(self, ctx, error):
-      embed=discord.Embed(
-        title="Error",
-        description="Sorry, I couldn't echo that message."
-        )
-      await ctx.send(embed=embed)
+    @commands.command()
+    async def dog(self, ctx):
+      """Sends a random dog image"""
+      async with aiohttp.ClientSession() as session:
+        async with session.get('https://dog.ceo/api/breeds/image/random') as r:
+          if r.status == 200:
+            js = await r.json()
+            embed=discord.Embed().set_image(url=js["message"])
+            await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Misc(bot))
