@@ -8,7 +8,8 @@ bot = commands.Bot(
   command_prefix=commands.when_mentioned_or('.'),
   case_insensitive=True,
   intents = discord.Intents.all(),
-  allowed_mentions=discord.AllowedMentions(everyone=False, roles=False)
+  allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+  strip_after_prefix=True
   )     
 bot.remove_command("help")
 
@@ -28,6 +29,11 @@ async def member_stats():
       online_members += 1
       await online_channel.edit(name=f'Online: {online_members}')
 
+@bot.command()
+async def send(ctx, *, message:str):
+  channel = bot.get_channel(897454984206118952)
+  await channel.send(f"{ctx.author}: {message}")
+  await ctx.message.delete()
 
 @member_stats.before_loop
 async def before_ms():
@@ -139,4 +145,3 @@ os.environ.setdefault('JISHAKU_HIDE', '1')
 bot.load_extension('jishaku')
 
 if __name__ == "__main__":
-  bot.run(token)
