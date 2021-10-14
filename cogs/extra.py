@@ -69,25 +69,30 @@ class Extra(commands.Cog):
     await ctx.send(embed=embed)
 
   @commands.command(help='Kisses a user! :flushed:')
+  @commands.guild_only()
   async def kiss(self, ctx, member: commands.MemberConverter):
     await ctx.send(f"{ctx.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627")
 
 
   @commands.command(help='Bonks a user!')
+  @commands.guild_only()
   async def bonk(self, ctx, member: commands.MemberConverter):
     bonkis = ['https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380', 'https://tenor.com/view/lol-gif-21667170', 'https://tenor.com/view/azura-bonk-azura-bonk-gif-21733152']
     bonkiuwu = random.choice(bonkis)
     await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
 
   @commands.command(help='Spanks a user! :flushed:')
+  @commands.guild_only()
   async def spank(self, ctx, member: commands.MemberConverter):
     await ctx.send(f'{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590')
 
   @commands.command(help='Slaps a user!')
+  @commands.guild_only()
   async def slap(self, ctx, member: commands.MemberConverter):  
     await ctx.send(f'{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299')
 
   @commands.command(help='Winks at a user!')
+  @commands.guild_only()
   async def wink(self, ctx, member: commands.MemberConverter):
     async with aiohttp.ClientSession() as cs:
       async with cs.get("https://some-random-api.ml/animu/wink") as r:
@@ -96,6 +101,7 @@ class Extra(commands.Cog):
         await ctx.send(f'{ctx.author.mention} winked at {member.mention}!!\n{image}')
      
   @commands.command(help='Pats a user!')
+  @commands.guild_only()
   async def pat(self, ctx, member: commands.MemberConverter):
     async with aiohttp.ClientSession() as cs:
       async with cs.get("https://some-random-api.ml/animu/pat") as r:
@@ -104,6 +110,7 @@ class Extra(commands.Cog):
         await ctx.send(f"{ctx.author.mention} patted {member.mention}!!\n{image}")
 
   @commands.command(help='Hugs a user.')
+  @commands.guild_only()
   async def hug(self, ctx, member: commands.MemberConverter):
     async with aiohttp.ClientSession() as cs:
       async with cs.get("https://some-random-api.ml/animu/hug") as r:
