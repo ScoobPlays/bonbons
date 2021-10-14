@@ -40,7 +40,7 @@ class Information(commands.Cog):
       embed.timestamp = datetime.utcnow()
       await ctx.send(embed=embed)
 
-    @commands.command(aliases=["userinfo"])
+    @commands.command(aliases=["userinfo", "u", "ui"])
     async def whois(self, ctx, member: commands.MemberConverter=None):
 
       if member == None:
@@ -68,18 +68,16 @@ class Information(commands.Cog):
         member = ctx.author
       
       for activity in member.activities:
-
-          if isinstance(activity, Spotify):
-
-            embed = discord.Embed(title = f"{member.name}'s Spotify", color = ctx.author.color)
-            embed.set_thumbnail(url=activity.album_cover_url)
-            embed.set_author(name=f'{member.name}#{member.discriminator}', icon_url=f'{member.display_avatar}')
-            embed.add_field(name='Song', value=activity.title)         
-            embed.add_field(name="Artist", value=activity.artist)
-            embed.add_field(name="Album", value=activity.album, inline=False)
-            embed.set_footer(text=f"Track ID: {activity.track_id}")            
-            embed.timestamp=datetime.utcnow()
-            await ctx.send(embed=embed)
+        if isinstance(activity, Spotify):
+          embed = discord.Embed(title = f"{member.name}'s Spotify", color = ctx.author.color)
+          embed.set_thumbnail(url=activity.album_cover_url)
+          embed.set_author(name=f'{member.name}#{member.discriminator}', icon_url=f'{member.display_avatar}')
+          embed.add_field(name='Song', value=activity.title)         
+          embed.add_field(name="Artist", value=activity.artist)
+          embed.add_field(name="Album", value=activity.album, inline=False)
+          embed.set_footer(text=f"Track ID: {activity.track_id}")
+          embed.timestamp=datetime.utcnow()
+          await ctx.send(embed=embed)
 
 
     @commands.command(help='Gives you info about a role.')
