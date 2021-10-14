@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 import random
 import aiohttp
-from discordTogether import DiscordTogether
 
 
 class Fun(commands.Cog):
@@ -11,7 +10,6 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.last_msg = None
-        self.togetherControl = DiscordTogether(bot)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message): #on msg delete for snipe command
@@ -69,47 +67,6 @@ class Fun(commands.Cog):
     @commands.command(aliases=['roll'])
     async def dice(self, ctx):
       await ctx.send(f"You rolled a {random.randint(1, 6)}!")
-
-    @commands.command(name='fishing', help='Opens a Fishing game.')
-    async def _fishing(self, ctx):
-      try:
-        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'fishing')
-        await ctx.send(f"{link}")
-      except:
-        await ctx.reply("You must be in a VC to use this command.")
-
-    @commands.command(name='youtube', help='Starts a Youtube activity.')
-    async def _youtube(self, ctx):
-      try:
-        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'youtube')
-        await ctx.send(f"{link}")
-      except:
-        await ctx.reply("You must be in a VC to use this command.")
-
-    @commands.command(name='poker', help='Opens a Poker game.')
-    async def _poker(self, ctx):
-      try:
-        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'poker')
-        await ctx.send(f"{link}")
-      except:
-        await ctx.reply("You must be in a VC to use this command.")
-
-    @commands.command(name='betrayal', help='Opens a Betrayal game.')
-    async def _betrayal(self, ctx):
-      try:
-        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'betrayal')
-        await ctx.send(f"{link}")
-        
-      except:
-        await ctx.reply("You must be in a VC to use this command.")
-    
-    @commands.command(name='chess', help='Opens a Chess game.')
-    async def _chess(self, ctx):
-      try:
-        link = await self.togetherControl.create_link(ctx.author.voice.channel.id, 'poker')
-        await ctx.send(f"{link}")
-      except:
-        await ctx.reply("You must be in a VC to use this command.")
 
 def setup(bot):
   bot.add_cog(Fun(bot))
