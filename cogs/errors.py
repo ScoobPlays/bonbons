@@ -20,7 +20,7 @@ class Errors(commands.Cog):
         description=f"> {error}",
         color=discord.Color.red()
         )
-      await ctx.send(embed=embed)
+      await ctx.send(embed=embed, delete_after=10)
 
 
     elif isinstance(error, commands.CommandOnCooldown): #cd error
@@ -30,7 +30,7 @@ class Errors(commands.Cog):
         description=f"> Command is on cooldown. Try again in **{error.retry_after}** seconds.",
         color=discord.Color.red()
         )
-      await ctx.send(embed=embed)
+      await ctx.send(embed=embed, delete_after=10)
 
 
     elif isinstance(error, commands.MissingRequiredArgument): #missing arg
@@ -40,27 +40,20 @@ class Errors(commands.Cog):
         description=f"> {error}",
         color=discord.Color.red()
         )
-      await ctx.send(embed=embed)
+      await ctx.send(embed=embed, delete_after=10)
 
     else: #unknown error
-      print(error)
-      raise(error)
       stdout = io.StringIO()
       value = stdout.getvalue()
-      cmd = ctx.command
-      file = ctx.cog
 
       embed=discord.Embed(
-        title='Unknown Error', 
+        title='Error', 
         color=discord.Color.red()
         )
-      if file:
-        embed.add_field(name='Cog', value=ctx.cog, inline=False)
-      if cmd:
-        embed.add_field(name='Command', value=ctx.command, inline=False)
       embed.add_field(name='Error', value=f"```{error}```", inline=False)
-      embed.add_field(name='Console',value=f'```py\n{value}{traceback.format_exc()}\n```', inline=False)
-      await ctx.send(embed=embed)
+      if ctx.author is ctx.guild.owner:
+        embed.add_field(name='Console',value=f'```py\n{value}{traceback.format_exc()}\n```', inline=False)
+      await ctx.send(embed=embed, delete_after=10)
 
 def setup(bot):
   bot.add_cog(Errors(bot))
