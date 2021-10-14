@@ -1,6 +1,6 @@
+import discord
 from discord.ext import commands
 import os
-import discord
 import sys
 from datetime import datetime
 import platform
@@ -45,7 +45,7 @@ class Owner(commands.Cog):
         color=discord.Color.green()
         )
       embed.add_field(name='Main', value="`kiss`, `bonk`, `spank`, `slap`, `wink`, `pat`, `hug`")
-      embed.add_field(name='Misc', value="`say`, `luck`, `encode`, `decode`, `wiki`, `mincraft`, `dog`, `cat`, `snipe`, `color`, `token`, `joke`, `dice`, `fishing`, `youtube`, `poker`, `betrayal`, `chess`")
+      embed.add_field(name='Misc', value="`say`, `luck`, `encode`, `decode`, `wiki`, `mincraft`, `dog`, `cat`, `snipe`, `color`, `token`, `joke`")
       embed.add_field(name='Information', value="`membercount`, `userinfo`, `serverinfo`, `roleinfo`, `spotify`, `avatar`")
       embed.add_field(name='Utility', value="`ping`, `nick`, `massnick`, `ban`, `unban`, `clean`")
       embed.add_field(name='Other', value="`stats`, `run`, `jsk`, `restart`")
