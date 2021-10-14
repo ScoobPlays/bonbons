@@ -9,6 +9,7 @@ class Moderation(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=['nickname'])
+    @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
     async def nick(self, ctx, member: commands.MemberConverter=None, *, nick):
      
@@ -29,6 +30,8 @@ class Moderation(commands.Cog):
        await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.guild_only()
+    @commands.is_owner()
     async def massnick(self, ctx, *, nick=None):
       
       embed=discord.Embed(
@@ -53,11 +56,13 @@ class Moderation(commands.Cog):
         pass
 
     @commands.command(aliases=['clear', 'clean'], help='Purges an amount of messages for you.')
+    @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx, amount:int = 2):
       await ctx.channel.purge(limit=amount)
 
     @commands.command(help="A minimal ban comand to ban users.")
+    @commands.guild_only()
     @commands.is_owner()
     async def ban(self, ctx, member: commands.MemberConverter, *, reason=None):
       await ctx.guild.ban(member, reason=reason)
@@ -65,6 +70,7 @@ class Moderation(commands.Cog):
       await ctx.send(embed=embed)
 
     @commands.command(help='A simple unban command to unban users.')
+    @commands.guild_only()
     @commands.has_guild_permissions(ban_members=True)
     async def unban(self, ctx, target: discord.User, *, reason:str = None):
       try:
