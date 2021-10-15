@@ -1,5 +1,5 @@
-from discord.ext import commands
 import discord
+from discord.ext import commands
 from datetime import datetime
 import base64
 import aiohttp
@@ -43,12 +43,9 @@ class Misc(commands.Cog):
         )
       await ctx.send(embed=embed)
 
-    @commands.command(aliases=['s'], help='Says whatever you want for you!')
+    @commands.command(help='Says whatever you want for you!')
     async def say(self, ctx, *, message):
-      embed=discord.Embed(description = f'{message}', color=ctx.author.color)
-      embed.set_author(name=f'{ctx.author.name}', icon_url = ctx.author.display_avatar)
-      embed.timestamp = datetime.utcnow()
-      await ctx.send(embed=embed)
+      await ctx.send(message)
 
     """Animals"""
 
