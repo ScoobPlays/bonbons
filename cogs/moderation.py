@@ -7,7 +7,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=["nickname"])
+    @commands.command(aliases=("nickname",))
     @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
     async def nick(self, ctx, member: commands.MemberConverter = None, *, nick):
@@ -61,7 +61,7 @@ class Moderation(commands.Cog):
             pass
 
     @commands.command(
-        aliases=["clear", "clean"], help="Purges an amount of messages for you."
+        aliases=("clear", "clean",), help="Purges an amount of messages for you."
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)

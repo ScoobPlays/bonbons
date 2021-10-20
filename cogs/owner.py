@@ -21,7 +21,7 @@ class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=["rs", "shutdown"])
+    @commands.command(aliases=("rs", "shutdown",))
     @commands.is_owner()
     async def restart(self, ctx):
         embed = discord.Embed(title="Restarting...", color=discord.Color.red())

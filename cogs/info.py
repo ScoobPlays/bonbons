@@ -8,7 +8,7 @@ class Information(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=["av"])
+    @commands.command(aliases=("av",))
     async def avatar(self, ctx, *, member: discord.Member = None):
 
         if member is None:
@@ -19,7 +19,7 @@ class Information(commands.Cog):
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["server"], help="Fetches the server's stats.")
+    @commands.command(aliases=("server",), help="Fetches the server's stats.")
     @commands.guild_only()
     async def serverinfo(self, ctx):
 
@@ -56,7 +56,7 @@ class Information(commands.Cog):
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["userinfo", "u", "ui"])
+    @commands.command(aliases=("userinfo", "u", "ui",))
     async def whois(self, ctx, member: discord.Member = None):
 
         if member is None:

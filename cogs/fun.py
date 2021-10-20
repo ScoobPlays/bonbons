@@ -80,7 +80,7 @@ class Fun(commands.Cog):
                 data = await r.json()
                 await ctx.send(data["joke"])
 
-    @commands.command(aliases=["roll"])
+    @commands.command(aliases=("roll",))
     async def dice(self, ctx):
         await ctx.send(f"You rolled a {random.randint(1, 6)}!")
 

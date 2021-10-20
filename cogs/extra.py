@@ -11,7 +11,7 @@ class Extra(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=["wiki"])
+    @commands.command(aliases=("wiki",))
     async def wikipedia(self, ctx, *, query: str):
         async with self.bot.session.get(
             (
@@ -61,7 +61,7 @@ class Extra(commands.Cog):
                 embed.timestamp = datetime.utcnow()
                 await ctx.send(embed=embed)
 
-    @commands.command(aliases=["skin", "mc"])
+    @commands.command(aliases=("skin", "mc",))
     async def minecraft(self, ctx, username="Shrek"):
 
         async with self.bot.session.get(
