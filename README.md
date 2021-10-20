@@ -1,1 +1,3 @@
-# Imagine **README.md**.
+# Bonbons
+- `Py-Cord` => `Disnake`?
+- Slash commands?
