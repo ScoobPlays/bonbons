@@ -66,7 +66,7 @@ class Moderation(commands.Cog):
     @commands.is_owner()
     async def ban(self, ctx, member: commands.MemberConverter, *, reason=None):
       await ctx.guild.ban(member, reason=reason)
-      embed=discord.Embed(title='🔨 Member Unbanned', description=f'{member.mention} has been banned!', color = discord.Color.red())
+      embed=discord.Embed(title='🔨 Member Banned', description=f'{member.mention} has been banned!', color = discord.Color.red())
       await ctx.send(embed=embed)
 
     @commands.command(help='A simple unban command to unban users.')
