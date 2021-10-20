@@ -143,7 +143,7 @@ class Owner(commands.Cog):
                     try:
 
                         out = await ctx.send(f"```py\n{value}\n```")
-                    except:
+                    except Exception:
                         paginated_text = paginate(value)
                         for page in paginated_text:
                             if page == paginated_text[-1]:
@@ -153,7 +153,7 @@ class Owner(commands.Cog):
             else:
                 try:
                     out = await ctx.send(f"```py\n{value}{ret}\n```")
-                except:
+                except Exception:
                     paginated_text = paginate(f"{value}{ret}")
                     for page in paginated_text:
                         if page == paginated_text[-1]:

@@ -25,7 +25,7 @@ class Moderation(commands.Cog):
             embed.timestamp = datetime.utcnow()
             await ctx.send(embed=embed)
 
-        except:
+        except Exception:
             embed = discord.Embed(
                 description=f"I can't change {member.mention}'s nick.",
                 color=discord.Color.red(),
