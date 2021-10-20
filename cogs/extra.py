@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-import requests
 import json
 from datetime import datetime
 import base64
@@ -14,71 +13,76 @@ class Extra(commands.Cog):
 
     @commands.command(aliases=["wiki"])
     async def wikipedia(self, ctx, *, query: str):
-        sea = requests.get(
+        async with self.bot.session.get(
             (
                 "https://en.wikipedia.org//w/api.php?action=query"
                 "&format=json&list=search&utf8=1&srsearch={}&srlimit=5&srprop="
             ).format(query)
-        ).json()["query"]
+        ) as r:
+            sea = (await r.json())["query"]
 
-        if sea["searchinfo"]["totalhits"] == 0:
-            await ctx.send("Sorry, your search could not be found.")
-        else:
-            for x in range(len(sea["search"])):
-                article = sea["search"][x]["title"]
-                req = requests.get(
-                    "https://en.wikipedia.org//w/api.php?action=query"
-                    "&utf8=1&redirects&format=json&prop=info|images"
-                    "&inprop=url&titles={}".format(article)
-                ).json()["query"]["pages"]
-                if str(list(req)[0]) != "-1":
-                    break
-            else:
+            if sea["searchinfo"]["totalhits"] == 0:
                 await ctx.send("Sorry, your search could not be found.")
-                return
-            article = req[list(req)[0]]["title"]
-            arturl = req[list(req)[0]]["fullurl"]
-            artdesc = requests.get(
-                "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
-            ).json()["extract"]
-            embed = discord.Embed(
-                title="**" + article + "**",
-                url=arturl,
-                description=artdesc,
-                color=0x3FCAFF,
-            )
-            embed.set_footer(
-                text=f"Search result for {query}",
-                icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
-            )
-            embed.set_author(
-                name="Wikipedia",
-                url="https://en.wikipedia.org/",
-                icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
-            )
-            embed.timestamp = datetime.utcnow()
-            await ctx.send(embed=embed)
+            else:
+                for x in range(len(sea["search"])):
+                    article = sea["search"][x]["title"]
+                    async with self.bot.session.get(
+                        "https://en.wikipedia.org//w/api.php?action=query"
+                        "&utf8=1&redirects&format=json&prop=info|images"
+                        "&inprop=url&titles={}".format(article)
+                    ) as r:
+                        req = (await r.json())["query"]["pages"]
+                        if str(list(req)[0]) != "-1":
+                            break
+                else:
+                    await ctx.send("Sorry, your search could not be found.")
+                    return
+                article = req[list(req)[0]]["title"]
+                arturl = req[list(req)[0]]["fullurl"]
+                async with self.bot.session.get(
+                    "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
+                ) as r:
+                    artdesc = (await r.json())["extract"]
+                embed = discord.Embed(
+                    title="**" + article + "**",
+                    url=arturl,
+                    description=artdesc,
+                    color=0x3FCAFF,
+                )
+                embed.set_footer(
+                    text=f"Search result for {query}",
+                    icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
+                )
+                embed.set_author(
+                    name="Wikipedia",
+                    url="https://en.wikipedia.org/",
+                    icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
+                )
+                embed.timestamp = datetime.utcnow()
+                await ctx.send(embed=embed)
 
     @commands.command(aliases=["skin", "mc"])
     async def minecraft(self, ctx, username="Shrek"):
 
-        uuid = requests.get(
+        async with self.bot.session.get(
             "https://api.mojang.com/users/profiles/minecraft/{}".format(username)
-        ).json()["id"]
+        ) as r:
+            uuid = (await r.json())["id"]
 
+        async with self.bot.session.get(
+            "https://sessionserver.mojang.com/session/minecraft/profile/{}".format(
+                uuid
+            )
+        ) as r:
+            value = (await r.json())["properties"][0]["value"]
         url = json.loads(
-            base64.b64decode(
-                requests.get(
-                    "https://sessionserver.mojang.com/session/minecraft/profile/{}".format(
-                        uuid
-                    )
-                ).json()["properties"][0]["value"]
-            ).decode("utf-8")
+            base64.b64decode(value).decode("utf-8")
         )["textures"]["SKIN"]["url"]
 
-        names = requests.get(
+        async with self.bot.session.get(
             "https://api.mojang.com/user/profiles/{}/names".format(uuid)
-        ).json()
+        ) as r:
+            names = await r.json()
         history = ""
         for name in reversed(names):
             history += name["name"] + "\n"

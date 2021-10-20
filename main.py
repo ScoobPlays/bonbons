@@ -2,6 +2,7 @@ import discord
 import os
 from discord.ext import commands
 from keep_alive import keep_alive
+from aiohttp import ClientSession
 
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or("."),
@@ -11,6 +12,7 @@ bot = commands.Bot(
     strip_after_prefix=True,
 )
 bot.remove_command("help")
+bot.session = ClientSession(loop=bot.loop)
 
 
 @bot.event
