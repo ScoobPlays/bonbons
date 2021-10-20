@@ -30,16 +30,13 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-          embed = discord.Embed(
-            title="Error",
-            description="Sorry, I couldn't find the most recently deleted message.",
+            embed = discord.Embed(
+                title="Error",
+                description="Sorry, I couldn't find the most recently deleted message.",
             )
-          embed.timestamp = datetime.utcnow()
-          embed.set_footer(
-            name=ctx.author,
-            icon_url=ctx.author.display_avatar
-            )
-          await ctx.send(embed=embed)
+            embed.timestamp = datetime.utcnow()
+            embed.set_footer(name=ctx.author, icon_url=ctx.author.display_avatar)
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def luck(self, ctx, *, lucky_on):

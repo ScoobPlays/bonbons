@@ -79,19 +79,20 @@ class Events(commands.Cog):
             return
 
         if isinstance(error, commands.CommandNotFound):
-          return
+            return
 
         if isinstance(error, commands.CommandOnCooldown):  # cd error
             print(error)
             await ctx.reply(error)
-            
+
         elif isinstance(error, commands.MissingRequiredArgument):
-          print(error)
-          await ctx.reply(error)
+            print(error)
+            await ctx.reply(error)
 
         else:
-          print(error)
-          await ctx.reply(error)
+            print(error)
+            await ctx.reply(error)
+
 
 def setup(bot):
     bot.add_cog(Events(bot))

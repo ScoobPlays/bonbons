@@ -12,13 +12,15 @@ bot = commands.Bot(
 )
 bot.remove_command("help")
 
+
 @bot.event
 async def on_ready():
     print(f"Bot is ready to be used! Ping: {round(bot.latency * 1000)}")
-    
+
+
 for filename in os.listdir("./cogs"):
-  if filename.endswith(".py"):
-    bot.load_extension(f"cogs.{filename[:-3]}")
+    if filename.endswith(".py"):
+        bot.load_extension(f"cogs.{filename[:-3]}")
 
 keep_alive()
 os.environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
