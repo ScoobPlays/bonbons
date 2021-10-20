@@ -12,12 +12,13 @@ bot = commands.Bot(
     strip_after_prefix=True,
 )
 bot.remove_command("help")
-bot.session = ClientSession(loop=bot.loop)
 
 
 @bot.event
 async def on_ready():
     print(f"Bot is ready to be used! Ping: {round(bot.latency * 1000)}")
+    if not hasattr(bot, 'session'):
+        bot.session = ClientSession(loop=bot.loop)
 
 
 for filename in os.listdir("./cogs"):
