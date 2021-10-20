@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 import json
 from datetime import datetime
 import base64
@@ -43,7 +43,7 @@ class Extra(commands.Cog):
                     "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
                 ) as r:
                     artdesc = (await r.json())["extract"]
-                embed = discord.Embed(
+                embed = disnake.Embed(
                     title="**" + article + "**",
                     url=arturl,
                     description=artdesc,
@@ -87,7 +87,7 @@ class Extra(commands.Cog):
         for name in reversed(names):
             history += name["name"] + "\n"
 
-        embed = discord.Embed(title=f"User Information For {username}")
+        embed = disnake.Embed(title=f"User Information For {username}")
         embed.add_field(name="Username", value=username)
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
         embed.add_field(name="History", value=history)

@@ -12,6 +12,7 @@ bot = commands.Bot(
     strip_after_prefix=True,
 )
 
+
 @bot.event
 async def on_ready():
     print(f"Bot is ready to be used! Ping: {round(bot.latency * 1000)}")
@@ -26,4 +27,4 @@ os.environ['JISHAKU_EMBEDDED_JSK'] = '1'
 bot.load_extension("jishaku")
 
 if __name__ == "__main__":
-  bot.run(os.environ["token"])
+    bot.run(os.environ["token"])

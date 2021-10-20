@@ -1,7 +1,7 @@
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 from datetime import datetime
-from discord import Spotify
+from disnake import Spotify
 
 
 class Information(commands.Cog):
@@ -9,12 +9,12 @@ class Information(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=("av",))
-    async def avatar(self, ctx, *, member: discord.Member = None):
+    async def avatar(self, ctx, *, member: disnake.Member = None):
 
         if member is None:
             member = ctx.author
 
-        embed = discord.Embed(color=ctx.author.color)
+        embed = disnake.Embed(color=ctx.author.color)
         embed.set_image(url=member.display_avatar)
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
@@ -23,7 +23,7 @@ class Information(commands.Cog):
     @commands.guild_only()
     async def serverinfo(self, ctx):
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title=ctx.guild.name,
             description=f"**ID:** {ctx.guild.id}\n**Owner:** {ctx.guild.owner}",
         )
@@ -48,16 +48,16 @@ class Information(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def membercount(self, ctx):
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title="Members",
             description=f"{len(ctx.guild.members)}",
-            color=discord.Color.green(),
+            color=disnake.Color.green(),
         )
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
     @commands.command(aliases=("userinfo", "u", "ui",))
-    async def whois(self, ctx, member: discord.Member = None):
+    async def whois(self, ctx, member: disnake.Member = None):
 
         if member is None:
             member = ctx.author
@@ -65,7 +65,7 @@ class Information(commands.Cog):
         if len(member.roles) > 1:
             role_string = ", ".join([r.mention for r in member.roles][1:])
 
-        embed = discord.Embed()
+        embed = disnake.Embed()
         embed.set_thumbnail(url=member.display_avatar)
         embed.set_author(
             name=f"{member.name}#{member.discriminator}",
@@ -98,7 +98,7 @@ class Information(commands.Cog):
 
         for activity in member.activities:
             if isinstance(activity, Spotify):
-                embed = discord.Embed(
+                embed = disnake.Embed(
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
                 )
@@ -115,7 +115,7 @@ class Information(commands.Cog):
 
     @commands.command(help="Gives you info about a role.")
     @commands.guild_only()
-    async def roleinfo(self, ctx, role: discord.Role = None):
+    async def roleinfo(self, ctx, role: disnake.Role = None):
 
         role_mentionable = None
         role_hoisted = None
@@ -140,7 +140,7 @@ class Information(commands.Cog):
         if role.hoist is False:
             role_hoisted = x_emoji
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             description=f"**Role:** {role.mention}\n**ID:** {role.id}", color=role.color
         )
         embed.set_author(name=f"{ctx.author}", icon_url=f"{ctx.author.display_avatar}")
@@ -160,7 +160,7 @@ class Information(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title="Ponged!", description=f"**Ping:** {round(self.bot.latency * 1000)}ms"
         )
 

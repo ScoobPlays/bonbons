@@ -1,6 +1,6 @@
 from datetime import datetime
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 import random
 import aiohttp
 
@@ -12,7 +12,7 @@ class Fun(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(
-        self, message: discord.Message
+        self, message: disnake.Message
     ):  # on msg delete for snipe command
         self.last_msg = message
 
@@ -20,7 +20,7 @@ class Fun(commands.Cog):
     async def snipe(self, ctx):
         if self.last_msg.guild.id == ctx.guild.id:
 
-            embed = discord.Embed(description=f"{self.last_msg.content}")
+            embed = disnake.Embed(description=f"{self.last_msg.content}")
             embed.set_footer(text=f"Message from {self.last_msg.author}")
             embed.set_author(
                 name=f"{self.last_msg.author}",
@@ -30,7 +30,7 @@ class Fun(commands.Cog):
             await ctx.send(embed=embed)
 
         else:
-            embed = discord.Embed(
+            embed = disnake.Embed(
                 title="Error",
                 description="Sorry, I couldn't find the most recently deleted message.",
             )
@@ -52,7 +52,7 @@ class Fun(commands.Cog):
         ]
         rng_day = random.choice(random_day)
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             description=f"Your luck of getting **{lucky_on}** {rng_day} **{randome}**%",
             color=ctx.author.color,
         )
@@ -65,7 +65,7 @@ class Fun(commands.Cog):
             async with cs.get("https://some-random-api.ml/bottoken") as r:
                 data = await r.json()
 
-                emb = discord.Embed(description=data["token"])
+                emb = disnake.Embed(description=data["token"])
                 emb.set_author(
                     name=f"{ctx.author.name}#{ctx.author.discriminator}",
                     icon_url=f"{ctx.author.display_avatar}",

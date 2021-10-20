@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 from datetime import datetime
 
 
@@ -17,18 +17,18 @@ class Moderation(commands.Cog):
 
         try:
             await member.edit(nick=nick)
-            embed = discord.Embed(
+            embed = disnake.Embed(
                 description=f"You have changed {member.mention}'s nick.",
-                color=discord.Color.green(),
+                color=disnake.Color.green(),
             )
             embed.set_author(name=f"{ctx.author}", icon_url=ctx.author.display_avatar)
             embed.timestamp = datetime.utcnow()
             await ctx.send(embed=embed)
 
         except Exception:
-            embed = discord.Embed(
+            embed = disnake.Embed(
                 description=f"I can't change {member.mention}'s nick.",
-                color=discord.Color.red(),
+                color=disnake.Color.red(),
             )
             embed.set_author(name=f"{ctx.author}", icon_url=ctx.author.display_avatar)
             embed.timestamp = datetime.utcnow()
@@ -39,15 +39,15 @@ class Moderation(commands.Cog):
     @commands.is_owner()
     async def massnick(self, ctx, *, nick=None):
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title=f"Changing nicknames for {ctx.guild.member_count} members...",
-            color=discord.Color.red(),
+            color=disnake.Color.red(),
         )
         send = await ctx.send(embed=embed)
 
-        done = discord.Embed(
+        done = disnake.Embed(
             title=f"Changed nicknames for {ctx.guild.member_count} members!",
-            color=discord.Color.green(),
+            color=disnake.Color.green(),
         )
 
         try:
@@ -55,7 +55,7 @@ class Moderation(commands.Cog):
                 await member.edit(nick=nick)
                 print(f"Changing {member}'s nickname...")
 
-        except discord.Forbidden:
+        except disnake.Forbidden:
             print(f"Couldn't change {member}'s nick.")
             await send.edit(embed=done)
             pass
@@ -73,30 +73,30 @@ class Moderation(commands.Cog):
     @commands.is_owner()
     async def ban(self, ctx, member: commands.MemberConverter, *, reason=None):
         await ctx.guild.ban(member, reason=reason)
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title="🔨 Member Banned",
             description=f"{member.mention} has been banned!",
-            color=discord.Color.red(),
+            color=disnake.Color.red(),
         )
         await ctx.send(embed=embed)
 
     @commands.command(help="A simple unban command to unban users.")
     @commands.guild_only()
     @commands.has_guild_permissions(ban_members=True)
-    async def unban(self, ctx, target: discord.User, *, reason: str = None):
+    async def unban(self, ctx, target: disnake.User, *, reason: str = None):
         try:
             await ctx.guild.fetch_ban(target)
-        except discord.NotFound:
+        except disnake.NotFound:
             return await ctx.send(
-                embed=discord.Embed(
+                embed=disnake.Embed(
                     title="Error", description="That user is not banned."
                 )
             )
 
-        embed = discord.Embed(
+        embed = disnake.Embed(
             title="🛠️ Member Unbanned",
             description=f"{target.mention} has been unbanned!",
-            color=discord.Color.green(),
+            color=disnake.Color.green(),
         )
 
         await ctx.guild.unban(target, reason=reason)

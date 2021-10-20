@@ -3,8 +3,9 @@ from disnake.ext import commands
 import os
 import sys
 
+
 def restart_bot():
-  os.execv(sys.executable, ["python"] + sys.argv)
+    os.execv(sys.executable, ["python"] + sys.argv)
 
 
 class Owner(commands.Cog):
@@ -18,6 +19,7 @@ class Owner(commands.Cog):
         await ctx.send(embed=embed)
         print("Restarting...")
         restart_bot()
+
 
 def setup(bot):
     bot.add_cog(Owner(bot))

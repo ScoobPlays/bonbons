@@ -44,18 +44,21 @@ class Misc(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(help="Says whatever you want for you!")
-    async def say(self, ctx, *, message):
+    @commands.command(
+        name="say",
+        help="Says whatever you want for you!"
+    )
+    async def say_cmd(self, ctx, *, message):
         await ctx.send(message)
 
-    @commands.slash_command()
-    async def say(self, inter, message):
+    @commands.slash_command(name="say")
+    async def say_slash(self, inter, message):
         await inter.response.send_message(message)
 
     """Animals"""
 
-    @commands.command()
-    async def cat(self, ctx):
+    @commands.command(name="cat")
+    async def cat_cmd(self, ctx):
         """Sends a random cat image"""
         async with aiohttp.ClientSession() as session:
             async with session.get("http://aws.random.cat/meow") as r:
@@ -64,8 +67,8 @@ class Misc(commands.Cog):
                     embed = disnake.Embed().set_image(url=js["file"])
                     await ctx.send(embed=embed)
 
-    @commands.slash_command()
-    async def cat(self, inter):
+    @commands.slash_command(name="cat")
+    async def cat_slash(self, inter):
         """Sends a random cat image"""
         async with aiohttp.ClientSession() as session:
             async with session.get("http://aws.random.cat/meow") as r:
@@ -74,8 +77,8 @@ class Misc(commands.Cog):
                     embed = disnake.Embed().set_image(url=js["file"])
                     await inter.response.send_message(embed=embed, ephemeral=False)
 
-    @commands.command()
-    async def dog(self, ctx):
+    @commands.command(name="dog")
+    async def dog_cmd(self, ctx):
         """Sends a random dog image"""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://dog.ceo/api/breeds/image/random") as r:
@@ -84,8 +87,8 @@ class Misc(commands.Cog):
                     embed = disnake.Embed().set_image(url=js["message"])
                     await ctx.send(embed=embed)
 
-    @commands.command()
-    async def dog(self, inter):
+    @commands.command(name="dog")
+    async def dog_slash(self, inter):
         """Sends a random dog image"""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://dog.ceo/api/breeds/image/random") as r:

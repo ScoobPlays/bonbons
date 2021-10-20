@@ -1,5 +1,5 @@
-import discord
-from discord.ext import commands
+import disnake
+from disnake.ext import commands
 
 
 class Events(commands.Cog):
@@ -20,7 +20,7 @@ class Events(commands.Cog):
 
         for word in self.badwords:
             if word in msg.content.lower():
-                embed = discord.Embed(
+                embed = disnake.Embed(
                     title=f'In {msg.guild.name}, "{word}" got highlighted.',
                     description=f"[Jump to message!]({msg.jump_url})",
                 )
@@ -33,7 +33,7 @@ class Events(commands.Cog):
 
         self.hw_append(value)
         highlights_list = ", ".join(self.badwords)
-        embed = discord.Embed(title="Current List", description=f"{highlights_list}")
+        embed = disnake.Embed(title="Current List", description=f"{highlights_list}")
         await ctx.send(f'Appended "{value}" to the highlights.', embed=embed)
 
     @commands.Cog.listener()
@@ -49,10 +49,10 @@ class Events(commands.Cog):
 
         await member.add_roles(*roles)
         await channel.send(
-            embed=discord.Embed(
+            embed=disnake.Embed(
                 title="Welcome!",
                 description=f"{member.mention} joined! Hope you stay!!",
-                color=discord.Color.green(),
+                color=disnake.Color.green(),
             ).set_footer(text=member, icon_url=member.display_avatar)
         )
 
@@ -64,10 +64,10 @@ class Events(commands.Cog):
         channel = guild.get_channel(880387280576061450)
 
         await channel.send(
-            embed=discord.Embed(
+            embed=disnake.Embed(
                 title="Goodbye!",
                 description=f"{member.mention} left.. :cry:",
-                color=discord.Color.green(),
+                color=disnake.Color.green(),
             ).set_footer(text=member, icon_url=member.display_avatar)
         )
 
