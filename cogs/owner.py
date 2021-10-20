@@ -4,7 +4,6 @@ import os
 import sys
 from datetime import datetime
 import platform
-import os
 import inspect
 import io
 import textwrap
