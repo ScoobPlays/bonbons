@@ -11,7 +11,7 @@ class Information(commands.Cog):
     @commands.command(aliases=["av"])
     async def avatar(self, ctx, *, member: discord.Member = None):
 
-        if member == None:
+        if member is None:
             member = ctx.author
 
         embed = discord.Embed(color=ctx.author.color)
@@ -28,7 +28,7 @@ class Information(commands.Cog):
             description=f"**ID:** {ctx.guild.id}\n**Owner:** {ctx.guild.owner}",
         )
         embed.add_field(
-            name=f"Server Created At",
+            name="Server Created At",
             value=f"<t:{int(ctx.guild.created_at.timestamp())}:F> (<t:{int(ctx.guild.created_at.timestamp())}:R>)",
             inline=False,
         )
@@ -38,7 +38,7 @@ class Information(commands.Cog):
         )
         embed.add_field(
             name=f"Server Roles [{len(ctx.guild.roles)}]",
-            value=f" ".join(r.mention for r in ctx.guild.roles[1:]),
+            value=" ".join(r.mention for r in ctx.guild.roles[1:]),
             inline=False,
         )
         embed.timestamp = datetime.utcnow()
@@ -49,7 +49,7 @@ class Information(commands.Cog):
     @commands.guild_only()
     async def membercount(self, ctx):
         embed = discord.Embed(
-            title=f"Members",
+            title="Members",
             description=f"{len(ctx.guild.members)}",
             color=discord.Color.green(),
         )
@@ -59,7 +59,7 @@ class Information(commands.Cog):
     @commands.command(aliases=["userinfo", "u", "ui"])
     async def whois(self, ctx, member: discord.Member = None):
 
-        if member == None:
+        if member is None:
             member = ctx.author
 
         if len(member.roles) > 1:
@@ -93,7 +93,7 @@ class Information(commands.Cog):
     @commands.command(help="Fetches your spotify activity/status. (if you have one)")
     async def spotify(self, ctx, member: commands.MemberConverter = None):
 
-        if member == None:
+        if member is None:
             member = ctx.author
 
         for activity in member.activities:
@@ -120,7 +120,7 @@ class Information(commands.Cog):
         role_mentionable = None
         role_hoisted = None
 
-        if role == None:
+        if role is None:
             role = ctx.author.top_role
 
         x_emoji = "❌"

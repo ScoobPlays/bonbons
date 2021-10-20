@@ -76,7 +76,7 @@ class Fun(commands.Cog):
     @commands.command(help="Gives a joke!")
     async def joke(self, ctx):
         async with aiohttp.ClientSession() as cs:
-            async with cs.get(f"https://some-random-api.ml/joke") as r:
+            async with cs.get("https://some-random-api.ml/joke") as r:
                 data = await r.json()
                 await ctx.send(data["joke"])
 

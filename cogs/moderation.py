@@ -12,7 +12,7 @@ class Moderation(commands.Cog):
     @commands.has_permissions(manage_nicknames=True)
     async def nick(self, ctx, member: commands.MemberConverter = None, *, nick):
 
-        if member == None:
+        if member is None:
             member = ctx.author
 
         try:

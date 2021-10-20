@@ -24,7 +24,7 @@ class Events(commands.Cog):
                     title=f'In {msg.guild.name}, "{word}" got highlighted.',
                     description=f"[Jump to message!]({msg.jump_url})",
                 )
-                embed.add_field(name=f"Message", value=msg.content)
+                embed.add_field(name="Message", value=msg.content)
                 embed.set_footer(text=f"From {msg.author}")
                 await offsprings.send(embed=embed)
 
