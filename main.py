@@ -1,18 +1,16 @@
-import discord
+import disnake
+from disnake.ext import commands
 import os
-from discord.ext import commands
-from keep_alive import keep_alive
 from aiohttp import ClientSession
 
 bot = commands.Bot(
-    command_prefix=commands.when_mentioned_or("."),
+    command_prefix=commands.when_mentioned_or(">"),
+    test_guilds=[880030618275155998],
     case_insensitive=True,
-    intents=discord.Intents.all(),
-    allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
+    intents=disnake.Intents.all(),
+    allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
     strip_after_prefix=True,
 )
-bot.remove_command("help")
-
 
 @bot.event
 async def on_ready():
@@ -20,15 +18,12 @@ async def on_ready():
     if not hasattr(bot, 'session'):
         bot.session = ClientSession(loop=bot.loop)
 
-
 for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
 
-keep_alive()
-os.environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
-os.environ.setdefault("JISHAKU_HIDE", "1")
+os.environ['JISHAKU_EMBEDDED_JSK'] = '1'
 bot.load_extension("jishaku")
 
 if __name__ == "__main__":
-    bot.run(os.environ["token"])
+  bot.run(os.environ["token"])
