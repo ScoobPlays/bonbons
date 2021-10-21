@@ -44,16 +44,14 @@ class Misc(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(
-        name="say",
-        help="Says whatever you want for you!"
-    )
+    @commands.command(name="say", help="Says whatever you want for you!")
     async def say_cmd(self, ctx, *, message):
         await ctx.send(message)
 
     @commands.slash_command(name="say")
     async def say_slash(self, inter, message):
-        await inter.response.send_message(message)
+        "Says whatever you want for you!"
+        await inter.response.send_message(message, ephemeral=False)
 
     """Animals"""
 
@@ -87,7 +85,7 @@ class Misc(commands.Cog):
                     embed = disnake.Embed().set_image(url=js["message"])
                     await ctx.send(embed=embed)
 
-    @commands.command(name="dog")
+    @commands.slash_command(name="dog")
     async def dog_slash(self, inter):
         """Sends a random dog image"""
         async with aiohttp.ClientSession() as session:
