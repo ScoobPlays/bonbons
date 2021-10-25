@@ -54,9 +54,9 @@ class Fun(commands.Cog):
 
         embed = disnake.Embed(
             description=f"Your luck of getting **{lucky_on}** {rng_day} **{randome}**%",
-            color=ctx.author.color,
         )
-        embed.set_timestamp = datetime.utcnow()
+        embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
+        embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
     @commands.command(help="Generates a random token.")
@@ -64,14 +64,7 @@ class Fun(commands.Cog):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/bottoken") as r:
                 data = await r.json()
-
-                emb = disnake.Embed(description=data["token"])
-                emb.set_author(
-                    name=f"{ctx.author.name}#{ctx.author.discriminator}",
-                    icon_url=f"{ctx.author.display_avatar}",
-                )
-                emb.timestamp = datetime.utcnow()
-                await ctx.send(embed=emb)
+                await ctx.send(f'Here\'s your token: `{data["token"]}`')
 
     @commands.command(help="Gives a joke!")
     async def joke(self, ctx):
@@ -79,10 +72,6 @@ class Fun(commands.Cog):
             async with cs.get("https://some-random-api.ml/joke") as r:
                 data = await r.json()
                 await ctx.send(data["joke"])
-
-    @commands.command(aliases=("roll",))
-    async def dice(self, ctx):
-        await ctx.send(f"You rolled a {random.randint(1, 6)}!")
 
 
 def setup(bot):
