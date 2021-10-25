@@ -6,7 +6,7 @@ cluster = pymongo.MongoClient(
     "mongodb+srv://<username>:<password>@cluster0.s0wqa.mongodb.net/discord?retryWrites=true&w=majority"
 )
 
-
+#e
 class Tags(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
