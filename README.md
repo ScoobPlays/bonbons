@@ -1,3 +1,3 @@
 # Bonbons
-- Database support (`tags`, `economy`)
-- Slash commands (Soon)
+- Database support (`Beta Feature`)
+- Slash commands (`Soon`)
