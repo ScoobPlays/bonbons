@@ -11,8 +11,8 @@ class Extra(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=("wiki",))
-    async def wikipedia(self, ctx, *, query: str):
+    @commands.command(name="wikipedia", aliases=("wiki",))
+    async def wikipedia_cmd(self, ctx: commands.Context, *, query: str):
         async with self.bot.session.get(
             (
                 "https://en.wikipedia.org//w/api.php?action=query"
@@ -61,8 +61,68 @@ class Extra(commands.Cog):
                 embed.timestamp = datetime.utcnow()
                 await ctx.send(embed=embed)
 
-    @commands.command(aliases=("skin", "mc",))
-    async def minecraft(self, ctx, username="Shrek"):
+    @commands.slash_command(name="wikipedia", aliases=("wiki",))
+    async def wikipedia_slash(self, inter, query: str):
+        """Searches for something on the wikipedia"""
+        async with self.bot.session.get(
+            (
+                "https://en.wikipedia.org//w/api.php?action=query"
+                "&format=json&list=search&utf8=1&srsearch={}&srlimit=5&srprop="
+            ).format(query)
+        ) as r:
+            sea = (await r.json())["query"]
+
+            if sea["searchinfo"]["totalhits"] == 0:
+                await inter.response.send_message(
+                    "Sorry, your search could not be found.", ephemeral=False
+                )
+            else:
+                for x in range(len(sea["search"])):
+                    article = sea["search"][x]["title"]
+                    async with self.bot.session.get(
+                        "https://en.wikipedia.org//w/api.php?action=query"
+                        "&utf8=1&redirects&format=json&prop=info|images"
+                        "&inprop=url&titles={}".format(article)
+                    ) as r:
+                        req = (await r.json())["query"]["pages"]
+                        if str(list(req)[0]) != "-1":
+                            break
+                else:
+                    return await inter.response.send_message(
+                        "Sorry, your search could not be found.", ephemeral=False
+                    )
+                article = req[list(req)[0]]["title"]
+                arturl = req[list(req)[0]]["fullurl"]
+                async with self.bot.session.get(
+                    "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
+                ) as r:
+                    artdesc = (await r.json())["extract"]
+                embed = disnake.Embed(
+                    title="**" + article + "**",
+                    url=arturl,
+                    description=artdesc,
+                    color=0x3FCAFF,
+                )
+                embed.set_footer(
+                    text=f"Search result for {query}",
+                    icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
+                )
+                embed.set_author(
+                    name="Wikipedia",
+                    url="https://en.wikipedia.org/",
+                    icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
+                )
+                embed.timestamp = datetime.utcnow()
+                await inter.response.send_message(embed=embed, ephemeral=False)
+
+    @commands.command(
+        name="minecraft",
+        aliases=(
+            "skin",
+            "mc",
+        ),
+    )
+    async def minecraft_cmd(self, ctx: commands.Context, username="Notch"):
 
         async with self.bot.session.get(
             "https://api.mojang.com/users/profiles/minecraft/{}".format(username)
@@ -70,14 +130,12 @@ class Extra(commands.Cog):
             uuid = (await r.json())["id"]
 
         async with self.bot.session.get(
-            "https://sessionserver.mojang.com/session/minecraft/profile/{}".format(
-                uuid
-            )
+            "https://sessionserver.mojang.com/session/minecraft/profile/{}".format(uuid)
         ) as r:
             value = (await r.json())["properties"][0]["value"]
-        url = json.loads(
-            base64.b64decode(value).decode("utf-8")
-        )["textures"]["SKIN"]["url"]
+        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
+            "url"
+        ]
 
         async with self.bot.session.get(
             "https://api.mojang.com/user/profiles/{}/names".format(uuid)
@@ -96,16 +154,65 @@ class Extra(commands.Cog):
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
-    @commands.command(help="Kisses a user! :flushed:")
+    @commands.slash_command(
+        name="minecraft",
+        aliases=(
+            "skin",
+            "mc",
+        ),
+    )
+    async def minecraft_slash(self, inter, username="Notch"):
+        """Fetches information about a minecraft user"""
+
+        async with self.bot.session.get(
+            "https://api.mojang.com/users/profiles/minecraft/{}".format(username)
+        ) as r:
+            uuid = (await r.json())["id"]
+
+        async with self.bot.session.get(
+            "https://sessionserver.mojang.com/session/minecraft/profile/{}".format(uuid)
+        ) as r:
+            value = (await r.json())["properties"][0]["value"]
+        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
+            "url"
+        ]
+
+        async with self.bot.session.get(
+            "https://api.mojang.com/user/profiles/{}/names".format(uuid)
+        ) as r:
+            names = await r.json()
+        history = ""
+        for name in reversed(names):
+            history += name["name"] + "\n"
+
+        embed = disnake.Embed(title=f"User Information For {username}")
+        embed.add_field(name="Username", value=username)
+        embed.set_author(name=inter.author, icon_url=inter.author.display_avatar)
+        embed.add_field(name="History", value=history)
+        embed.set_thumbnail(url=url)
+        embed.set_footer(icon_url=inter.author.display_avatar)
+        embed.timestamp = datetime.utcnow()
+        await inter.response.send_message(embed=embed, ephemeral=False)
+
+    @commands.command(name="kiss", help="Kisses a user")
     @commands.guild_only()
-    async def kiss(self, ctx, member: commands.MemberConverter):
+    async def kiss_cmd(self, ctx: commands.Context, member: disnake.Member):
         await ctx.send(
             f"{ctx.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627"
         )
 
-    @commands.command(help="Bonks a user!")
+    @commands.slash_command(name="kiss")
     @commands.guild_only()
-    async def bonk(self, ctx, member: commands.MemberConverter):
+    async def kiss_slash(self, inter, member: disnake.Member):
+        """Kisses a user"""
+        await inter.response.send_message(
+            f"{inter.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627",
+            ephemeral=False,
+        )
+
+    @commands.command(name="bonk", help="Bonks a user")
+    @commands.guild_only()
+    async def bonk_cmd(self, ctx: commands.Context, member: disnake.Member):
         bonkis = [
             "https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380",
             "https://tenor.com/view/lol-gif-21667170",
@@ -114,34 +221,56 @@ class Extra(commands.Cog):
         bonkiuwu = random.choice(bonkis)
         await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
 
-    @commands.command(help="Spanks a user! :flushed:")
+    @commands.slash_command(name="bonk", help="Bonks a user")
     @commands.guild_only()
-    async def spank(self, ctx, member: commands.MemberConverter):
+    async def bonk_slash(self, inter, member: disnake.Member):
+        """Bonks a user"""
+        bonkis = [
+            "https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380",
+            "https://tenor.com/view/lol-gif-21667170",
+            "https://tenor.com/view/azura-bonk-azura-bonk-gif-21733152",
+        ]
+        bonkiuwu = random.choice(bonkis)
+        await inter.response.send_message(
+            f"{inter.author.mention} bonked {member.mention}!\n{bonkiuwu}",
+            ephemeral=False,
+        )
+
+    @commands.command(name="spank", help="Spanks a user")
+    @commands.guild_only()
+    async def spank_cmd(self, ctx: commands.Context, member: disnake.Member):
         await ctx.send(
             f"{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590"
         )
 
-    @commands.command(help="Slaps a user!")
+    @commands.slash_command(name="spank", help="Spanks a user")
     @commands.guild_only()
-    async def slap(self, ctx, member: commands.MemberConverter):
+    async def spank_slash(self, inter, member: disnake.Member):
+        """Spanks a user"""
+        await inter.response.send_message(
+            f"{inter.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590",
+            ephemeral=False,
+        )
+
+    @commands.command(name="slap", help="Slaps a user")
+    @commands.guild_only()
+    async def slap_cmd(self, ctx: commands.Context, member: disnake.Member):
         await ctx.send(
             f"{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299"
         )
 
-    @commands.command(help="Winks at a user!")
+    @commands.slash_command(name="slap")
     @commands.guild_only()
-    async def wink(self, ctx, member: commands.MemberConverter):
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get("https://some-random-api.ml/animu/wink") as r:
-                data = await r.json()
-                image = data["link"]
-                await ctx.send(
-                    f"{ctx.author.mention} winked at {member.mention}!!\n{image}"
-                )
+    async def slap_slash(self, inter, member: disnake.Member):
+        """Slaps a user"""
+        await inter.response.send_message(
+            f"{inter.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299",
+            ephemeral=False,
+        )
 
-    @commands.command(help="Pats a user!")
+    @commands.command(name="pat", help="Pats a user")
     @commands.guild_only()
-    async def pat(self, ctx, member: commands.MemberConverter):
+    async def pat_cmd(self, ctx: commands.Context, member: disnake.Member):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/pat") as r:
                 data = await r.json()
@@ -150,15 +279,40 @@ class Extra(commands.Cog):
                     f"{ctx.author.mention} patted {member.mention}!!\n{image}"
                 )
 
-    @commands.command(help="Hugs a user.")
+    @commands.slash_command(name="pat")
     @commands.guild_only()
-    async def hug(self, ctx, member: commands.MemberConverter):
+    async def pat_slash(self, inter, member: disnake.Member):
+        """Pats a user"""
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://some-random-api.ml/animu/pat") as r:
+                data = await r.json()
+                image = data["link"]
+                await inter.response.send_message(
+                    f"{inter.author.mention} patted {member.mention}!!\n{image}",
+                    ephemeral=False,
+                )
+
+    @commands.command(name="hug", help="Hugs a user.")
+    @commands.guild_only()
+    async def hug_cmd(self, ctx: commands.Context, member: disnake.Member):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/hug") as r:
                 data = await r.json()
                 image = data["link"]
                 await ctx.send(
                     f"{ctx.author.mention} hugged {member.mention}!!\n{image}"
+                )
+
+    @commands.slash_command(name="hug", help="Hugs a user.")
+    @commands.guild_only()
+    async def hug_slash(self, inter, member: disnake.Member):
+        """Hugs a user"""
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get("https://some-random-api.ml/animu/hug") as r:
+                data = await r.json()
+                image = data["link"]
+                await inter.response.send_message(
+                    f"{inter.author.mention} hugged {member.mention}!!\n{image}"
                 )
 
 
