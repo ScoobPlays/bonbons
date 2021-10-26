@@ -9,7 +9,9 @@ class Information(commands.Cog):
         self.bot = bot
 
     @commands.command(aliases=("av",))
-    async def avatar(self, ctx, *, member: disnake.Member = None):
+    async def avatar(
+        self, ctx, *, member: disnake.Member = None
+    ):  # needs slash command
 
         if member is None:
             member = ctx.author
@@ -19,12 +21,14 @@ class Information(commands.Cog):
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=("server",), help="Fetches the server's stats.")
+    @commands.command(name="serverinfo")
     @commands.guild_only()
     async def serverinfo(self, ctx):
 
+        """Fetches the server's stats"""
+
         embed = disnake.Embed(
-            title=ctx.guild.name,
+            title=disnake.guild.name,
             description=f"**ID:** {ctx.guild.id}\n**Owner:** {ctx.guild.owner}",
         )
         embed.add_field(
@@ -45,9 +49,37 @@ class Information(commands.Cog):
         embed.set_thumbnail(url=ctx.guild.icon.url)
         await ctx.send(embed=embed)
 
+    @commands.slash_command(name="serverinfo")
+    @commands.guild_only()
+    async def serverinfo_slash(self, inter):
+
+        """Fetches the server's stats"""
+
+        embed = disnake.Embed(
+            title=disnake.guild.name,
+            description=f"**ID:** {inter.guild.id}\n**Owner:** {inter.guild.owner}",
+        )
+        embed.add_field(
+            name="Server Created At",
+            value=f"<t:{int(inter.guild.created_at.timestamp())}:F> (<t:{int(inter.guild.created_at.timestamp())}:R>)",
+            inline=False,
+        )
+        embed.add_field(
+            name="Information",
+            value=f"• Members: {str(inter.guild.member_count)}\n• Channels: {len(inter.guild.channels)}\n• Emojis: {len(inter.guild.emojis)}\n• Region: {inter.guild.region}",
+        )
+        embed.add_field(
+            name=f"Server Roles [{len(inter.guild.roles)}]",
+            value=" ".join(r.mention for r in inter.guild.roles[1:]),
+            inline=False,
+        )
+        embed.timestamp = datetime.utcnow()
+        embed.set_thumbnail(url=inter.guild.icon.url)
+        await inter.response.send_message(embed=embed, ephemeral=False)
+
     @commands.command()
     @commands.guild_only()
-    async def membercount(self, ctx):
+    async def membercount_cmd(self, ctx):
         embed = disnake.Embed(
             title="Members",
             description=f"{len(ctx.guild.members)}",
@@ -56,8 +88,26 @@ class Information(commands.Cog):
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=("userinfo", "u", "ui",))
-    async def whois(self, ctx, member: disnake.Member = None):
+    @commands.command(name="membercount")
+    @commands.guild_only()
+    async def membercount_slash(self, inter):
+        """Fetches the server member count"""
+        embed = disnake.Embed(
+            title="Members",
+            description=f"{len(inter.guild.members)}",
+            color=disnake.Color.green(),
+        )
+        embed.timestamp = datetime.utcnow()
+        await inter.response.send_message(embed=embed, ephemeral=False)
+
+    @commands.command(
+        aliases=(
+            "userinfo",
+            "u",
+            "ui",
+        )
+    )
+    async def whois(self, ctx, member: disnake.Member = None):  # slash command
 
         if member is None:
             member = ctx.author
@@ -90,8 +140,10 @@ class Information(commands.Cog):
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
-    @commands.command(help="Fetches your spotify activity/status. (if you have one)")
-    async def spotify(self, ctx, member: commands.MemberConverter = None):
+    @commands.command(help="Fetches information about your spotify activity")
+    async def spotify(
+        self, ctx: commands.Context, member: disnake.Member = None
+    ):  # slash command
 
         if member is None:
             member = ctx.author
@@ -113,9 +165,11 @@ class Information(commands.Cog):
         if not member.activity:
             await ctx.reply("You don't have a spotify activity!", mention_author=False)
 
-    @commands.command(help="Gives you info about a role.")
+    @commands.command(help="Gives you information about a role")
     @commands.guild_only()
-    async def roleinfo(self, ctx, role: disnake.Role = None):
+    async def roleinfo(
+        self, ctx: commands.Context, role: disnake.Role = None
+    ):  # slash command
 
         role_mentionable = None
         role_hoisted = None
@@ -157,8 +211,9 @@ class Information(commands.Cog):
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def ping(self, ctx):
+    @commands.command(name="ping")
+    async def ping_cmd(self, ctx):
+        """Returns the bots latency"""
 
         embed = disnake.Embed(
             title="Ponged!", description=f"**Ping:** {round(self.bot.latency * 1000)}ms"
@@ -166,6 +221,16 @@ class Information(commands.Cog):
 
         embed.timestamp = datetime.utcnow()
         await ctx.reply(embed=embed, mention_author=False)
+
+    @commands.slash_command(name="ping")
+    async def ping_slash(self, inter):
+        """Returns the bots latency"""
+
+        embed = disnake.Embed(
+            title="Ponged!", description=f"**Ping:** {round(self.bot.latency * 1000)}ms"
+        )
+
+        await inter.response.send_message(embed=embed)
 
 
 def setup(bot):
