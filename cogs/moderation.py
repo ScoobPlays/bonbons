@@ -34,34 +34,12 @@ class Moderation(commands.Cog):
             embed.timestamp = datetime.utcnow()
             await ctx.send(embed=embed)
 
-    @commands.command()
-    @commands.guild_only()
-    @commands.is_owner()
-    async def massnick(self, ctx, *, nick=None):
-
-        embed = disnake.Embed(
-            title=f"Changing nicknames for {ctx.guild.member_count} members...",
-            color=disnake.Color.red(),
-        )
-        send = await ctx.send(embed=embed)
-
-        done = disnake.Embed(
-            title=f"Changed nicknames for {ctx.guild.member_count} members!",
-            color=disnake.Color.green(),
-        )
-
-        try:
-            for member in ctx.guild.members:
-                await member.edit(nick=nick)
-                print(f"Changing {member}'s nickname...")
-
-        except disnake.Forbidden:
-            print(f"Couldn't change {member}'s nick.")
-            await send.edit(embed=done)
-            pass
-
     @commands.command(
-        aliases=("clear", "clean",), help="Purges an amount of messages for you."
+        aliases=(
+            "clear",
+            "clean",
+        ),
+        help="Purges an amount of messages for you.",
     )
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
