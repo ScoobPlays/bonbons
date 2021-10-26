@@ -16,7 +16,7 @@ bot = commands.Bot(
 @bot.event
 async def on_ready():
     print(f"Bot is ready to be used! Ping: {round(bot.latency * 1000)}")
-    if not hasattr(bot, 'session'):
+    if not hasattr(bot, "session"):
         bot.session = ClientSession(loop=bot.loop)
 
 for filename in os.listdir("./cogs"):
@@ -24,10 +24,10 @@ for filename in os.listdir("./cogs"):
         bot.load_extension(f"cogs.{filename[:-3]}")
 
 keep_alive()
-os.environ['JISHAKU_EMBEDDED_JSK'] = '1'
+os.environ['JISHAKU_FORCE_PAGINATOR'] = '1'
+os.environ["JISHAKU_EMBEDDED_JSK"] = "1"
 os.environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
 bot.load_extension("jishaku")
-bot.load_extension("docs")
 
 if __name__ == "__main__":
-  bot.run(os.environ["token"])
+    bot.run(os.environ["token"])
