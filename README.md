@@ -1,3 +1,3 @@
 # Bonbons
 - Database support (`Beta Feature`)
-- Slash commands (`Soon`)
+- Slash commands (`21 atm`)
