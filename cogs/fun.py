@@ -1,11 +1,10 @@
 from datetime import datetime
 import disnake
 from disnake.ext import commands
-import random
 import aiohttp
 
 
-class Fun(commands.Cog):
+class Fun(commands.Cog, description="Very unuseful commands"):
     def __init__(self, bot):
         self.bot = bot
         self.last_msg = None
@@ -38,35 +37,14 @@ class Fun(commands.Cog):
             embed.set_footer(name=ctx.author, icon_url=ctx.author.display_avatar)
             await ctx.send(embed=embed)
 
-    @commands.command()
-    async def luck(self, ctx, *, lucky_on):
-        randome = random.randint(0, 100)
-
-        random_day = [
-            "tomorrow is",
-            "next week is",
-            "this Friday is",
-            "this Monday is",
-            "next year is",
-            "in 2050 is",
-        ]
-        rng_day = random.choice(random_day)
-
-        embed = disnake.Embed(
-            description=f"Your luck of getting **{lucky_on}** {rng_day} **{randome}**%",
-        )
-        embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
-        embed.timestamp = datetime.utcnow()
-        await ctx.send(embed=embed)
-
-    @commands.command(help="Generates a random token.")
+    @commands.command(help="Generates a random token")
     async def token(self, ctx):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/bottoken") as r:
                 data = await r.json()
-                await ctx.send(f'Here\'s your token: `{data["token"]}`')
+                await ctx.reply(f'Here\'s your token: `{data["token"]}`')
 
-    @commands.command(help="Gives a joke!")
+    @commands.command(help="Gives a joke")
     async def joke(self, ctx):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/joke") as r:
@@ -76,3 +54,4 @@ class Fun(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Fun(bot))
+
