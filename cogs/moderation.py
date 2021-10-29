@@ -1,45 +1,17 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-
-# needs slash commands
+from utils.ban import check
 
 
 class Moderation(commands.Cog, description="Moderation related commands"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=("nickname",))
+    @commands.slash_command()
     @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
-    async def nick(self, ctx: commands.Context, member: disnake.Member = None, *, nick):
-
-        if member is None:
-            member = ctx.author
-
-        try:
-            await member.edit(nick=nick)
-            embed = disnake.Embed(
-                description=f"You have changed {member.mention}'s nick.",
-                color=disnake.Color.green(),
-            )
-            embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
-            embed.timestamp = datetime.utcnow()
-            await ctx.send(embed=embed)
-
-        except Exception:
-            embed = disnake.Embed(
-                description=f"I can't change {member.mention}'s nick.",
-                color=disnake.Color.red(),
-            )
-            embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
-            embed.timestamp = datetime.utcnow()
-            await ctx.send(embed=embed)
-
-    @commands.slash_command(name="nickname")
-    @commands.guild_only()
-    @commands.has_permissions(manage_nicknames=True)
-    async def nick_slash(self, inter, member: disnake.Member, nickname):
+    async def nickname(self, inter, member: disnake.Member, nickname):
         """Change a users nickname"""
 
         try:
@@ -61,57 +33,49 @@ class Moderation(commands.Cog, description="Moderation related commands"):
             embed.timestamp = datetime.utcnow()
             await inter.response.send_message(embed=embed)
 
-    @commands.command(
-        name="purge",
-        aliases=(
-            "clear",
-            "clean",
-        ),
-        help="Purges an amount of messages",
-    )
+    @commands.slash_command()
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def purge_cmd(self, ctx: commands.Context, amount: int = 2):
-        await ctx.channel.purge(limit=amount)
-
-    @commands.slash_command(name="purge")
-    @commands.guild_only()
-    @commands.has_permissions(manage_messages=True)
-    async def purge_slash(self, inter, amount: int = 2):
-        """Purges an amount of messages"""
+    async def purge(self, inter, amount: int = 5):
+        """Purges an amount of messages in a channel"""
         await inter.channel.purge(limit=amount)
 
-    @commands.command(help="Bans users")
+    @commands.slash_command()
     @commands.guild_only()
-    @commands.is_owner()
-    async def ban(self, ctx: commands.Context, member: disnake.Member, *, reason=None):
-        await ctx.guild.ban(member, reason=reason)
+    @commands.has_permissions(ban_members=True)
+    async def ban(self, inter, user: disnake.User, reason=None):
+        """Bans a member"""
+
+        await check(inter, user)
+
+        await inter.guild.ban(user, reason=reason)
         embed = disnake.Embed(
-            description=f"{member.mention} has been banned!",
+            description=f"{user.mention} was banned!",
             color=disnake.Color.red(),
         )
-        await ctx.send(embed=embed)
+        await inter.response.send_message(embed=embed)
 
-    @commands.command(help="Unbans users")
+    @commands.slash_command()
     @commands.guild_only()
-    @commands.has_guild_permissions(ban_members=True)
-    async def unban(
-        self, ctx: commands.Context, target: disnake.User, *, reason: str = None
-    ):
+    @commands.has_permissions(ban_members=True)
+    async def unban(self, inter, user: disnake.User):
+        """Unbans a member"""
         try:
-            await ctx.guild.fetch_ban(target)
+            await inter.guild.fetch_ban(user)
         except disnake.NotFound:
-            return await ctx.send(
-                embed=disnake.Embed(description="That user is not banned.")
+            return await inter.response.send_message(
+                embed=disnake.Embed(
+                    description="That user is not banned.", color=disnake.Color.red()
+                )
             )
 
         embed = disnake.Embed(
-            description=f"{target.mention} has been unbanned!",
+            description=f"{user.mention} was unbanned.",
             color=disnake.Color.green(),
         )
 
-        await ctx.guild.unban(target, reason=reason)
-        await ctx.send(embed=embed)
+        await inter.guild.unban(user)
+        await inter.response.send_message(embed=embed)
 
 
 def setup(bot):
