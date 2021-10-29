@@ -1,8 +1,7 @@
 import disnake
-from disnake.ext import commands
 import os
+from disnake.ext import commands
 from aiohttp import ClientSession
-from keep_alive import keep_alive
 from utils.help_command import MyHelp
 
 bot = commands.Bot(
@@ -11,12 +10,11 @@ bot = commands.Bot(
     case_insensitive=True,
     intents=disnake.Intents.all(),
     allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
-    help_command=None,
+    help_command=MyHelp(),
     strip_after_prefix=True,
     status=disnake.Status.dnd,
     activity=disnake.Game(name="/ commands (soon)"),
 )
-
 
 @bot.event
 async def on_ready():
@@ -24,14 +22,11 @@ async def on_ready():
     if not hasattr(bot, "session"):
         bot.session = ClientSession(loop=bot.loop)
 
-bot.help_command = MyHelp()
-
 for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
         bot.load_extension(f"cogs.{filename[:-3]}")
 
-
-keep_alive()
+#jishaku/https://github.com/Kraots/jishaku
 os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
 os.environ["JISHAKU_EMBEDDED_JSK"] = "1"
 os.environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
