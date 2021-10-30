@@ -10,14 +10,12 @@ class Events(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member: disnake.Member):
         guild = self.bot.get_guild(880030618275155998)
-        muted_role = guild.get_role(896697171108327475)
         general = guild.get_channel(880387280576061450)
         member_role = guild.get_role(880030723908722729)
 
         await self.bot.wait_until_ready()
-        roles = [member_role, muted_role]
 
-        await member.add_roles(*roles)
+        await member.add_roles(member_role)
         await general.send(
             embed=disnake.Embed(
                 title="Welcome!",
@@ -66,29 +64,20 @@ class Events(commands.Cog):
     # Automod
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
-        guild = self.bot.get_guild(880030618275155998)
-        owner = guild.get_role(884679735366533151)
-
-        if len(message.attachments) > 3:
-          
-          if owner in message.author.roles:
+        if message.author.bot:
             return
 
-            await message.delete()
+        if message.author.id in self.bot.cache["afk"].keys():
+            del self.bot.cache["afk"][message.author.id]
             await message.channel.send(
-                f"Too many files! {message.author.mention}", delete_after=7
+                f"Welcome back {message.author.display_name}!",
+                delete_after=4.0,
             )
-
-        if len(message.mentions) > 5:
-          
-          if owner in message.author.roles:
-            print(f"Owner mentioned {message.mentions} people.")
-            return
-
-            await message.delete()
-            await message.channel.send(
-                f"Too many mentions! {message.author.mention}", delete_after=7
-            )
+            with suppress(disnake.Forbidden):
+                await message.author.edit(nick=message.author.display_name[6:])
+        for mention in message.mentions:
+            if msg := self.bot.cache["afk"].get(mention.id):
+                await message.channel.send(f"{mention.display_name} is AFK: {msg}")
 
 
 def setup(bot):
