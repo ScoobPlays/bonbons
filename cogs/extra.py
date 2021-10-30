@@ -5,9 +5,10 @@ from datetime import datetime
 import base64
 import random
 import aiohttp
+from contextlib import suppress
 
 
-class Extra(commands.Cog):
+class Extra(commands.Cog, description="Some extra commands"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -221,7 +222,7 @@ class Extra(commands.Cog):
         bonkiuwu = random.choice(bonkis)
         await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
 
-    @commands.slash_command(name="bonk", help="Bonks a user")
+    @commands.slash_command(name="bonk", help="Bonks a user") # <3 811900552225095710
     @commands.guild_only()
     async def bonk_slash(self, inter, member: disnake.Member):
         """Bonks a user"""
@@ -314,6 +315,19 @@ class Extra(commands.Cog):
                 await inter.response.send_message(
                     f"{inter.author.mention} hugged {member.mention}!!\n{image}"
                 )
+
+    @commands.slash_command()  # taken directly from https://github.com/Dorukyum/Pycord-Manager
+    async def afk(self, inter, message=None):
+        """Become AFK."""
+        if not message:
+            await inter.response.send_message("You are now AFK.")
+            self.bot.cache["afk"][inter.author.id] = message
+            return
+        await inter.response.send_message(f"Set your AFK: {message}")
+        self.bot.cache["afk"][inter.author.id] = message
+
+        with suppress(disnake.Forbidden):
+            await inter.author.edit(nick=f"[AFK] {inter.author.display_name}")
 
 
 def setup(bot):
