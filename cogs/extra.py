@@ -6,12 +6,40 @@ import base64
 import random
 import aiohttp
 from contextlib import suppress
-from utils.funcs import b64_encode, b64_decode
+from utils.funcs import b64_encode, b64_decode, Google
 
 
-class Extra(commands.Cog, description="Some extra commands"):
+class Extra(commands.Cog, description="Extra commands."):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.command(name="google")
+    async def google(self, ctx: commands.Context, *, query: str):
+
+        """Returns a google link for a query."""
+
+        await ctx.send(f"Google Result for: `{query}`", view=Google(query))
+
+    @commands.slash_command(name="google")
+    async def google_slash(
+        self, inter: disnake.ApplicationCommandInteraction, query: str
+    ):
+        """Returns a google link for a query"""
+
+        await inter.response.send_message(
+            f"Google Result for: `{query}`", view=Google(query), ephemeral=False
+        )
+
+    @commands.command(name="say", help="Says whatever you want for you.")
+    async def say(self, ctx: commands.Context, *, argument: str):
+        await ctx.send(argument)
+
+    @commands.slash_command(name="say")
+    async def say_slash(
+        self, inter: disnake.ApplicationCommandInteraction, argument: str
+    ):
+        "Says whatever you want for you"
+        await inter.response.send_message(argument, ephemeral=False)
 
     @commands.slash_command()
     async def base64(self, inter: disnake.ApplicationCommandInteraction):
@@ -43,6 +71,7 @@ class Extra(commands.Cog, description="Some extra commands"):
 
     @commands.command(name="wikipedia", aliases=("wiki",))
     async def wikipedia_cmd(self, ctx: commands.Context, *, query: str):
+        """Searches for something on the wikipedia"""
         async with self.bot.session.get(
             (
                 "https://en.wikipedia.org//w/api.php?action=query"
@@ -153,6 +182,7 @@ class Extra(commands.Cog, description="Some extra commands"):
         ),
     )
     async def minecraft_cmd(self, ctx: commands.Context, username="Notch"):
+        """Fetches information about a minecraft user."""
 
         async with self.bot.session.get(
             "https://api.mojang.com/users/profiles/minecraft/{}".format(username)
@@ -222,7 +252,7 @@ class Extra(commands.Cog, description="Some extra commands"):
         embed.timestamp = datetime.utcnow()
         await inter.response.send_message(embed=embed, ephemeral=False)
 
-    @commands.command(name="kiss", help="Kisses a user")
+    @commands.command(name="kiss", help="Kisses a user.")
     @commands.guild_only()
     async def kiss_cmd(self, ctx: commands.Context, member: disnake.Member):
         await ctx.send(
@@ -240,7 +270,7 @@ class Extra(commands.Cog, description="Some extra commands"):
             ephemeral=False,
         )
 
-    @commands.command(name="bonk", help="Bonks a user")
+    @commands.command(name="bonk", help="Bonks a user.")
     @commands.guild_only()
     async def bonk_cmd(self, ctx: commands.Context, member: disnake.Member):
         bonkis = [
@@ -268,7 +298,7 @@ class Extra(commands.Cog, description="Some extra commands"):
             ephemeral=False,
         )
 
-    @commands.command(name="spank", help="Spanks a user")
+    @commands.command(name="spank", help="Spanks a user.")
     @commands.guild_only()
     async def spank_cmd(self, ctx: commands.Context, member: disnake.Member):
         await ctx.send(
@@ -286,7 +316,7 @@ class Extra(commands.Cog, description="Some extra commands"):
             ephemeral=False,
         )
 
-    @commands.command(name="slap", help="Slaps a user")
+    @commands.command(name="slap", help="Slaps a user.")
     @commands.guild_only()
     async def slap_cmd(self, ctx: commands.Context, member: disnake.Member):
         await ctx.send(
@@ -304,7 +334,7 @@ class Extra(commands.Cog, description="Some extra commands"):
             ephemeral=False,
         )
 
-    @commands.command(name="pat", help="Pats a user")
+    @commands.command(name="pat", help="Pats a user.")
     @commands.guild_only()
     async def pat_cmd(self, ctx: commands.Context, member: disnake.Member):
         async with aiohttp.ClientSession() as cs:
@@ -341,7 +371,7 @@ class Extra(commands.Cog, description="Some extra commands"):
                     f"{ctx.author.mention} hugged {member.mention}!!\n{image}"
                 )
 
-    @commands.slash_command(name="hug", help="Hugs a user.")
+    @commands.slash_command(name="hug")
     @commands.guild_only()
     async def hug_slash(
         self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
@@ -355,8 +385,12 @@ class Extra(commands.Cog, description="Some extra commands"):
                     f"{inter.author.mention} hugged {member.mention}!!\n{image}"
                 )
 
-    @commands.slash_command(name="afk")  # taken directly from https://github.com/Dorukyum/Pycord-Manager
-    async def afk_slash(self, inter: disnake.ApplicationCommandInteraction, message=None):
+    @commands.slash_command(
+        name="afk"
+    )  # taken directly from https://github.com/Dorukyum/Pycord-Manager
+    async def afk_slash(
+        self, inter: disnake.ApplicationCommandInteraction, message=None
+    ):
         """Become AFK."""
         if not message:
             await inter.response.send_message("You are now AFK.")
@@ -368,9 +402,9 @@ class Extra(commands.Cog, description="Some extra commands"):
         with suppress(disnake.Forbidden):
             await inter.author.edit(nick=f"[AFK] {inter.author.display_name}")
 
-    @commands.slash_command()  # taken directly from https://github.com/Dorukyum/Pycord-Manager
-    async def afk(self, ctx: commands.Context, argument:str=None):
-        
+    @commands.command()  # taken directly from https://github.com/Dorukyum/Pycord-Manager
+    async def afk(self, ctx: commands.Context, argument: str = None):
+
         """Become AFK."""
 
         if not argument:
@@ -382,6 +416,7 @@ class Extra(commands.Cog, description="Some extra commands"):
 
         with suppress(disnake.Forbidden):
             await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}")
+
 
 def setup(bot):
     bot.add_cog(Extra(bot))
