@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from utils.ban import check
+from utils.funcs import check
 
 
 class Moderation(commands.Cog, description="Moderation related commands"):
@@ -38,7 +38,8 @@ class Moderation(commands.Cog, description="Moderation related commands"):
     @commands.has_permissions(manage_messages=True)
     async def purge(self, inter, amount: int = 5):
         """Purges an amount of messages in a channel"""
-        await inter.channel.purge(limit=amount)
+        x = await inter.channel.purge(limit=amount)
+        await inter.response.send_message(f"Purged {x} messages.", ephemeral=True)
 
     @commands.slash_command()
     @commands.guild_only()
