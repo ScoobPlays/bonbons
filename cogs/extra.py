@@ -6,11 +6,40 @@ import base64
 import random
 import aiohttp
 from contextlib import suppress
+from utils.funcs import b64_encode, b64_decode
 
 
 class Extra(commands.Cog, description="Some extra commands"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.slash_command()
+    async def base64(self, inter: disnake.ApplicationCommandInteraction):
+        pass
+
+    @base64.sub_command()
+    async def encode(self, inter: disnake.ApplicationCommandInteraction, argument: str):
+        """Encodes a message into a base64 string"""
+        try:
+            await inter.response.send_message(
+                await b64_encode(argument), ephemeral=False
+            )
+        except Exception:
+            await inter.response.send_message(
+                f"Couldn't encode that message.", ephemeral=False
+            )
+
+    @base64.sub_command()
+    async def decode(self, inter: disnake.ApplicationCommandInteraction, argument: str):
+        """Decodes a base64 string"""
+        try:
+            await inter.response.send_message(
+                await b64_decode(argument), ephemeral=False
+            )
+        except Exception:
+            await inter.response.send_message(
+                "Couldn't decode that message.", ephemeral=False
+            )
 
     @commands.command(name="wikipedia", aliases=("wiki",))
     async def wikipedia_cmd(self, ctx: commands.Context, *, query: str):
@@ -157,12 +186,10 @@ class Extra(commands.Cog, description="Some extra commands"):
 
     @commands.slash_command(
         name="minecraft",
-        aliases=(
-            "skin",
-            "mc",
-        ),
     )
-    async def minecraft_slash(self, inter, username="Notch"):
+    async def minecraft_slash(
+        self, inter: disnake.ApplicationCommandInteraction, username="Notch"
+    ):
         """Fetches information about a minecraft user"""
 
         async with self.bot.session.get(
@@ -204,7 +231,9 @@ class Extra(commands.Cog, description="Some extra commands"):
 
     @commands.slash_command(name="kiss")
     @commands.guild_only()
-    async def kiss_slash(self, inter, member: disnake.Member):
+    async def kiss_slash(
+        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+    ):
         """Kisses a user"""
         await inter.response.send_message(
             f"{inter.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627",
@@ -222,9 +251,11 @@ class Extra(commands.Cog, description="Some extra commands"):
         bonkiuwu = random.choice(bonkis)
         await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
 
-    @commands.slash_command(name="bonk", help="Bonks a user") # <3 811900552225095710
+    @commands.slash_command(name="bonk", help="Bonks a user")
     @commands.guild_only()
-    async def bonk_slash(self, inter, member: disnake.Member):
+    async def bonk_slash(
+        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+    ):
         """Bonks a user"""
         bonkis = [
             "https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380",
@@ -246,7 +277,9 @@ class Extra(commands.Cog, description="Some extra commands"):
 
     @commands.slash_command(name="spank", help="Spanks a user")
     @commands.guild_only()
-    async def spank_slash(self, inter, member: disnake.Member):
+    async def spank_slash(
+        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+    ):
         """Spanks a user"""
         await inter.response.send_message(
             f"{inter.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590",
@@ -262,7 +295,9 @@ class Extra(commands.Cog, description="Some extra commands"):
 
     @commands.slash_command(name="slap")
     @commands.guild_only()
-    async def slap_slash(self, inter, member: disnake.Member):
+    async def slap_slash(
+        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+    ):
         """Slaps a user"""
         await inter.response.send_message(
             f"{inter.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299",
@@ -282,7 +317,9 @@ class Extra(commands.Cog, description="Some extra commands"):
 
     @commands.slash_command(name="pat")
     @commands.guild_only()
-    async def pat_slash(self, inter, member: disnake.Member):
+    async def pat_slash(
+        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+    ):
         """Pats a user"""
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/pat") as r:
@@ -306,7 +343,9 @@ class Extra(commands.Cog, description="Some extra commands"):
 
     @commands.slash_command(name="hug", help="Hugs a user.")
     @commands.guild_only()
-    async def hug_slash(self, inter, member: disnake.Member):
+    async def hug_slash(
+        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+    ):
         """Hugs a user"""
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/hug") as r:
@@ -317,7 +356,7 @@ class Extra(commands.Cog, description="Some extra commands"):
                 )
 
     @commands.slash_command()  # taken directly from https://github.com/Dorukyum/Pycord-Manager
-    async def afk(self, inter, message=None):
+    async def afk(self, inter: disnake.ApplicationCommandInteraction, message=None):
         """Become AFK."""
         if not message:
             await inter.response.send_message("You are now AFK.")
