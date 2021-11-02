@@ -355,8 +355,8 @@ class Extra(commands.Cog, description="Some extra commands"):
                     f"{inter.author.mention} hugged {member.mention}!!\n{image}"
                 )
 
-    @commands.slash_command()  # taken directly from https://github.com/Dorukyum/Pycord-Manager
-    async def afk(self, inter: disnake.ApplicationCommandInteraction, message=None):
+    @commands.slash_command(name="afk")  # taken directly from https://github.com/Dorukyum/Pycord-Manager
+    async def afk_slash(self, inter: disnake.ApplicationCommandInteraction, message=None):
         """Become AFK."""
         if not message:
             await inter.response.send_message("You are now AFK.")
@@ -368,6 +368,20 @@ class Extra(commands.Cog, description="Some extra commands"):
         with suppress(disnake.Forbidden):
             await inter.author.edit(nick=f"[AFK] {inter.author.display_name}")
 
+    @commands.slash_command()  # taken directly from https://github.com/Dorukyum/Pycord-Manager
+    async def afk(self, ctx: commands.Context, argument:str=None):
+        
+        """Become AFK."""
+
+        if not argument:
+            await ctx.send("You are now AFK.")
+            self.bot.cache["afk"][ctx.author.id] = argument
+            return
+        await ctx.send(f"Set your AFK: {argument}")
+        self.bot.cache["afk"][ctx.author.id] = argument
+
+        with suppress(disnake.Forbidden):
+            await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}")
 
 def setup(bot):
     bot.add_cog(Extra(bot))
