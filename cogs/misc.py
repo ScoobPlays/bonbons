@@ -12,25 +12,25 @@ class Google(disnake.ui.View):
         self.add_item(disnake.ui.Button(label="Click Here", url=url))
 
 
-class Misc(commands.Cog):
+class Misc(commands.Cog, description="Very weird commands"):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="say", help="Says whatever you want for you")
-    async def say_cmd(self, ctx: commands.Context, *, message: str):
-        await ctx.send(message)
+    async def say(self, ctx: commands.Context, *, argument: str):
+        await ctx.send(argument)
 
     @commands.slash_command(name="say")
     async def say_slash(
-        self, inter: disnake.ApplicationCommandInteraction, message: str
+        self, inter: disnake.ApplicationCommandInteraction, argument: str
     ):
         "Says whatever you want for you"
-        await inter.response.send_message(message, ephemeral=False)
+        await inter.response.send_message(argument, ephemeral=False)
 
     """Animals"""
 
     @commands.command(name="cat")
-    async def cat_cmd(self, ctx: commands.Context):
+    async def cat(self, ctx: commands.Context):
         """Sends a random cat image"""
         async with aiohttp.ClientSession() as session:
             async with session.get("http://aws.random.cat/meow") as r:
@@ -50,7 +50,7 @@ class Misc(commands.Cog):
                     await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(name="dog")
-    async def dog_cmd(self, ctx: commands.Context):
+    async def dog(self, ctx: commands.Context):
         """Sends a random dog image"""
         async with aiohttp.ClientSession() as session:
             async with session.get("https://dog.ceo/api/breeds/image/random") as r:
@@ -70,8 +70,10 @@ class Misc(commands.Cog):
                     await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(name="google")
-    async def google_cmd(self, ctx: commands.Context, *, query: str):
+    async def google(self, ctx: commands.Context, *, query: str):
+
         """Returns a google link for a query"""
+
         await ctx.send(f"Google Result for: `{query}`", view=Google(query))
 
     @commands.slash_command(name="google")
@@ -79,6 +81,7 @@ class Misc(commands.Cog):
         self, inter: disnake.ApplicationCommandInteraction, query: str
     ):
         """Returns a google link for a query"""
+
         await inter.response.send_message(
             f"Google Result for: `{query}`", view=Google(query), ephemeral=False
         )
