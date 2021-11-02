@@ -1,6 +1,4 @@
 import contextlib
-import datetime
-
 import disnake
 from disnake.ext import commands
 
@@ -11,8 +9,7 @@ from disnake.ext import commands
 class HelpEmbed(disnake.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.timestamp = datetime.datetime.utcnow()
-        text = "Use help [command] or help [category] for more information"
+        text = "Use help [command] or help [category] for more information."
         self.set_footer(text=text)
         self.color = disnake.Color.blurple()
 
@@ -46,7 +43,7 @@ class MyHelp(commands.HelpCommand):
                     description = "Commands with no category"
 
                 embed.add_field(
-                    name=f"{name} Category [{amount_commands}]", value=description
+                    name=f"{name} [{amount_commands}]", value=description
                 )
 
         embed.description = f"{len(self.context.bot.commands)} commands | {usable} usable"
@@ -55,9 +52,7 @@ class MyHelp(commands.HelpCommand):
 
     async def send_command_help(self, command):
         """triggers when a `<prefix>help <command>` is called"""
-        signature = self.get_command_signature(
-            command
-        )  # get_command_signature gets the signature of a command in <required> [optional]
+        signature = self.get_command_signature(command)  # get_command_signature gets the signature of a command in <required> [optional]
         embed = HelpEmbed(
             title=signature, description=command.help or "No help found..."
         )
