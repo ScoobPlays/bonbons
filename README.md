@@ -1,6 +1,5 @@
 # Bonbons
-- Database support (`Beta Feature`)
-- Slash commands
+- Slash Commands/Prefixed Commands
 
 # Credits
 - Thanks to [Carrot](https://github.com/Kraots), [Geno](https://github.com/TheGenocides/) for helping with the bot.
