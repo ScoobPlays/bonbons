@@ -1,17 +1,7 @@
 import contextlib
 import disnake
 from disnake.ext import commands
-
-# https://gist.github.com/InterStella0/b78488fb28cadf279dfd3164b9f0cf96#gistcomment-3623975
-# https://mystb.in/EthicalBasketballPoliticians.python
-
-
-class HelpEmbed(disnake.Embed):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        text = "Use help [command] or help [category] for more information."
-        self.set_footer(text=text)
-        self.color = disnake.Color.blurple()
+from .utils import HelpEmbed
 
 
 class MyHelp(commands.HelpCommand):
@@ -54,7 +44,7 @@ class MyHelp(commands.HelpCommand):
         """triggers when a `<prefix>help <command>` is called"""
         signature = self.get_command_signature(command)  # get_command_signature gets the signature of a command in <required> [optional]
         embed = HelpEmbed(
-            title=signature, description=command.help or "No help found..."
+            title=signature, description=command.help or "No help found."
         )
 
         if cog := command.cog:
