@@ -2,12 +2,12 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 from disnake import Spotify
-from utils.funcs import timestamp
+from utils.utils import timestamp
 
 # inter: disnake.ApplicationCommandInteraction
 
 
-class Information(commands.Cog, description="Commands that give information"):
+class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
 
