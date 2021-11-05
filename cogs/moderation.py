@@ -1,7 +1,8 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from utils.funcs import check_slash, check_ctx
+from utils.utils import check_slash, check_ctx
+
 
 class Moderation(commands.Cog, description="Moderation related commands."):
     def __init__(self, bot):
@@ -35,7 +36,12 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     @commands.slash_command(name="nickname")
     @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
-    async def nickname_slash(self, inter, member: disnake.Member, nickname):
+    async def nickname_slash(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        member: disnake.Member,
+        nickname,
+    ):
         """Change a users nickname"""
 
         try:
@@ -60,14 +66,16 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def purge(self, ctx, amount: int = 5):
+    async def purge(self, ctx: commands.Context, amount: int = 5):
         """Purges an amount of messages in a channel"""
         await ctx.channel.purge(limit=amount)
 
     @commands.slash_command(name="purge")
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
-    async def purge_slash(self, inter, amount: int = 5):
+    async def purge_slash(
+        self, inter: disnake.ApplicationCommandInteraction, amount: int = 5
+    ):
         """Purges an amount of messages in a channel"""
         x = await inter.channel.purge(limit=amount)
         await inter.response.send_message(f"Purged {len(x)} messages.", ephemeral=True)
@@ -90,7 +98,12 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     @commands.slash_command(name="ban")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def ban_slash(self, inter: disnake.ApplicationCommandInteraction, user: disnake.User, reason=None):
+    async def ban_slash(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        user: disnake.User,
+        reason=None,
+    ):
         """Bans a member"""
 
         await check_slash(inter, user)
@@ -145,6 +158,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
 
         await ctx.guild.unban(user)
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Moderation(bot))
