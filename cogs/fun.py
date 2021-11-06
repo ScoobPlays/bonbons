@@ -294,8 +294,8 @@ class Fun(commands.Cog, description="Random commands."):
         async with self.bot.session.get(
             (
                 "https://en.wikipedia.org//w/api.php?action=query"
-                "&format=json&list=search&utf8=1&srsearch={}&srlimit=5&srprop="
-            ).format(query)
+                f"&format=json&list=search&utf8=1&srsearch={query}&srlimit=5&srprop="
+            )
         ) as r:
             sea = (await r.json())["query"]
 
@@ -307,9 +307,9 @@ class Fun(commands.Cog, description="Random commands."):
                     async with self.bot.session.get(
                         "https://en.wikipedia.org//w/api.php?action=query"
                         "&utf8=1&redirects&format=json&prop=info|images"
-                        "&inprop=url&titles={}".format(article)
+                        f"&inprop=url&titles={article}"
                     ) as r:
-                        req = (await r.json())["query"]["pages"]
+                        req = await r.json()["query"]["pages"]
                         if str(list(req)[0]) != "-1":
                             break
                 else:
@@ -320,12 +320,13 @@ class Fun(commands.Cog, description="Random commands."):
                 async with self.bot.session.get(
                     "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
                 ) as r:
-                    artdesc = (await r.json())["extract"]
+                    artdesc = await r.json()["extract"]
                 embed = disnake.Embed(
-                    title="**" + article + "**",
+                    title=f"**{article}**",
                     url=arturl,
                     description=artdesc,
                     color=0x3FCAFF,
+                    timestamp=datetime.utcnow(),
                 )
                 embed.set_footer(
                     text=f"Search result for {query}",
@@ -336,19 +337,18 @@ class Fun(commands.Cog, description="Random commands."):
                     url="https://en.wikipedia.org/",
                     icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
                 )
-                embed.timestamp = datetime.utcnow()
                 await ctx.send(embed=embed)
 
-    @commands.slash_command(name="wikipedia", aliases=("wiki",))
+    @commands.slash_command(name="wikipedia")
     async def wikipedia_slash(self, inter, query: str):
         """Searches for something on the wikipedia"""
         async with self.bot.session.get(
             (
                 "https://en.wikipedia.org//w/api.php?action=query"
-                "&format=json&list=search&utf8=1&srsearch={}&srlimit=5&srprop="
-            ).format(query)
+                f"&format=json&list=search&utf8=1&srsearch={query}&srlimit=5&srprop="
+            )
         ) as r:
-            sea = (await r.json())["query"]
+            sea = await r.json()["query"]
 
             if sea["searchinfo"]["totalhits"] == 0:
                 await inter.response.send_message(
@@ -360,9 +360,9 @@ class Fun(commands.Cog, description="Random commands."):
                     async with self.bot.session.get(
                         "https://en.wikipedia.org//w/api.php?action=query"
                         "&utf8=1&redirects&format=json&prop=info|images"
-                        "&inprop=url&titles={}".format(article)
+                        f"&inprop=url&titles={query}"
                     ) as r:
-                        req = (await r.json())["query"]["pages"]
+                        req = await r.json()["query"]["pages"]
                         if str(list(req)[0]) != "-1":
                             break
                 else:
@@ -374,12 +374,13 @@ class Fun(commands.Cog, description="Random commands."):
                 async with self.bot.session.get(
                     "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
                 ) as r:
-                    artdesc = (await r.json())["extract"]
+                    artdesc = await r.json()["extract"]
                 embed = disnake.Embed(
-                    title="**" + article + "**",
+                    title=f"**{article}**",
                     url=arturl,
                     description=artdesc,
                     color=0x3FCAFF,
+                    timestamp=datetime.utcnow(),
                 )
                 embed.set_footer(
                     text=f"Search result for {query}",
@@ -390,7 +391,6 @@ class Fun(commands.Cog, description="Random commands."):
                     url="https://en.wikipedia.org/",
                     icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
                 )
-                embed.timestamp = datetime.utcnow()
                 await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(
@@ -404,33 +404,34 @@ class Fun(commands.Cog, description="Random commands."):
         """Fetches information about a minecraft user."""
 
         async with self.bot.session.get(
-            "https://api.mojang.com/users/profiles/minecraft/{}".format(username)
+            f"https://api.mojang.com/users/profiles/minecraft/{username}"
         ) as r:
-            uuid = (await r.json())["id"]
+            uuid = await r.json()["id"]
 
         async with self.bot.session.get(
-            "https://sessionserver.mojang.com/session/minecraft/profile/{}".format(uuid)
+            f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
         ) as r:
-            value = (await r.json())["properties"][0]["value"]
+            value = await r.json()["properties"][0]["value"]
         url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
             "url"
         ]
 
         async with self.bot.session.get(
-            "https://api.mojang.com/user/profiles/{}/names".format(uuid)
+            f"https://api.mojang.com/user/profiles/{uuid}/names"
         ) as r:
             names = await r.json()
         history = ""
         for name in reversed(names):
             history += name["name"] + "\n"
 
-        embed = disnake.Embed(title=f"User Information For {username}")
+        embed = disnake.Embed(
+            title=f"User Information For {username}", timestamp=datetime.utcnow()
+        )
         embed.add_field(name="Username", value=username)
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
         embed.add_field(name="History", value=history)
         embed.set_thumbnail(url=url)
         embed.set_footer(icon_url=ctx.author.display_avatar)
-        embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
 
     @commands.slash_command(
@@ -442,12 +443,12 @@ class Fun(commands.Cog, description="Random commands."):
         """Fetches information about a minecraft user"""
 
         async with self.bot.session.get(
-            "https://api.mojang.com/users/profiles/minecraft/{}".format(username)
+            f"https://api.mojang.com/users/profiles/minecraft/{username}"
         ) as r:
-            uuid = (await r.json())["id"]
+            uuid = await r.json()["id"]
 
         async with self.bot.session.get(
-            "https://sessionserver.mojang.com/session/minecraft/profile/{}".format(uuid)
+            f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
         ) as r:
             value = (await r.json())["properties"][0]["value"]
         url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
@@ -455,7 +456,7 @@ class Fun(commands.Cog, description="Random commands."):
         ]
 
         async with self.bot.session.get(
-            "https://api.mojang.com/user/profiles/{}/names".format(uuid)
+            f"https://api.mojang.com/user/profiles/uuid/names"
         ) as r:
             names = await r.json()
         history = ""
