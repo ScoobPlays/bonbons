@@ -309,7 +309,7 @@ class Fun(commands.Cog, description="Random commands."):
                         "&utf8=1&redirects&format=json&prop=info|images"
                         f"&inprop=url&titles={article}"
                     ) as r:
-                        req = await r.json()["query"]["pages"]
+                        req = (await r.json())["query"]["pages"]
                         if str(list(req)[0]) != "-1":
                             break
                 else:
@@ -320,7 +320,7 @@ class Fun(commands.Cog, description="Random commands."):
                 async with self.bot.session.get(
                     "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
                 ) as r:
-                    artdesc = await r.json()["extract"]
+                    artdesc = (await r.json())["extract"]
                 embed = disnake.Embed(
                     title=f"**{article}**",
                     url=arturl,
@@ -348,7 +348,7 @@ class Fun(commands.Cog, description="Random commands."):
                 f"&format=json&list=search&utf8=1&srsearch={query}&srlimit=5&srprop="
             )
         ) as r:
-            sea = await r.json()["query"]
+            sea = (await r.json())["query"]
 
             if sea["searchinfo"]["totalhits"] == 0:
                 await inter.response.send_message(
@@ -362,7 +362,7 @@ class Fun(commands.Cog, description="Random commands."):
                         "&utf8=1&redirects&format=json&prop=info|images"
                         f"&inprop=url&titles={query}"
                     ) as r:
-                        req = await r.json()["query"]["pages"]
+                        req = (await r.json())["query"]["pages"]
                         if str(list(req)[0]) != "-1":
                             break
                 else:
@@ -374,7 +374,7 @@ class Fun(commands.Cog, description="Random commands."):
                 async with self.bot.session.get(
                     "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
                 ) as r:
-                    artdesc = await r.json()["extract"]
+                    artdesc = (await r.json())["extract"]
                 embed = disnake.Embed(
                     title=f"**{article}**",
                     url=arturl,
@@ -393,40 +393,37 @@ class Fun(commands.Cog, description="Random commands."):
                 )
                 await inter.response.send_message(embed=embed, ephemeral=False)
 
-    @commands.command(
-        name="minecraft",
-        aliases=(
-            "skin",
-            "mc",
-        ),
-    )
-    async def minecraft_cmd(self, ctx: commands.Context, username="Notch"):
+    @commands.command(name="minecraft")
+    async def minecraft(self, ctx: commands.Context, username="Notch"):
         """Fetches information about a minecraft user."""
-
+        
         async with self.bot.session.get(
             f"https://api.mojang.com/users/profiles/minecraft/{username}"
-        ) as r:
-            uuid = await r.json()["id"]
-
+            ) as r:
+        
+            uuid = (await r.json())["id"]
+            
         async with self.bot.session.get(
             f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
-        ) as r:
-            value = await r.json()["properties"][0]["value"]
-        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
-            "url"
-        ]
+            ) as r:
 
+            value = (await r.json())["properties"][0]["value"]
+            
+        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"]["url"]
+        
         async with self.bot.session.get(
             f"https://api.mojang.com/user/profiles/{uuid}/names"
-        ) as r:
-            names = await r.json()
+            ) as r:
+            
+            names = (await r.json())
+        
         history = ""
         for name in reversed(names):
             history += name["name"] + "\n"
 
         embed = disnake.Embed(
             title=f"User Information For {username}", timestamp=datetime.utcnow()
-        )
+            )
         embed.add_field(name="Username", value=username)
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
         embed.add_field(name="History", value=history)
@@ -434,42 +431,42 @@ class Fun(commands.Cog, description="Random commands."):
         embed.set_footer(icon_url=ctx.author.display_avatar)
         await ctx.send(embed=embed)
 
-    @commands.slash_command(
-        name="minecraft",
-    )
-    async def minecraft_slash(
-        self, inter: disnake.ApplicationCommandInteraction, username="Notch"
-    ):
-        """Fetches information about a minecraft user"""
-
+    @commands.slash_command(name="minecraft")
+    async def minecraft_slash(self, inter, username="Notch"):
+        """Fetches information about a minecraft user."""
+        
         async with self.bot.session.get(
             f"https://api.mojang.com/users/profiles/minecraft/{username}"
-        ) as r:
-            uuid = await r.json()["id"]
-
+            ) as r:
+        
+            uuid = (await r.json())["id"]
+            
         async with self.bot.session.get(
             f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
-        ) as r:
-            value = (await r.json())["properties"][0]["value"]
-        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
-            "url"
-        ]
+            ) as r:
 
+            value = (await r.json())["properties"][0]["value"]
+            
+        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"]["url"]
+        
         async with self.bot.session.get(
-            f"https://api.mojang.com/user/profiles/uuid/names"
-        ) as r:
-            names = await r.json()
+            f"https://api.mojang.com/user/profiles/{uuid}/names"
+            ) as r:
+            
+            names = (await r.json())
+        
         history = ""
         for name in reversed(names):
             history += name["name"] + "\n"
 
-        embed = disnake.Embed(title=f"User Information For {username}")
+        embed = disnake.Embed(
+            title=f"User Information For {username}", timestamp=datetime.utcnow()
+            )
         embed.add_field(name="Username", value=username)
         embed.set_author(name=inter.author, icon_url=inter.author.display_avatar)
         embed.add_field(name="History", value=history)
         embed.set_thumbnail(url=url)
         embed.set_footer(icon_url=inter.author.display_avatar)
-        embed.timestamp = datetime.utcnow()
         await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(name="kiss", help="Kisses a user.")
