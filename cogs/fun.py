@@ -8,7 +8,6 @@ import aiohttp
 import contextlib
 from utils import Google
 
-
 class Fun(commands.Cog, description="Random commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -27,6 +26,23 @@ class Fun(commands.Cog, description="Random commands."):
         message_bytes = base64.b64decode(b64msg)
         message = message_bytes.decode("ascii")
         return message
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, message: disnake.Message):
+
+        if message.author.bot:
+            return
+
+        self.last_msg = message
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before: str, after: str):
+
+        if before.author.bot or after.author.bot:
+            return
+
+        self.before = before
+        self.after = after
 
     @commands.command()
     async def search(self, ctx, subreddit: str):
@@ -76,31 +92,14 @@ class Fun(commands.Cog, description="Random commands."):
                 ephemeral=True,
             )
 
-    @commands.Cog.listener()
-    async def on_message_delete(self, message: disnake.Message):
-
-        if message.author.bot:
-            return
-
-        self.last_msg = message
-
-    @commands.Cog.listener()
-    async def on_message_edit(self, before: str, after: str):
-
-        if before.author.bot or after.author.bot:
-            return
-
-        self.before = before
-        self.after = after
 
     @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.channel)
     async def editsnipe(self, ctx: commands.Context):
         message = ctx.message
         """Snipes most recently edited message."""
-        if self.before.guild.id == ctx.guild.id:
-            if self.before.channel.id == ctx.channel.id:
-                try:
+        try:
+            if self.before.guild.id == ctx.guild.id:
+                if self.before.channel.id == ctx.channel.id:
 
                     before = disnake.Embed(
                         description=f"{self.before.content}",
@@ -159,22 +158,23 @@ class Fun(commands.Cog, description="Random commands."):
 
                     msg = await ctx.send(embed=before, view=Edit())
 
-                except Exception:
-                    await ctx.send(
-                        embed=disnake.Embed(
-                            description="There currently are no recently edited messages."
-                        )
+        except Exception:
+            await ctx.send(
+                embed=disnake.Embed(
+                    description="There currently are no recently edited messages.",
+                    color=disnake.Color.red()
                     )
+                )
 
     @commands.command()
-    @commands.cooldown(1, 30, commands.BucketType.channel)
     async def snipe(self, ctx: commands.Context):
         message = ctx.message
         msg = self.last_msg
         """Snipes most recently deleted message."""
-        if self.last_msg.guild.id == ctx.guild.id:
-            if self.last_msg.channel.id == ctx.channel.id:
-                try:
+        
+        try:
+            if self.last_msg.guild.id == ctx.guild.id:
+                if self.last_msg.channel.id == ctx.channel.id:
 
                     before = disnake.Embed(
                         description=f"{self.last_msg.content}",
@@ -228,20 +228,13 @@ class Fun(commands.Cog, description="Random commands."):
 
                     await ctx.send(embed=before, view=Edit())
 
-                except Exception as e:
-                    print(e)
-                    await ctx.send(
-                        embed=disnake.Embed(
-                            description="There currently are no recently deleted messages."
-                        )
+        except Exception:
+            await ctx.send(
+                embed=disnake.Embed(
+                    description="There currently are no recently deleted messages.",
+                    color=disnake.Color.red()
                     )
-
-    @commands.command(help="Generates a random token.")
-    async def token(self, ctx: commands.Context):
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get("https://some-random-api.ml/bottoken") as r:
-                data = await r.json()
-                await ctx.reply({data["token"]})
+                )
 
     @commands.command(help="Gives a joke.")
     async def joke(self, ctx: commands.Context):
