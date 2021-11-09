@@ -1,33 +1,56 @@
 import disnake
 from disnake.ext import commands
 import io
+import os
+import sys
 import textwrap
 import traceback
-from contextlib import redirect_stdout
-from utils.utils import restart_bot, cleanup_code, paginate
+import contextlib
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
+    def paginate(text: str):
+        last = 0
+        pages = []
+
+        for curr in range(0, len(text)):
+            if curr % 1980 == 0:
+                pages.append(text[last:curr])
+                last = curr
+                appd_index = curr
+
+            if appd_index != len(text) - 1:
+                pages.append(text[last:curr])
+            return list(filter(lambda a: a != "", pages))
+
+    def cleanup_code(content):
+        if content.startswith("```") and content.endswith("```"):
+            return "\n".join(content.split("\n")[1:-1])
+        return content.strip("` \n")
+
+    async def restart_bot(ctx):
+        await ctx.send(
+            embed=disnake.Embed(
+                description="Restarting the bot.", color=disnake.Color.red()
+            )
+        )
+
+        os.execv(sys.executable, ["python"] + sys.argv)
+
     @commands.command(aliases=("rs",))
     @commands.is_owner()
     async def restart(self, ctx: commands.Context):
         try:
-            embed = disnake.Embed(
-                description="Restarting the bot.", color=disnake.Color.red()
-            )
-            await ctx.send(embed=embed)
-            print("Restarting...")
-            restart_bot()
+            await self.restart_bot(ctx)
         except Exception:
             await ctx.send("Couldn't restart the bot.")
 
-    @commands.command(
-        name="eval", aliases=["e"]
-    )  # totally didnt steal this from somewhere
-    async def _eval(self, ctx, *, code):
+    @commands.command(name="eval", aliases=["e"])
+    @commands.is_owner()
+    async def _eval(self, ctx: commands.Context, *, code: str):
         """Evaluates python code."""
         env = {
             "ctx": ctx,
@@ -40,7 +63,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
         env.update(globals())
 
-        code = cleanup_code(code)
+        code = self.cleanup_code(code)
         stdout = io.StringIO()
         err = out = None
         to_compile = f'async def func():\n{textwrap.indent(code, "  ")}'
@@ -53,7 +76,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
         func = env["func"]
         try:
-            with redirect_stdout(stdout):
+            with contextlib.redirect_stdout(stdout):
                 ret = await func()
         except Exception:
             value = stdout.getvalue()
@@ -66,7 +89,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
                         out = await ctx.send(f"```py\n{value}\n```")
                     except Exception:
-                        paginated_text = paginate(value)
+                        paginated_text = self.paginate(value)
                         for page in paginated_text:
                             if page == paginated_text[-1]:
                                 out = await ctx.send(f"```py\n{page}\n```")
@@ -76,7 +99,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                 try:
                     out = await ctx.send(f"```py\n{value}{ret}\n```")
                 except Exception:
-                    paginated_text = paginate(f"{value}{ret}")
+                    paginated_text = self.paginate(f"{value}{ret}")
                     for page in paginated_text:
                         if page == paginated_text[-1]:
                             out = await ctx.send(f"```py\n{page}\n```")
