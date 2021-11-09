@@ -1,8 +1,6 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from disnake import Spotify
-from utils.utils import timestamp
 
 # inter: disnake.ApplicationCommandInteraction
 
@@ -11,13 +9,16 @@ class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
 
+    def timestamp(self, value):
+        return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
+
     @commands.command()
     async def snowflake(self, ctx: commands.Context, argument: str):
 
         """Displays a snowflake's creation date"""
 
         embed = disnake.Embed(
-            description=f"Snowflake was created at {timestamp(argument)}"
+            description=f"Snowflake was created at {self.timestamp(argument)}"
         )
         await ctx.send(embed=embed)
 
@@ -214,7 +215,7 @@ class Information(commands.Cog, description="Information related commands."):
             member = ctx.author
 
         for activity in member.activities:
-            if isinstance(activity, Spotify):
+            if isinstance(activity, disnake.Spotify):
                 embed = disnake.Embed(
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
@@ -245,7 +246,7 @@ class Information(commands.Cog, description="Information related commands."):
             member = inter.author
 
         for activity in member.activities:
-            if isinstance(activity, Spotify):
+            if isinstance(activity, disnake.Spotify):
                 embed = disnake.Embed(
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
