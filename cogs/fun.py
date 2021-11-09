@@ -6,7 +6,7 @@ import base64
 import random
 import aiohttp
 import contextlib
-from utils import b64_encode, b64_decode, Google
+from utils import Google
 
 
 class Fun(commands.Cog, description="Random commands."):
@@ -15,6 +15,18 @@ class Fun(commands.Cog, description="Random commands."):
         self.last_msg = None
         self.before = None
         self.after = None
+
+    def b64_encode(self, text: str):
+        message_bytes = text.encode("ascii")
+        base64_bytes = base64.b64encode(message_bytes)
+        message = base64_bytes.decode("ascii")
+        return message
+
+    def b64_decode(self, text: str):
+        b64msg = text.encode("ascii")
+        message_bytes = base64.b64decode(b64msg)
+        message = message_bytes.decode("ascii")
+        return message
 
     @commands.command()
     async def search(self, ctx, subreddit: str):
@@ -33,7 +45,11 @@ class Fun(commands.Cog, description="Random commands."):
                     await ctx.send(embed=embed)
 
         except Exception:
-            await ctx.send(embed=disnake.Embed(description="No subreddit was found."))
+            await ctx.send(
+                embed=disnake.Embed(
+                    description="An error occured.", color=disnake.Color.red()
+                )
+            )
 
     @commands.slash_command(name="search")
     async def search_slash(self, inter, subreddit: str):
@@ -54,7 +70,9 @@ class Fun(commands.Cog, description="Random commands."):
         except Exception as e:
             print(e)
             await inter.response.send_message(
-                embed=disnake.Embed(description="No subreddit was found."),
+                embed=disnake.Embed(
+                    description="An error occured.", color=disnake.Color.red()
+                ),
                 ephemeral=True,
             )
 
@@ -67,7 +85,7 @@ class Fun(commands.Cog, description="Random commands."):
         self.last_msg = message
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before, after):
+    async def on_message_edit(self, before: str, after: str):
 
         if before.author.bot or after.author.bot:
             return
@@ -269,7 +287,7 @@ class Fun(commands.Cog, description="Random commands."):
         """Encodes a message into a base64 string"""
         try:
             await inter.response.send_message(
-                await b64_encode(argument), ephemeral=False
+                self.b64_encode(argument), ephemeral=False
             )
         except Exception:
             await inter.response.send_message(
@@ -281,7 +299,7 @@ class Fun(commands.Cog, description="Random commands."):
         """Decodes a base64 string"""
         try:
             await inter.response.send_message(
-                await b64_decode(argument), ephemeral=False
+                self.b64_decode(argument), ephemeral=False
             )
         except Exception:
             await inter.response.send_message(
@@ -396,34 +414,36 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.command(name="minecraft")
     async def minecraft(self, ctx: commands.Context, username="Notch"):
         """Fetches information about a minecraft user."""
-        
+
         async with self.bot.session.get(
             f"https://api.mojang.com/users/profiles/minecraft/{username}"
-            ) as r:
-        
+        ) as r:
+
             uuid = (await r.json())["id"]
-            
+
         async with self.bot.session.get(
             f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
-            ) as r:
+        ) as r:
 
             value = (await r.json())["properties"][0]["value"]
-            
-        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"]["url"]
-        
+
+        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
+            "url"
+        ]
+
         async with self.bot.session.get(
             f"https://api.mojang.com/user/profiles/{uuid}/names"
-            ) as r:
-            
-            names = (await r.json())
-        
+        ) as r:
+
+            names = await r.json()
+
         history = ""
         for name in reversed(names):
             history += name["name"] + "\n"
 
         embed = disnake.Embed(
             title=f"User Information For {username}", timestamp=datetime.utcnow()
-            )
+        )
         embed.add_field(name="Username", value=username)
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
         embed.add_field(name="History", value=history)
@@ -434,34 +454,36 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.slash_command(name="minecraft")
     async def minecraft_slash(self, inter, username="Notch"):
         """Fetches information about a minecraft user."""
-        
+
         async with self.bot.session.get(
             f"https://api.mojang.com/users/profiles/minecraft/{username}"
-            ) as r:
-        
+        ) as r:
+
             uuid = (await r.json())["id"]
-            
+
         async with self.bot.session.get(
             f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
-            ) as r:
+        ) as r:
 
             value = (await r.json())["properties"][0]["value"]
-            
-        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"]["url"]
-        
+
+        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
+            "url"
+        ]
+
         async with self.bot.session.get(
             f"https://api.mojang.com/user/profiles/{uuid}/names"
-            ) as r:
-            
-            names = (await r.json())
-        
+        ) as r:
+
+            names = await r.json()
+
         history = ""
         for name in reversed(names):
             history += name["name"] + "\n"
 
         embed = disnake.Embed(
             title=f"User Information For {username}", timestamp=datetime.utcnow()
-            )
+        )
         embed.add_field(name="Username", value=username)
         embed.set_author(name=inter.author, icon_url=inter.author.display_avatar)
         embed.add_field(name="History", value=history)
