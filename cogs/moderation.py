@@ -1,12 +1,145 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from utils.utils import check_slash, check_ctx
+import asyncio
 
 
 class Moderation(commands.Cog, description="Moderation related commands."):
     def __init__(self, bot):
         self.bot = bot
+
+    async def check_slash(self, inter, user: disnake.User):
+        if inter.author.top_role.position < user.top_role.position:
+            return await inter.response.send_message(
+                embed=disnake.Embed(
+                    description="You cannot ban a user higher than you.",
+                    color=disnake.Color.red(),
+                )
+            )
+
+        if user == inter.author:
+            return await inter.response.send_message(
+                embed=disnake.Embed(
+                    description="You cannot ban yourself.", color=disnake.Color.red()
+                )
+            )
+        if disnake.Forbidden:
+            return await inter.response.send_message(
+                embed=disnake.Embed(
+                    description="Missing permissions.", color=disnake.Color.red()
+                )
+            )
+
+    async def check_ctx(self, ctx, user: disnake.User):
+
+        if user == ctx.author:
+            return await ctx.response.send_message(
+                embed=disnake.Embed(
+                    description="You cannot ban yourself.", color=disnake.Color.red()
+                )
+            )
+        if disnake.Forbidden:
+            return await ctx.response.send_message(
+                embed=disnake.Embed(
+                    description="Missing permissions.", color=disnake.Color.red()
+                )
+            )
+
+        if ctx.author.top_role.position < user.top_role.position:
+            return await ctx.response.send_message(
+                embed=disnake.Embed(
+                    description="You cannot ban a user higher than you.",
+                    color=disnake.Color.red(),
+                )
+            )
+
+    async def add_mute(
+        self, ctx: commands.Context, member: disnake.Member, amount, reason: str = None
+    ):
+
+        if not reason:
+            reason = "you are bad."
+
+        role = ctx.guild.get_role(907560943070896168)
+
+        seconds = amount[:-1]
+        dura = amount[-1]
+        limit = None
+        sleep = None
+
+        if dura == "s":
+            limit = "second(s)"
+            sleep = int(seconds)
+
+        if dura == "m":
+            limit = "minute(s)"
+            sleep = int(seconds) * 60
+
+        if dura == "h":
+            limit = "hour(s)"
+            sleep = int(seconds) * 3600
+
+        await member.add_roles(role)
+        await ctx.send(
+            embed=disnake.Embed(
+                description=f"{member.mention} was muted for {seconds} {limit} because **{reason}**",
+                color=disnake.Color.red(),
+            )
+        )
+        await member.send(
+            embed=disnake.Embed(
+                description=f"You were muted for {seconds} {limit} because **{reason}**",
+                color=disnake.Color.red(),
+            )
+        )
+        await asyncio.sleep(sleep)
+        await ctx.send(
+            embed=disnake.Embed(
+                description=f"{member.mention} is now unmuted.",
+                color=disnake.Color.green(),
+            )
+        )
+        await member.send(
+            embed=disnake.Embed(
+                description=f"You are now unmuted.", color=disnake.Color.green()
+            )
+        )
+        await member.remove_roles(role)
+
+    async def remove_mute(self, ctx: commands.Context, member: disnake.Member):
+
+        role = ctx.guild.get_role(907560943070896168)
+
+        if role not in member.roles:
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description=f"{member.mention} isn't muted.",
+                    color=disnake.Color.green(),
+                )
+            )
+
+        await member.remove_roles(role)
+
+        await ctx.send(embed=disnake.Embed(description=f"Unmuted {member.mention}."))
+
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def mute(
+        self,
+        ctx: commands.Context,
+        member: disnake.Member,
+        amount,
+        *,
+        reason: str = None,
+    ):
+        """Mutes a member."""
+        await self.add_mute(ctx, member, amount, reason)
+
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def unmute(self, ctx: commands.Context, member: disnake.Member):
+        """Unmutes a member."""
+        await self.remove_mute(ctx, member)
 
     @commands.command(aliases=["nick"])
     @commands.guild_only()
@@ -86,7 +219,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     async def ban(self, ctx: commands.Context, user: disnake.User, reason=None):
         """Bans a member"""
 
-        await check_ctx(ctx, user)
+        await self.check_ctx(ctx, user)
 
         await ctx.guild.ban(user, reason=reason)
         embed = disnake.Embed(
@@ -106,14 +239,14 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     ):
         """Bans a member"""
 
-        await check_slash(inter, user)
-
+        await self.check_slash(inter, user)
         await inter.guild.ban(user, reason=reason)
-        embed = disnake.Embed(
-            description=f"{user.mention} was banned!",
-            color=disnake.Color.red(),
+        await inter.response.send_message(
+            embed=disnake.Embed(
+                description=f"{user.mention} was banned!", color=disnake.Color.red()
+            ),
+            ephemeral=False,
         )
-        await inter.response.send_message(embed=embed)
 
     @commands.slash_command(name="unban")
     @commands.guild_only()
@@ -126,16 +259,18 @@ class Moderation(commands.Cog, description="Moderation related commands."):
             return await inter.response.send_message(
                 embed=disnake.Embed(
                     description="That user is not banned.", color=disnake.Color.red()
-                )
+                ),
+                ephemeral=False,
             )
 
-        embed = disnake.Embed(
-            description=f"{user.mention} was unbanned.",
-            color=disnake.Color.green(),
-        )
-
         await inter.guild.unban(user)
-        await inter.response.send_message(embed=embed)
+        await inter.response.send_message(
+            embed=disnake.Embed(
+                description=f"{user.mention} was unbanned.",
+                color=disnake.Color.green(),
+            ),
+            ephemeral=False,
+        )
 
     @commands.command()
     @commands.guild_only()
@@ -151,13 +286,14 @@ class Moderation(commands.Cog, description="Moderation related commands."):
                 )
             )
 
-        embed = disnake.Embed(
-            description=f"{user.mention} was unbanned.",
-            color=disnake.Color.green(),
-        )
-
         await ctx.guild.unban(user)
-        await ctx.send(embed=embed)
+        await ctx.send(
+            embed=disnake.Embed(
+                description=f"{user.mention} was unbanned.",
+                color=disnake.Color.green(),
+            ),
+            ephemeral=False,
+        )
 
 
 def setup(bot):
