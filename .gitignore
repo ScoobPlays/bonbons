@@ -1,5 +1,8 @@
 utils/secrets.py
+utils/__pycache__
+cogs/__pycache__
 keep_alive.py
 .replit
 poetry.lock
 pyproject.toml
+__pycache__
