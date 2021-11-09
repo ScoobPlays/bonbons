@@ -12,7 +12,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
-    def paginate(text: str):
+    def paginate(self, text: str):
         last = 0
         pages = []
 
@@ -26,12 +26,12 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                 pages.append(text[last:curr])
             return list(filter(lambda a: a != "", pages))
 
-    def cleanup_code(content):
+    def cleanup_code(self, content):
         if content.startswith("```") and content.endswith("```"):
             return "\n".join(content.split("\n")[1:-1])
         return content.strip("` \n")
 
-    async def restart_bot(ctx):
+    async def restart_bot(self, ctx):
         await ctx.send(
             embed=disnake.Embed(
                 description="Restarting the bot.", color=disnake.Color.red()

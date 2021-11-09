@@ -1,5 +1,5 @@
 import os
-from utils.bonbons import Bonbons
+from utils import Bonbons
 
 bot = Bonbons()
 

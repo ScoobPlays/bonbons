@@ -14,3 +14,4 @@ class HelpEmbed(disnake.Embed):
         text = "Use help [command] or help [category] for more information."
         self.set_footer(text=text)
         self.color = disnake.Color.blurple()
+

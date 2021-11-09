@@ -150,7 +150,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(name="ID", value=member.id, inline=False)
         embed.add_field(
-            name="Account Created At", value=f"{timestamp(member.id)}", inline=False
+            name="Account Created At", value=f"{self.timestamp(member.id)}", inline=False
         )
         embed.add_field(
             name="Joined Server At",
@@ -190,7 +190,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(name="ID", value=member.id, inline=False)
         embed.add_field(
-            name="Account Created At", value=f"{timestamp(member.id)}", inline=False
+            name="Account Created At", value=f"{self.timestamp(member.id)}", inline=False
         )
         embed.add_field(
             name="Joined Server At",

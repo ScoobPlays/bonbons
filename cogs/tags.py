@@ -1,19 +1,21 @@
 import disnake
 from disnake.ext import commands
-from disnake.ext.commands import Param
 import pymongo
+import os
 from datetime import datetime
+from utils import mongoclient
 
-cluster = pymongo.MongoClient(
-    "mongodb+srv://kayle:kaylebetter@cluster0.s0wqa.mongodb.net/discord?retryWrites=true&w=majority"
-)
+cluster = pymongo.MongoClient(mongoclient)
 
-
-class Tags(commands.Cog, description="Commands related to tags"):
+class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]
         self.tags = self.db["tags"]
+
+    @commands.command()
+    async def a(self, ctx):
+        await ctx.send("a")
 
     @commands.slash_command()
     @commands.guild_only()
@@ -22,7 +24,6 @@ class Tags(commands.Cog, description="Commands related to tags"):
 
     @tag.sub_command()
     @commands.guild_only()
-    @commands.has_any_role(902390891937939496)
     async def delete(self, inter, tag: str):
         """Deletes a tag"""
         try:
@@ -37,30 +38,19 @@ class Tags(commands.Cog, description="Commands related to tags"):
             print(e)
 
     @tag.sub_command()
+    @commands.guild_only()
     async def show(self, inter, name: str):
+        """Displays a tag"""
         data = self.tags.find_one({"name": name})
-        # if not data:
-        #    return await inter.response.send_message("a")
+
+        if not data:
+            return await inter.response.send_message(f'"{name}" is not a valid tag.')
 
         await inter.response.send_message(f"{data['content']}")
 
     @tag.sub_command()
     @commands.guild_only()
-    @commands.has_any_role(902390891937939496)
-    async def clear(self, inter):
-        """Clears the database for all tags"""
-        try:
-            data = self.tags.delete_many({})
-            await inter.response.send_message(
-                f"**{data.deleted_count}** tag(s) were deleted."
-            )
-            print(f"{data.deleted_count} documents were deleted.")
-        except Exception as e:
-            print(e)
-
-    @tag.sub_command()
-    @commands.guild_only()
-    async def info(self, inter, tag: str = Param(desc="A tag that exists")):
+    async def info(self, inter, tag: str):
         """Gives information about a tag"""
         try:
             data = self.tags.find_one({"name": tag})

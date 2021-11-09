@@ -1,3 +1,4 @@
+import disnake
 from disnake import Color, Embed
 from disnake.ext import commands
 import re
@@ -54,9 +55,7 @@ class Evaluation(commands.Cog, description="Commands that evaluate code."):
 
     async def _send_result(self, ctx: commands.Context, result: dict):
         if "message" in result:
-            return await ctx.reply(
-                embed=Embed(description=result["message"], color=Color.red())
-            )
+            return await ctx.reply(embed=Embed(description=result["message"], color=Color.red()))
 
         output = result["output"]
         language = result["language"]
