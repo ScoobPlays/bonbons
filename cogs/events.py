@@ -1,12 +1,12 @@
 import disnake
 from disnake.ext import commands
+import contextlib
 
 
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Member events
     @commands.Cog.listener()
     async def on_member_join(self, member: disnake.Member):
         guild = self.bot.get_guild(880030618275155998)
@@ -39,9 +39,8 @@ class Events(commands.Cog):
             ).set_footer(text=member, icon_url=member.display_avatar)
         )
 
-    # Command errors
     @commands.Cog.listener()
-    async def on_command_error(self, ctx: commands.Context, error):
+    async def on_command_error(self, ctx: commands.Context, error: str):
 
         if hasattr(ctx.command, "on_error"):
             return
@@ -50,18 +49,23 @@ class Events(commands.Cog):
             return
 
         if isinstance(error, commands.CommandOnCooldown):
-            print(error)
-            await ctx.reply(error)
+            await ctx.reply(error, mention_author=False)
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            print(error)
-            await ctx.reply(error)
+            await ctx.reply(
+                embed=disnake.Embed(
+                    title="Missing Required Argument",
+                    description=error,
+                    color=disnake.Color.red(),
+                ),
+                mention_author=False,
+            )
 
         else:
+            self.bot.get_channel(907474389195456622).send(error)
+            await ctx.reply("An error has occured.")
             raise error
-            await ctx.reply(error)
 
-    # Automod
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
         if message.author.bot:
@@ -73,8 +77,9 @@ class Events(commands.Cog):
                 f"Welcome back {message.author.display_name}!",
                 delete_after=4.0,
             )
-            with suppress(disnake.Forbidden):
+            with contextlib.suppress(disnake.Forbidden):
                 await message.author.edit(nick=message.author.display_name[6:])
+
         for mention in message.mentions:
             if msg := self.bot.cache["afk"].get(mention.id):
                 await message.channel.send(f"{mention.display_name} is AFK: {msg}")
