@@ -1,6 +1,6 @@
 # Bonbons
 
-- A bot made for kayle.
+- Cool bot 😎
 
 # Credits
 - Thanks to [Carrot](https://github.com/Kraots), [Geno](https://github.com/TheGenocides/) for helping with the bot.
