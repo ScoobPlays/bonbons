@@ -9,6 +9,10 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: disnake.Member):
+
+        if member.guild.id != 880030618275155998:
+            pass
+            
         guild = self.bot.get_guild(880030618275155998)
         general = guild.get_channel(880387280576061450)
         member_role = guild.get_role(880030723908722729)
@@ -62,7 +66,10 @@ class Events(commands.Cog):
             )
 
         else:
-            self.bot.get_channel(907474389195456622).send(error)
+            a = self.bot.get_channel(
+                907474389195456622
+            ) or await self.bot.fetch_channel(907474389195456622)
+            await a.send(error)
             await ctx.reply("An error has occured.")
             raise error
 
