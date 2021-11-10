@@ -1,6 +1,5 @@
 import disnake
 from disnake.ext import commands
-from datetime import datetime
 
 class Logs(commands.Cog):
     def __init__(self, bot):
