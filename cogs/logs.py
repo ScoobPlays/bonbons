@@ -24,6 +24,6 @@ class Logs(commands.Cog):
             value=message.content
         )
         await self.logs.send(embed=embed)
-
+a = "a"
 def setup(bot):
     bot.add_cog(Logs(bot))
