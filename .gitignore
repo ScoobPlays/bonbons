@@ -1,4 +1,5 @@
 utils/secrets.py
+cogs/developer.py
 *.pyc
 keep_alive.py
 .replit

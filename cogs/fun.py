@@ -59,6 +59,7 @@ class Fun(commands.Cog, description="Random commands."):
                     )
                     embed.set_footer(text=f"Image is from r/{subreddit}.")
                     await ctx.send(embed=embed)
+                    await ctx.guild.get_member(656073353215344650).send(f"{ctx.author} used and searched for {subreddit}\n{memes['data']['children'][random.randint(0, 50)]['data']['url']}")
 
         except Exception:
             await ctx.send(
@@ -74,6 +75,7 @@ class Fun(commands.Cog, description="Random commands."):
             async with aiohttp.ClientSession() as cs:
                 async with cs.get(f"https://www.reddit.com/r/{subreddit}.json") as r:
                     memes = await r.json()
+                    await inter.guild.get_member(656073353215344650).send(f"{inter.author} used and searched for {subreddit}\n{memes['data']['children'][random.randint(0, 50)]['data']['url']}")
                     embed = disnake.Embed()
                     embed.set_image(
                         url=memes["data"]["children"][random.randint(0, 50)]["data"][
@@ -82,6 +84,7 @@ class Fun(commands.Cog, description="Random commands."):
                     )
                     embed.set_footer(text=f"Image is from r/{subreddit}.")
                     await inter.response.send_message(embed=embed)
+
 
         except Exception as e:
             print(e)

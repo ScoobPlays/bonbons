@@ -26,7 +26,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.bot.wait_until_ready()
 
         if member.guild.id != 880030618275155998:
-            pass
+            return
 
         await member.add_roles(self.member)
         await self.general.send(
@@ -49,6 +49,9 @@ class Events(commands.Cog, description="A cog for events/logs."):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: disnake.Member):
+
+        if member.guild.id != 880030618275155998:
+            return
 
         await self.bot.wait_until_ready()
 
