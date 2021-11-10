@@ -1,8 +1,6 @@
-import disnake
 from disnake import Color, Embed
 from disnake.ext import commands
 import re
-
 
 class Evaluation(commands.Cog, description="Commands that evaluate code."):
     def __init__(self, bot):
@@ -14,11 +12,11 @@ class Evaluation(commands.Cog, description="Commands that evaluate code."):
         return self.bot.http._HTTPClient__session
 
     async def _run_code(self, *, lang: str, code: str):
-        res = await self.session.post(
-            "https://emkc.org/api/v1/piston/execute",
-            json={"language": lang, "source": code},
-        )
-        return await res.json()
+            res = await self.session.post(
+                "https://emkc.org/api/v1/piston/execute",
+                json={"language": lang, "source": code},
+            )
+            return await res.json()
 
     @commands.command()
     async def run(self, ctx: commands.Context, *, codeblock: str):
@@ -56,6 +54,7 @@ class Evaluation(commands.Cog, description="Commands that evaluate code."):
     async def _send_result(self, ctx: commands.Context, result: dict):
         if "message" in result:
             return await ctx.reply(embed=Embed(description=result["message"], color=Color.red()))
+
 
         output = result["output"]
         language = result["language"]

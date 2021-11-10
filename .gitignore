@@ -1,6 +1,4 @@
 utils/secrets.py
-utils/__pycache__
-cogs/__pycache__
 *.pyc
 keep_alive.py
 .replit

@@ -23,7 +23,7 @@ class Threads(commands.Cog, description="Thread related commands."):
                         amount.append(thread.mention)
             await ctx.send(", ".join(amount))
         except Exception:
-            await ctx.send(f"There were no threads called or started with \"**{argument}**\".")
+            await ctx.send(embed=disnake.Embed(description=f"There were no threads called or started with \"**{argument}**\".", color=disnake.Color.red()))
 
     @thread.command()
     @commands.has_permissions(manage_channels=True)

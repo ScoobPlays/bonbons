@@ -6,21 +6,19 @@ import contextlib
 class Events(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.general = self.bot.get_guild(880030618275155998).get_channel(880387280576061450)
+        self.member = self.bot.get_guild(880030618275155998).get_role(880030723908722729)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: disnake.Member):
 
-        if member.guild.id != 880030618275155998:
-            pass
-            
-        guild = self.bot.get_guild(880030618275155998)
-        general = guild.get_channel(880387280576061450)
-        member_role = guild.get_role(880030723908722729)
-
         await self.bot.wait_until_ready()
 
-        await member.add_roles(member_role)
-        await general.send(
+        if member.guild.id != 880030618275155998:
+            pass
+
+        await member.add_roles(self.member)
+        await self.general.send(
             embed=disnake.Embed(
                 title="Welcome!",
                 description=f"{member.mention} joined! Hope you stay!!",
@@ -30,12 +28,10 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: disnake.Member):
-        guild = self.bot.get_guild(880030618275155998)
-        general = guild.get_channel(880387280576061450)
 
         await self.bot.wait_until_ready()
 
-        await general.send(
+        await self.general.send(
             embed=disnake.Embed(
                 title="Goodbye!",
                 description=f"{member.mention} left.. :cry:",
@@ -75,6 +71,7 @@ class Events(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
+
         if message.author.bot:
             return
 
@@ -82,7 +79,7 @@ class Events(commands.Cog):
             del self.bot.cache["afk"][message.author.id]
             await message.channel.send(
                 f"Welcome back {message.author.display_name}!",
-                delete_after=4.0,
+                delete_after=5.0,
             )
             with contextlib.suppress(disnake.Forbidden):
                 await message.author.edit(nick=message.author.display_name[6:])

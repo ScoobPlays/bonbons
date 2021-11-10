@@ -3,15 +3,13 @@ import disnake
 from disnake.ext import commands
 from .utils import HelpEmbed
 
-
 class MyHelp(commands.HelpCommand):
     def __init__(self):
         super().__init__(
-            command_attrs=
-            {
+            command_attrs = {
                 "hidden": True,
             }
-            )
+        )
 
     async def send(self, **kwargs):
         await self.get_destination().send(**kwargs)
@@ -30,9 +28,6 @@ class MyHelp(commands.HelpCommand):
                 if cog:
                     name = cog.qualified_name
                     description = cog.description or "No description"
-                else:
-                    name = "No Category"
-                    description = "Commands with no category"
 
                 embed.add_field(
                     name=f"{name} [{amount_commands}]", value=description
