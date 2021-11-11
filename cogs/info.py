@@ -2,9 +2,6 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 
-# inter: disnake.ApplicationCommandInteraction
-
-
 class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
