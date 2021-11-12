@@ -1,15 +1,6 @@
-os
 disnake
 re
 datetime
-random
-base64
-json
 aiohttp
 contextlib
-asyncio
-traceback
-textwrap
-sys 
-io
 pymongo
