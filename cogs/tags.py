@@ -1,7 +1,6 @@
 import disnake
 from disnake.ext import commands
 import pymongo
-import os
 from datetime import datetime
 from utils import mongoclient
 
@@ -14,16 +13,34 @@ class Tags(commands.Cog, description="Commands related to tags."):
         self.tags = self.db["tags"]
 
     @commands.command()
-    async def a(self, ctx):
-        await ctx.send("a")
+    async def tags(self, ctx):
+        """Returns all the tags in the database"""
+        all_tags = []
+        
+        for tags in self.tags.find({}):
+            all_tags.append(tags["name"])
+        await ctx.send(embed=disnake.Embed(description=", ".join(all_tags)))
 
     @commands.slash_command()
     @commands.guild_only()
     async def tag(self, inter, tag: str = None):
         pass
 
+    @commands.slash_command(name="tags")
+    async def tags_slash(self, inter):
+        """Returns all the tags in the database"""
+        all_tags = []
+        
+        for tags in self.tags.find({}):
+            all_tags.append(tags["name"])
+        await inter.response.send_message(
+            embed=disnake.Embed(description=", ".join(all_tags)),
+            ephemeral=False
+            )
+
     @tag.sub_command()
     @commands.guild_only()
+    @commands.has_permissions(kick_members=True)
     async def delete(self, inter, tag: str):
         """Deletes a tag"""
         try:
@@ -34,8 +51,8 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
             await inter.response.send_message(f'Tag was deleted.')
             self.tags.delete_one(data)
-        except Exception as e:
-            print(e)
+        except Exception:
+            return await inter.response.send_message(embed=disnake.Embed(description="Missing permissions."), ephemeral=True)
 
     @tag.sub_command()
     @commands.guild_only()
@@ -92,7 +109,6 @@ class Tags(commands.Cog, description="Commands related to tags."):
             self.tags.insert_one(data)
         except Exception as e:
             print(e)
-
 
 def setup(bot):
     bot.add_cog(Tags(bot))

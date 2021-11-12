@@ -1,0 +1,2 @@
+- Deleting Tags: `kick_members`
+- Permissions: `Missing Permissions.`

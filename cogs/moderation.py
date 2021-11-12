@@ -141,6 +141,8 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         """Change a users nickname"""
 
         try:
+            if ctx.author.top_role.position < member.top_role.position:
+                return await ctx.send(embed=disnake.Embed(description="You cannot change this members nick.", color=disnake.Color.red())) 
             await member.edit(nick=nickname)
             embed = disnake.Embed(
                 description=f"You have changed {member.mention}'s nick.",
