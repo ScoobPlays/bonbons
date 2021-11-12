@@ -1,10 +1,7 @@
 import disnake
 from disnake.ext import commands
-import pymongo
 from datetime import datetime
-from utils import mongoclient
-
-cluster = pymongo.MongoClient(mongoclient)
+from utils import cluster, tags_autocomp
 
 class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
@@ -41,10 +38,10 @@ class Tags(commands.Cog, description="Commands related to tags."):
     @tag.sub_command()
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
-    async def delete(self, inter, tag: str):
+    async def delete(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
         """Deletes a tag"""
         try:
-            data = self.tags.find_one({"name": tag})
+            data = self.tags.find_one({"name": name})
 
             if not data:
                 return await inter.response.send_message(f'Tag was not found.')
@@ -56,7 +53,11 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @tag.sub_command()
     @commands.guild_only()
-    async def show(self, inter, name: str):
+    async def show(
+        self,
+        inter,
+        name: str = commands.param(autocomp=tags_autocomp)
+        ):
         """Displays a tag"""
         data = self.tags.find_one({"name": name})
 
