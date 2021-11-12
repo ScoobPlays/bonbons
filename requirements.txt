@@ -1,6 +1,4 @@
 disnake
-re
-datetime
 aiohttp
 contextlib
 pymongo
