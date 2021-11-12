@@ -3,6 +3,7 @@ from disnake.ext import commands
 from datetime import datetime
 from utils import cluster, tags_autocomp
 
+
 class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
         self.bot = bot
@@ -13,7 +14,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     async def tags(self, ctx):
         """Returns all the tags in the database"""
         all_tags = []
-        
+
         for tags in self.tags.find({}):
             all_tags.append(tags["name"])
         await ctx.send(embed=disnake.Embed(description=", ".join(all_tags)))
@@ -27,13 +28,12 @@ class Tags(commands.Cog, description="Commands related to tags."):
     async def tags_slash(self, inter):
         """Returns all the tags in the database"""
         all_tags = []
-        
+
         for tags in self.tags.find({}):
             all_tags.append(tags["name"])
         await inter.response.send_message(
-            embed=disnake.Embed(description=", ".join(all_tags)),
-            ephemeral=False
-            )
+            embed=disnake.Embed(description=", ".join(all_tags)), ephemeral=False
+        )
 
     @tag.sub_command()
     @commands.guild_only()
@@ -44,20 +44,18 @@ class Tags(commands.Cog, description="Commands related to tags."):
             data = self.tags.find_one({"name": name})
 
             if not data:
-                return await inter.response.send_message(f'Tag was not found.')
+                return await inter.response.send_message(f"Tag was not found.")
 
-            await inter.response.send_message(f'Tag was deleted.')
+            await inter.response.send_message(f"Tag was deleted.")
             self.tags.delete_one(data)
         except Exception:
-            return await inter.response.send_message(embed=disnake.Embed(description="Missing permissions."), ephemeral=True)
+            return await inter.response.send_message(
+                embed=disnake.Embed(description="Missing permissions."), ephemeral=True
+            )
 
     @tag.sub_command()
     @commands.guild_only()
-    async def show(
-        self,
-        inter,
-        name: str = commands.param(autocomp=tags_autocomp)
-        ):
+    async def show(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
         """Displays a tag"""
         data = self.tags.find_one({"name": name})
 
@@ -74,7 +72,9 @@ class Tags(commands.Cog, description="Commands related to tags."):
             data = self.tags.find_one({"name": tag})
             print(data)
 
-            embed = disnake.Embed(title=f"{tag} Information", timestamp=datetime.utcnow())
+            embed = disnake.Embed(
+                title=f"{tag} Information", timestamp=datetime.utcnow()
+            )
             embed.add_field(name="Owner", value=f"<@{data['owner']}>", inline=False)
             embed.add_field(
                 name="Created",
@@ -97,9 +97,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
                     f"A tag with that name already exists.", ephemeral=False
                 )
 
-            await inter.response.send_message(
-                f'Tag was created.', ephemeral=False
-            )
+            await inter.response.send_message(f"Tag was created.", ephemeral=False)
 
             data = {
                 "owner": inter.author.id,
@@ -110,6 +108,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
             self.tags.insert_one(data)
         except Exception as e:
             print(e)
+
 
 def setup(bot):
     bot.add_cog(Tags(bot))

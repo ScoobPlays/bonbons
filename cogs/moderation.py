@@ -53,20 +53,27 @@ class Moderation(commands.Cog, description="Moderation related commands."):
                 )
             )
 
-    async def add_mute(
-        self, ctx: commands.Context, member: disnake.Member, amount
-        ):
+    async def add_mute(self, ctx: commands.Context, member: disnake.Member, amount):
 
         role = disnake.utils.get(ctx.guild.roles, name="Muted")
 
         if not amount:
-            return await ctx.send(embed=disnake.Embed(description="Please provide an amount. (5m, 1h)", color=disnake.Color.red()))
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description="Please provide an amount. (5m, 1h)",
+                    color=disnake.Color.red(),
+                )
+            )
 
         if not role:
             return await ctx.send("No muted role was found.")
 
         if role in member.roles:
-            return await ctx.send(embed=disnake.Embed(description="Member is already muted.", color=disnake.Color.red()))
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description="Member is already muted.", color=disnake.Color.red()
+                )
+            )
 
         seconds = amount[:-1]
         dura = amount[-1]
@@ -142,7 +149,12 @@ class Moderation(commands.Cog, description="Moderation related commands."):
 
         try:
             if ctx.author.top_role.position < member.top_role.position:
-                return await ctx.send(embed=disnake.Embed(description="You cannot change this members nick.", color=disnake.Color.red())) 
+                return await ctx.send(
+                    embed=disnake.Embed(
+                        description="You cannot change this members nick.",
+                        color=disnake.Color.red(),
+                    )
+                )
             await member.edit(nick=nickname)
             embed = disnake.Embed(
                 description=f"You have changed {member.mention}'s nick.",

@@ -8,6 +8,7 @@ import aiohttp
 import contextlib
 from utils import Google
 
+
 class Fun(commands.Cog, description="Random commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -113,16 +114,16 @@ class Fun(commands.Cog, description="Random commands."):
             await ctx.send(
                 embed=disnake.Embed(
                     description="There currently are no recently edited messages.",
-                    color=disnake.Color.red()
-                    )
+                    color=disnake.Color.red(),
                 )
+            )
 
     @commands.command()
     async def snipe(self, ctx: commands.Context):
         message = ctx.message
         msg = self.last_msg
         """Snipes most recently deleted message."""
-        
+
         try:
             if self.last_msg.guild.id == ctx.guild.id:
                 if self.last_msg.channel.id == ctx.channel.id:
@@ -183,9 +184,9 @@ class Fun(commands.Cog, description="Random commands."):
             await ctx.send(
                 embed=disnake.Embed(
                     description="There currently are no recently deleted messages.",
-                    color=disnake.Color.red()
-                    )
+                    color=disnake.Color.red(),
                 )
+            )
 
     @commands.command(help="Gives a joke.")
     async def joke(self, ctx: commands.Context):

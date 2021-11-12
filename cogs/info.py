@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 
+
 class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -147,7 +148,9 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(name="ID", value=member.id, inline=False)
         embed.add_field(
-            name="Account Created At", value=f"{self.timestamp(member.id)}", inline=False
+            name="Account Created At",
+            value=f"{self.timestamp(member.id)}",
+            inline=False,
         )
         embed.add_field(
             name="Joined Server At",
@@ -187,7 +190,9 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(name="ID", value=member.id, inline=False)
         embed.add_field(
-            name="Account Created At", value=f"{self.timestamp(member.id)}", inline=False
+            name="Account Created At",
+            value=f"{self.timestamp(member.id)}",
+            inline=False,
         )
         embed.add_field(
             name="Joined Server At",
@@ -216,7 +221,7 @@ class Information(commands.Cog, description="Information related commands."):
                 embed = disnake.Embed(
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
-                    color=0x1DB954
+                    color=0x1DB954,
                 )
                 embed.set_thumbnail(url=activity.album_cover_url)
                 embed.add_field(name="Song", value=activity.title)
@@ -248,7 +253,7 @@ class Information(commands.Cog, description="Information related commands."):
                 embed = disnake.Embed(
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
-                    color=0x1DB954
+                    color=0x1DB954,
                 )
                 embed.set_thumbnail(url=activity.album_cover_url)
                 embed.add_field(name="Song", value=activity.title)

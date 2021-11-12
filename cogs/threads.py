@@ -1,9 +1,10 @@
 import disnake
 from disnake.ext import commands
 
+
 class Threads(commands.Cog, description="Thread related commands."):
     def __init__(self, bot):
-        self.bot=bot
+        self.bot = bot
 
     @commands.group()
     async def thread(self, ctx):
@@ -21,7 +22,12 @@ class Threads(commands.Cog, description="Thread related commands."):
                         amount.append(thread.mention)
             await ctx.send(", ".join(amount))
         except Exception:
-            await ctx.send(embed=disnake.Embed(description=f"There were no threads called or started with \"**{argument}**\".", color=disnake.Color.red()))
+            await ctx.send(
+                embed=disnake.Embed(
+                    description=f'There were no threads called or started with "**{argument}**".',
+                    color=disnake.Color.red(),
+                )
+            )
 
     @thread.command()
     @commands.has_permissions(manage_channels=True)
@@ -31,6 +37,7 @@ class Threads(commands.Cog, description="Thread related commands."):
             for thread in channel.threads:
                 await thread.delete()
                 await ctx.message.add_reaction("✅")
+
 
 def setup(bot):
     bot.add_cog(Threads(bot))

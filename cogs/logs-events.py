@@ -37,8 +37,8 @@ class Events(commands.Cog, description="A cog for events/logs."):
         embed = disnake.Embed(
             title="Member Joined",
             description=f"""
-            **Member:** {member} ({member.id})
-            **Guild:** {member.guild.name} ({member.guild.id})
+            **Member:** {member} (`{member.id}`)
+            **Guild:** {member.guild.name} (`{member.guild.id}`)
             **Joined At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
         )
@@ -63,8 +63,8 @@ class Events(commands.Cog, description="A cog for events/logs."):
         embed = disnake.Embed(
             title="Member Removed",
             description=f"""
-            **Member:** {member} ({member.id})
-            **Guild:** {member.guild.name} ({member.guild.id})
+            **Member:** {member} (`{member.id}`)
+            **Guild:** {member.guild.name} (`{member.guild.id}`)
             **Left At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
         )
@@ -78,11 +78,12 @@ class Events(commands.Cog, description="A cog for events/logs."):
         embed = disnake.Embed(
             title="Message Deleted",
             description=f"""
-            **Author:** {message.author.mention} ({message.author.id})
-            **Guild:** {message.guild.name} ({message.guild.id})
-            **Channel:** {message.channel.mention} ({message.channel.id})
+            **Author:** {message.author.mention} (`{message.author.id}`)
+            **Guild:** {message.guild.name} (`{message.guild.id}`)
+            **Channel:** {message.channel.mention} (`{message.channel.id}`)
             **Deleted At:** <t:{int(message.created_at.timestamp())}:F> (<t:{int(message.created_at.timestamp())}:R>)
             """,
+            color=disnake.Color.greyple(),
         ).add_field(name="Message Content", value=message.content)
         await self.logs.send(embed=embed)
 
@@ -95,14 +96,149 @@ class Events(commands.Cog, description="A cog for events/logs."):
             disnake.Embed(
                 title="Message Edited",
                 description=f"""
-            **Author:** {before.author.mention} ({before.author.id})
-            **Guild:** {before.guild.name} ({before.guild.id})
-            **Channel:** {before.channel.mention} ({before.channel.id})
+            **Author:** {before.author.mention} (`{before.author.id}`)
+            **Guild:** {before.guild.name} (`{before.guild.id}`)
+            **Channel:** {before.channel.mention} (`{before.channel.id}`)
             **Deleted At:** <t:{int(before.created_at.timestamp())}:F> (<t:{int(before.created_at.timestamp())}:R>)
             """,
+                color=disnake.Color.greyple(),
             )
             .add_field(name="Before Content", value=before.content, inline=False)
             .add_field(name="After Content", value=after.content, inline=False)
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_channel_create(self, channel):
+        embed = disnake.Embed(
+            title="Channel Created",
+            description=f"""
+            **Guild:** {channel.guild.name} (`{channel.guild.id}`)
+            **Channel:** {channel.mention} (`{channel.id}`)
+            **Created At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.brand_green(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel):
+        embed = disnake.Embed(
+            title="Channel Deleted",
+            description=f"""
+            **Guild:** {channel.guild.name} (`{channel.guild.id}`)
+            **Channel:** #{channel.name} (`{channel.id}`)
+            **Deleted At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.brand_green(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, user):
+        embed = disnake.Embed(
+            title="User Banned",
+            description=f"""
+            **User:** {user} (`{user.id}`)
+            **Guild:** {guild.name} (`{guild.id}`)
+            **Banned At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.darker_gray(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_unban(self, guild, user):
+        embed = disnake.Embed(
+            title="User Unbanned",
+            description=f"""
+            **User:** {user} (`{user.id}`)
+            **Guild:** {guild.name} (`{guild.id}`)
+            **Unbanned At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.darker_gray(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_invite_delete(self, invite):
+        embed = disnake.Embed(
+            title="Invite Deleted",
+            description=f"""
+            **Invite:** {invite.code} (`{user.id}`)
+            **Guild:** {invite.guild.name} (`{invite.guild.id}`)
+            **Deleted At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.fuchsia(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_invite_create(self, invite):
+        embed = disnake.Embed(
+            title="Invite Created",
+            description=f"""
+            **Invite:** {invite.code} (`{user.id}`)
+            **Guild:** {invite.guild.name} (`{invite.guild.id}`)
+            **Created At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.fuchsia(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_thread_join(self, thread):
+        embed = disnake.Embed(
+            title="Thread Updated",
+            description=f"""
+            **Thread:** {thread.mention} (`{thread.id}`)
+            **Guild:** {thread.guild.name} (`{thread.guild.id}`)
+            **Created At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.orange(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_thread_delete(self, thread):
+        embed = disnake.Embed(
+            title="Thread Deleted",
+            description=f"""
+            **Thread:** #{thread.name} (`{thread.id}`)
+            **Guild:** {thread.guild.name} (`{thread.guild.id}`)
+            **Deleted At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.orange(),
+        )
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_thread_member_join(self, member):
+        member = member.thread.guild.get_member(member.id)
+        embed = disnake.Embed(
+            title="Member Joined a Thread",
+            description=f"""
+            **Member:** {member.mention} (`{member.id}`)
+            **Guild:** {member.guild.name} (`{member.guild.id}`)
+            **Joined At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.orange(),
+        ).add_field(name="Description", value=f"{member.mention} joined a thread.")
+        await self.logs.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_thread_member_remove(self, member):
+        member = member.thread.guild.get_member(member.id)
+        embed = disnake.Embed(
+            title="Member Removed from Thread",
+            description=f"""
+            **Member:** {member.mention} (`{member.id}`)
+            **Guild:** {member.guild.name} (`{member.guild.id}`)
+            **Removed At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+            """,
+            color=disnake.Color.orange(),
+        ).add_field(
+            name="Description", value=f"{member.mention} was removed from a thread."
         )
         await self.logs.send(embed=embed)
 
@@ -148,8 +284,11 @@ class Events(commands.Cog, description="A cog for events/logs."):
             )
 
         else:
-            await ctx.reply(embed=disnake.Embed(description=error, color=disnake.Color.red()))
+            await ctx.reply(
+                embed=disnake.Embed(description=error, color=disnake.Color.red())
+            )
             raise error
+
 
 def setup(bot):
     bot.add_cog(Events(bot))
