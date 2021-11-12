@@ -11,7 +11,6 @@ em5 = disnake.Embed(title="Last Embed!", color=disnake.Color.red())
 
 ems = [em1, em2, em3, em4, em5]
 
-
 @bot.command()
 async def pag(ctx):
     current = 0

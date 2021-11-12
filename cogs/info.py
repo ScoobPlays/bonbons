@@ -216,6 +216,7 @@ class Information(commands.Cog, description="Information related commands."):
                 embed = disnake.Embed(
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
+                    color=0x1DB954
                 )
                 embed.set_thumbnail(url=activity.album_cover_url)
                 embed.add_field(name="Song", value=activity.title)
@@ -247,6 +248,7 @@ class Information(commands.Cog, description="Information related commands."):
                 embed = disnake.Embed(
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
+                    color=0x1DB954
                 )
                 embed.set_thumbnail(url=activity.album_cover_url)
                 embed.add_field(name="Song", value=activity.title)

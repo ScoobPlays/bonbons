@@ -58,9 +58,16 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     ):
 
         if not reason:
-            reason = "you are bad."
+            reason = ""
 
-        role = ctx.guild.get_role(907560943070896168)
+        role = disnake.utils.get(ctx.guild.roles, name="Muted")
+
+        if not role:
+            await ctx.guild.create_role(
+                name="Muted",
+                permissions=(disnake.Permissions(send_messages=False, view_channels=True, speak=False, connect=False)),
+                color=0x605f5f
+            )
 
         seconds = amount[:-1]
         dura = amount[-1]

@@ -1,6 +1,6 @@
 # Bonbons
 
-- :sunglasses:
+- Bot.
 
 
 # Credits

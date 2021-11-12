@@ -16,9 +16,6 @@ class Events(commands.Cog, description="A cog for events/logs."):
         self.member = self.bot.get_guild(880030618275155998).get_role(
             880030723908722729
         )
-        self.errors = self.bot.get_guild(880030618275155998).get_channel(
-            907474389195456622
-        )
 
     @commands.Cog.listener()
     async def on_member_join(self, member: disnake.Member):
@@ -151,10 +148,8 @@ class Events(commands.Cog, description="A cog for events/logs."):
             )
 
         else:
-            await self.errors.send(error)
-            await ctx.reply(embed=disnake.Embed(description="An error has occured."))
+            await ctx.reply(embed=disnake.Embed(description=error, color=disnake.Color.red()))
             raise error
-
 
 def setup(bot):
     bot.add_cog(Events(bot))
