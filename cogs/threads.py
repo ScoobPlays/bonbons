@@ -1,8 +1,6 @@
 import disnake
 from disnake.ext import commands
 
-"""[WIP]"""
-
 class Threads(commands.Cog, description="Thread related commands."):
     def __init__(self, bot):
         self.bot=bot

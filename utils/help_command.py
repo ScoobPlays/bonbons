@@ -7,7 +7,7 @@ class MyHelp(commands.HelpCommand):
     def __init__(self):
         super().__init__(
             command_attrs = {
-                "hidden": True,
+                "hidden": True
             }
         )
 

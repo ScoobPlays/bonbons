@@ -54,20 +54,19 @@ class Moderation(commands.Cog, description="Moderation related commands."):
             )
 
     async def add_mute(
-        self, ctx: commands.Context, member: disnake.Member, amount, reason: str = None
-    ):
-
-        if not reason:
-            reason = ""
+        self, ctx: commands.Context, member: disnake.Member, amount
+        ):
 
         role = disnake.utils.get(ctx.guild.roles, name="Muted")
 
+        if not amount:
+            return await ctx.send(embed=disnake.Embed(description="Please provide an amount. (5m, 1h)", color=disnake.Color.red()))
+
         if not role:
-            await ctx.guild.create_role(
-                name="Muted",
-                permissions=(disnake.Permissions(send_messages=False, view_channels=True, speak=False, connect=False)),
-                color=0x605f5f
-            )
+            return await ctx.send("No muted role was found.")
+
+        if role in member.roles:
+            return await ctx.send(embed=disnake.Embed(description="Member is already muted.", color=disnake.Color.red()))
 
         seconds = amount[:-1]
         dura = amount[-1]
@@ -89,28 +88,17 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         await member.add_roles(role)
         await ctx.send(
             embed=disnake.Embed(
-                description=f"{member.mention} was muted for {seconds} {limit} because **{reason}**",
-                color=disnake.Color.red(),
-            )
-        )
-        await member.send(
-            embed=disnake.Embed(
-                description=f"You were muted for {seconds} {limit} because **{reason}**",
-                color=disnake.Color.red(),
-            )
-        )
-        await asyncio.sleep(sleep)
-        await ctx.send(
-            embed=disnake.Embed(
-                description=f"{member.mention} is now unmuted.",
+                description=f"{member.mention} was muted for {seconds} {limit}.",
                 color=disnake.Color.green(),
             )
         )
         await member.send(
             embed=disnake.Embed(
-                description=f"You are now unmuted.", color=disnake.Color.green()
+                description=f"You were muted in {ctx.guild.name} for {seconds} {limit}",
+                color=disnake.Color.red(),
             )
         )
+        await asyncio.sleep(sleep)
         await member.remove_roles(role)
 
     async def remove_mute(self, ctx: commands.Context, member: disnake.Member):
@@ -120,7 +108,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         if role not in member.roles:
             return await ctx.send(
                 embed=disnake.Embed(
-                    description=f"{member.mention} isn't muted.",
+                    description=f"{member.mention} is not muted.",
                     color=disnake.Color.green(),
                 )
             )
@@ -136,11 +124,9 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         ctx: commands.Context,
         member: disnake.Member,
         amount,
-        *,
-        reason: str = None,
     ):
         """Mutes a member."""
-        await self.add_mute(ctx, member, amount, reason)
+        await self.add_mute(ctx, member, amount)
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)

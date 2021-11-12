@@ -1,6 +1,6 @@
 # Bonbons
 
-- Bot.
+- Made with love.
 
 
 # Credits
