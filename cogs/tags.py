@@ -8,16 +8,24 @@ class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]
-        self.tags = self.db["tags"]
 
     @commands.command()
     async def tags(self, ctx):
         """Returns all the tags in the database"""
-        all_tags = []
+        try:
+            self.tags = self.db[str(ctx.guild.id)]
 
-        for tags in self.tags.find({}):
-            all_tags.append(tags["name"])
-        await ctx.send(embed=disnake.Embed(description=", ".join(all_tags)))
+            all_tags = []
+
+            for tags in self.tags.find({}):
+                all_tags.append(tags["name"])
+                await ctx.send(embed=disnake.Embed(description=", ".join(all_tags)))
+        except disnake.HTTPException:
+            await ctx.send(
+                embed=disnake.Embed(
+                    "There are no tags in the current guild.", color=disnake.Color.red()
+                )
+            )
 
     @commands.slash_command()
     @commands.guild_only()
@@ -27,13 +35,26 @@ class Tags(commands.Cog, description="Commands related to tags."):
     @commands.slash_command(name="tags")
     async def tags_slash(self, inter):
         """Returns all the tags in the database"""
-        all_tags = []
 
-        for tags in self.tags.find({}):
-            all_tags.append(tags["name"])
-        await inter.response.send_message(
-            embed=disnake.Embed(description=", ".join(all_tags)), ephemeral=False
-        )
+        try:
+            self.tags = self.db[str(inter.guild.id)]
+
+            all_tags = []
+
+            for tags in self.tags.find({}):
+                all_tags.append(tags["name"])
+                await inter.response.send_message(
+                    embed=disnake.Embed(description=", ".join(all_tags)),
+                    ephemeral=False,
+                )
+        except disnake.HTTPException:
+            await inter.response.send_message(
+                embed=disnake.Embed(
+                    "There are no tags in the current guild.",
+                    color=disnake.Color.red(),
+                    ephemeral=False,
+                )
+            )
 
     @tag.sub_command()
     @commands.guild_only()
@@ -41,6 +62,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     async def delete(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
         """Deletes a tag"""
         try:
+            self.tags = self.db[str(inter.guild.id)]
             data = self.tags.find_one({"name": name})
 
             if not data:
@@ -48,15 +70,19 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
             await inter.response.send_message(f"Tag was deleted.")
             self.tags.delete_one(data)
-        except Exception:
+        except Exception as e:
             return await inter.response.send_message(
-                embed=disnake.Embed(description="Missing permissions."), ephemeral=True
+                embed=disnake.Embed(
+                    description="Missing permissions.", color=disnake.Color.red()
+                ),
+                ephemeral=True,
             )
 
     @tag.sub_command()
     @commands.guild_only()
     async def show(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
         """Displays a tag"""
+        self.tags = self.db[str(inter.guild.id)]
         data = self.tags.find_one({"name": name})
 
         if not data:
@@ -66,16 +92,26 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @tag.sub_command()
     @commands.guild_only()
-    async def info(self, inter, tag: str):
+    async def info(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
         """Gives information about a tag"""
         try:
-            data = self.tags.find_one({"name": tag})
-            print(data)
+            self.tags = self.db[str(inter.guild.id)]
+            data = self.tags.find_one({"name": name})
 
-            embed = disnake.Embed(
-                title=f"{tag} Information", timestamp=datetime.utcnow()
+            if not data:
+                return await inter.response.send_message(
+                    embed=disnake.Embed(
+                        description="That is not a valid tag.",
+                        color=disnake.Color.red(),
+                    )
+                )
+
+            author = data["owner"]
+
+            embed = disnake.Embed(title=f"Tag Information", timestamp=datetime.utcnow())
+            embed.add_field(
+                name="Owner", value=f"<@{data['owner']}> (`{author.id}`)", inline=False
             )
-            embed.add_field(name="Owner", value=f"<@{data['owner']}>", inline=False)
             embed.add_field(
                 name="Created",
                 value=f"<t:{data['created_at']}:F> (<t:{data['created_at']}:R>)",
@@ -91,6 +127,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     async def create(self, inter, name: str, content: str):
         """Creates a tag"""
         try:
+            self.tags = self.db[str(inter.guild.id)]
             found = self.tags.find_one({"name": name})
             if found:
                 return await inter.response.send_message(

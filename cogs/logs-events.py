@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 import contextlib
 from datetime import datetime
+import humanize
 
 
 class Events(commands.Cog, description="A cog for events/logs."):
@@ -269,10 +270,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
 
         if isinstance(error, commands.CommandNotFound):
             return
-
-        if isinstance(error, commands.CommandOnCooldown):
-            await ctx.reply(error, mention_author=False)
-
+            
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.reply(
                 embed=disnake.Embed(

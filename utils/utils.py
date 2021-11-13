@@ -18,7 +18,7 @@ class HelpEmbed(disnake.Embed):
         self.color = disnake.Color.blurple()
 
 def tags_autocomp(inter, input: str) -> str:
-    tags = cluster["discord"]["tags"]
+    tags = cluster["discord"][str(inter.guild.id)]
 
     all_tags = []
         
