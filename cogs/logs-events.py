@@ -166,7 +166,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         embed = disnake.Embed(
             title="Invite Deleted",
             description=f"""
-            **Invite:** {invite.code} (`{user.id}`)
+            **Invite:** {invite.code} (`{invite.id}`)
             **Guild:** {invite.guild.name} (`{invite.guild.id}`)
             **Deleted At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
@@ -179,7 +179,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         embed = disnake.Embed(
             title="Invite Created",
             description=f"""
-            **Invite:** {invite.code} (`{user.id}`)
+            **Invite:** {invite.code} (`{invite.id}`)
             **Guild:** {invite.guild.name} (`{invite.guild.id}`)
             **Created At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
