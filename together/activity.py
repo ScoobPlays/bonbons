@@ -35,7 +35,7 @@ class ActivityLink:
         return f"https://discord.gg/{self.raw_code}"
 
 
-class DisnakeTogether:
+class Together:
     def __init__(
         self,
         client: Union[Client, Bot, AutoShardedClient, AutoShardedBot],
@@ -142,7 +142,7 @@ class DisnakeTogether:
                 print(
                     "\033[95m"
                     + "\033[1m"
-                    + "[DEBUG] (disnake_together) Response Output:\n"
+                    + "[DEBUG] (together) Response Output:\n"
                     + "\033[0m"
                     + str(result)
                 )
@@ -182,7 +182,7 @@ class DisnakeTogether:
                     print(
                         "\033[95m"
                         + "\033[1m"
-                        + "[DEBUG] (disnake_together) Response Output:\n"
+                        + "[DEBUG] (together) Response Output:\n"
                         + "\033[0m"
                         + str(result)
                     )
@@ -210,7 +210,7 @@ class DisnakeTogether:
                 print(
                     "\033[95m"
                     + "\033[1m"
-                    + "[DEBUG] (disnake_together) Response Output:\n"
+                    + "[DEBUG] (together) Response Output:\n"
                     + "\033[0m"
                     + str(result)
                 )
