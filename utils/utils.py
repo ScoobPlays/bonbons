@@ -1,7 +1,7 @@
 import disnake
 from urllib.parse import quote_plus
 import pymongo
-from .secrets import cluster
+from .mongo import cluster
 
 class Google(disnake.ui.View):
     def __init__(self, query: str):
