@@ -10,21 +10,20 @@ from .errors import (
     RangeExceeded,
 )
 
-defaultApplications = {
-    "youtube": "755600276941176913",
-    "youtubedev": "880218832743055411",
-    "poker": "755827207812677713",
-    "betrayal": "773336526917861400",
-    "fishing": "814288819477020702",
-    "chess": "832012774040141894",
-    "chessdev": "832012586023256104",
-    "lettertile": "879863686565621790",
-    "wordsnack": "879863976006127627",
-    "doodlecrew": "878067389634314250",
-    "spellcast": "852509694341283871",
-    "checkers": "807655087643557919",
+applications = {
+    "youtube": "755600276941176913", #Youtube 
+    "youtubedev": "880218832743055411", #Youtube Development
+    "poker": "755827207812677713", # Poker
+    "betrayal": "773336526917861400", # Betrayal
+    "fishing": "814288819477020702", # Fishing
+    "chess": "832012774040141894", # Chess
+    "chessdev": "832012586023256104", # Chess Development
+    "lettertile": "879863686565621790", # Lettertile
+    "wordsnack": "879863976006127627", # Wordsnack
+    "doodlecrew": "878067389634314250", # Doodlecrew
+    "spellcast": "852509694341283871", # Spellcast
+    "checkers": "807655087643557919", # Checkers
 }
-
 
 class ActivityLink:
     def __init__(self, invite_code: str):
@@ -86,13 +85,13 @@ class Together:
             )
 
         if option and (
-            str(option).lower().replace(" ", "") in defaultApplications.keys()
+            str(option).lower().replace(" ", "") in applications.keys()
         ):
 
             data = {
                 "max_age": max_age,
                 "max_uses": max_uses,
-                "target_application_id": defaultApplications[
+                "target_application_id": applications[
                     str(option).lower().replace(" ", "")
                 ],
                 "target_type": 2,
@@ -151,7 +150,7 @@ class Together:
 
         elif (
             option
-            and (str(option).replace(" ", "") not in defaultApplications.keys())
+            and (str(option).replace(" ", "") not in applications.keys())
             and str(option).replace(" ", "").isnumeric()
         ):
             data = {
@@ -221,6 +220,6 @@ class Together:
             raise InvalidActivityChoice(
                 'Invalid activity option chosen. You may only choose between ("{}") or '
                 "input a custom application ID.".format(
-                    '", "'.join(defaultApplications.keys())
+                    '", "'.join(applications.keys())
                 )
             )
