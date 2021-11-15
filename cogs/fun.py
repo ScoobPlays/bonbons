@@ -303,7 +303,9 @@ class Fun(commands.Cog, description="Random commands."):
                 await ctx.send(embed=embed)
 
     @commands.slash_command(name="wikipedia")
-    async def wikipedia_slash(self, inter, query: str):
+    async def wikipedia_slash(
+        self, inter: disnake.ApplicationCommandInteraction, query: str
+    ):
         """Searches for something on the wikipedia"""
         async with self.bot.session.get(
             (
@@ -397,7 +399,9 @@ class Fun(commands.Cog, description="Random commands."):
         await ctx.send(embed=embed)
 
     @commands.slash_command(name="minecraft")
-    async def minecraft_slash(self, inter, username="Notch"):
+    async def minecraft_slash(
+        self, inter: disnake.ApplicationCommandInteraction, username="Notch"
+    ):
         """Fetches information about a minecraft user."""
 
         async with self.bot.session.get(
@@ -569,9 +573,7 @@ class Fun(commands.Cog, description="Random commands."):
                     f"{inter.author.mention} hugged {member.mention}!!\n{image}"
                 )
 
-    @commands.slash_command(
-        name="afk"
-    )  # taken directly from https://github.com/Dorukyum/Pycord-Manager
+    @commands.slash_command(name="afk")
     async def afk_slash(
         self, inter: disnake.ApplicationCommandInteraction, message=None
     ):
@@ -586,7 +588,7 @@ class Fun(commands.Cog, description="Random commands."):
         with contextlib.suppress(disnake.Forbidden):
             await inter.author.edit(nick=f"[AFK] {inter.author.display_name}")
 
-    @commands.command()  # taken directly from https://github.com/Dorukyum/Pycord-Manager
+    @commands.command()
     async def afk(self, ctx: commands.Context, argument: str = None):
 
         """Become AFK."""

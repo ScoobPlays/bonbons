@@ -1,9 +1,10 @@
 import disnake
 from disnake.ext import commands
 
+
 class Utilities(commands.Cog, description="Commands for the bot."):
     def __init__(self, bot):
-        self.bot=bot
+        self.bot = bot
 
     @commands.command()
     @commands.cooldown(1, 1800, commands.BucketType.user)
@@ -16,18 +17,16 @@ class Utilities(commands.Cog, description="Commands for the bot."):
                 embed=disnake.Embed(
                     title=f"Suggestion by {ctx.author}",
                     description=suggestion,
-                    color=disnake.Color.greyple()
+                    color=disnake.Color.greyple(),
                 )
             )
             await msg.add_reaction("👍")
             await msg.add_reaction("👎")
         except Exception as e:
             await ctx.send(
-                embed=disnake.Embed(
-                    description=e,
-                    color=disnake.Color.red()
-                )
+                embed=disnake.Embed(description=e, color=disnake.Color.red())
             )
+
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

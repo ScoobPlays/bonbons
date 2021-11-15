@@ -72,7 +72,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message):
+    async def on_message_delete(self, message: disnake.Message):
         if message.author.bot:
             return
 
@@ -136,7 +136,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_member_ban(self, guild, user):
+    async def on_member_ban(self, guild: disnake.Guild, user: disnake.User):
         embed = disnake.Embed(
             title="User Banned",
             description=f"""
@@ -149,7 +149,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_member_unban(self, guild, user):
+    async def on_member_unban(self, guild: disnake.Guild, user: disnake.User):
         embed = disnake.Embed(
             title="User Unbanned",
             description=f"""
@@ -162,7 +162,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_invite_delete(self, invite):
+    async def on_invite_delete(self, invite: disnake.Invite):
         embed = disnake.Embed(
             title="Invite Deleted",
             description=f"""
@@ -175,7 +175,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_invite_create(self, invite):
+    async def on_invite_create(self, invite: disnake.Invite):
         embed = disnake.Embed(
             title="Invite Created",
             description=f"""
@@ -188,7 +188,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_thread_join(self, thread):
+    async def on_thread_join(self, thread: disnake.Thread):
         embed = disnake.Embed(
             title="Thread Updated",
             description=f"""
@@ -201,7 +201,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_thread_delete(self, thread):
+    async def on_thread_delete(self, thread: disnake.Thread):
         embed = disnake.Embed(
             title="Thread Deleted",
             description=f"""
@@ -214,7 +214,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_thread_member_join(self, member):
+    async def on_thread_member_join(self, member: disnake.ThreadMember):
         member = member.thread.guild.get_member(member.id)
         embed = disnake.Embed(
             title="Member Joined a Thread",
@@ -228,7 +228,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
-    async def on_thread_member_remove(self, member):
+    async def on_thread_member_remove(self, member: disnake.ThreadMember):
         member = member.thread.guild.get_member(member.id)
         embed = disnake.Embed(
             title="Member Removed from Thread",
@@ -261,6 +261,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         for mention in message.mentions:
             if msg := self.bot.cache["afk"].get(mention.id):
                 await message.channel.send(f"{mention.display_name} is AFK: {msg}")
+
 
 def setup(bot):
     bot.add_cog(Events(bot))

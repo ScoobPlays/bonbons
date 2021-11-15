@@ -16,7 +16,6 @@ class Bonbons(commands.Bot):
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
             help_command=MyHelp(),
             strip_after_prefix=True,
-            status=disnake.Status.dnd,
             **kwargs
             )
 

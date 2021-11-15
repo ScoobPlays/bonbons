@@ -17,7 +17,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"Snowflake was created at {self.timestamp(argument)}",
-            color=disnake.Color.greyple()
+            color=disnake.Color.greyple(),
         )
         await ctx.send(embed=embed)
 
@@ -50,10 +50,10 @@ class Information(commands.Cog, description="Information related commands."):
         if member is None:
             member = inter.author
 
-        embed = disnake.Embed(color=disnake.Color.greyple(), timestamp=datetime.utcnow())
-        embed.set_image(
-            url=member.display_avatar
+        embed = disnake.Embed(
+            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
         )
+        embed.set_image(url=member.display_avatar)
         await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(name="serverinfo")
@@ -67,7 +67,7 @@ class Information(commands.Cog, description="Information related commands."):
         embed = disnake.Embed(
             title=ctx.guild.name,
             description=f"**ID:** {ctx.guild.id}\n**Owner:** {ctx.guild.owner}",
-            color=disnake.Color.greyple()
+            color=disnake.Color.greyple(),
         )
         embed.add_field(
             name="Server Created At",
@@ -92,13 +92,13 @@ class Information(commands.Cog, description="Information related commands."):
     async def serverinfo_slash(self, inter: disnake.ApplicationCommandInteraction):
 
         """
-        A command that gets information about a guild. 
+        A command that gets information about a guild.
         """
 
         embed = disnake.Embed(
             title=inter.guild.name,
             description=f"**ID:** {inter.guild.id}\n**Owner:** {inter.guild.owner}",
-            color=disnake.Color.greyple()
+            color=disnake.Color.greyple(),
         )
         embed.add_field(
             name="Server Created At",
@@ -127,7 +127,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"{ctx.guild.member_count} members in **{ctx.guild.name}**.",
-            color=disnake.Color.greyple()
+            color=disnake.Color.greyple(),
         )
         await ctx.send(embed=embed)
 
@@ -145,7 +145,9 @@ class Information(commands.Cog, description="Information related commands."):
         if len(member.roles) > 1:
             role_string = ", ".join([r.mention for r in member.roles][1:])
 
-        embed = disnake.Embed(color=disnake.Color.greyple(), timestamp=datetime.utcnow())
+        embed = disnake.Embed(
+            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
+        )
         embed.set_thumbnail(url=member.display_avatar)
         embed.set_author(
             name=member,
@@ -187,7 +189,9 @@ class Information(commands.Cog, description="Information related commands."):
         if len(member.roles) > 1:
             role_string = ", ".join([r.mention for r in member.roles][1:])
 
-        embed = disnake.Embed(color=disnake.Color.greyple(), timestamp=datetime.utcnow())
+        embed = disnake.Embed(
+            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
+        )
         embed.set_thumbnail(url=member.display_avatar)
         embed.set_author(
             name=member,
@@ -383,7 +387,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Ponged!** {round(self.bot.latency * 1000)}ms",
-            color=disnake.Color.greyple()
+            color=disnake.Color.greyple(),
         )
 
         await ctx.reply(embed=embed, mention_author=False)
@@ -397,7 +401,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Ponged!** {round(self.bot.latency * 1000)}ms",
-            color=disnake.Color.greyple()
+            color=disnake.Color.greyple(),
         )
 
         await inter.response.send_message(embed=embed)

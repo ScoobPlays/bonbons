@@ -191,7 +191,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
                         description="You cannot change this members nick.",
                         color=disnake.Color.red(),
                     ),
-                    ephemeral=True
+                    ephemeral=True,
                 )
             await member.edit(nick=nickname)
             embed = disnake.Embed(

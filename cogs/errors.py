@@ -1,9 +1,10 @@
 import disnake
 from disnake.ext import commands
 
+
 class Errors(commands.Cog):
     def __init__(self, bot):
-        self.bot=bot
+        self.bot = bot
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: str):
@@ -13,7 +14,7 @@ class Errors(commands.Cog):
 
         if isinstance(error, commands.CommandNotFound):
             return
-            
+
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.reply(
                 embed=disnake.Embed(
@@ -31,26 +32,26 @@ class Errors(commands.Cog):
             raise error
 
     @commands.Cog.listener()
-    async def on_slash_command_error(self, inter: disnake.ApplicationCommandInteraction, error: str):
-        
+    async def on_slash_command_error(
+        self, inter: disnake.ApplicationCommandInteraction, error: str
+    ):
+
         if isinstance(error, commands.MissingPermissions):
             await inter.response.send_message(
                 embed=disnake.Embed(
                     description="Missing permissions",
                     color=disnake.Color.red(),
                 ),
-                ephemeral=True
+                ephemeral=True,
             )
 
         else:
             await inter.response.send_message(
-                embed=disnake.Embed(
-                    description=error,
-                    color=disnake.Color.red()
-                    ),
-                    ephemeral=True
-                )
+                embed=disnake.Embed(description=error, color=disnake.Color.red()),
+                ephemeral=True,
+            )
             raise error
+
 
 def setup(bot):
     bot.add_cog(Errors(bot))
