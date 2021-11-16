@@ -34,7 +34,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     async def restart_bot(self, ctx):
         await ctx.send(
             embed=disnake.Embed(
-                description="Restarting the bot.", color=disnake.Color.red()
+                description="Restarting the bot.", color=disnake.Color.greyple()
             )
         )
 
