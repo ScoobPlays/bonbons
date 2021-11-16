@@ -6,7 +6,7 @@ import base64
 import random
 import aiohttp
 import contextlib
-from utils import Google
+from utils.utils import Google
 
 
 class Fun(commands.Cog, description="Random commands."):

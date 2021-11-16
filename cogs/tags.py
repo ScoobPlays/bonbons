@@ -1,13 +1,23 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from utils import cluster, tags_autocomp
+from utils.mongo import cluster
 
 
 class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]
+
+    def tags_autocomp(inter, input: str) -> str:
+        tags = cluster["discord"][str(inter.guild.id)]
+
+        all_tags = []
+        
+        for tags in tags.find({}):
+            all_tags.append(tags["name"])
+
+        return [tag for tag in all_tags if input.lower() in tag]
 
     @commands.command()
     async def tags(self, ctx):
@@ -29,7 +39,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @commands.slash_command()
     @commands.guild_only()
-    async def tag(self, inter, tag: str = None):
+    async def tag(self, inter):
         pass
 
     @commands.slash_command(name="tags")

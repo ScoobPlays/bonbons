@@ -12,8 +12,10 @@ class Threads(commands.Cog, description="Thread related commands."):
         pass
 
     @thread.command()
-    async def find(self, ctx, *, argument: str):
-        """Finds the guild for a thread."""
+    async def find(self, ctx: commands.Context, *, argument: str):
+
+        """Searches the guild for a thread."""
+
         try:
             amount = []
             for channel in ctx.guild.text_channels:
@@ -24,15 +26,15 @@ class Threads(commands.Cog, description="Thread related commands."):
         except Exception:
             await ctx.send(
                 embed=disnake.Embed(
-                    description=f'There were no threads called or started with "**{argument}**".',
+                    description=f'There were no threads called or started with "{argument}".',
                     color=disnake.Color.red(),
                 )
             )
 
     @thread.command()
     @commands.has_permissions(manage_channels=True)
-    async def massdelete(self, ctx):
-        """Deletes every thread on the guild."""
+    async def massdelete(self, ctx: commands.Context):
+        """Deletes every thread in the guild."""
         for channel in ctx.guild.text_channels:
             for thread in channel.threads:
                 await thread.delete()
