@@ -11,33 +11,46 @@ class Starboard(commands.Cog):
 
         """Sets the reactions needed to be on the starboard"""
 
-        data = config.find_one(
-            {"reaction_count": "The reaction count for the starboard."}
-        )
-        values = {"$set": {"reactions": count}}
+        try:
 
-        config.update_one(data, values)
-        await ctx.send(
-            f"I have set the reactions needed for the starboard to `{count}`."
-        )
+            data = config.find_one(
+                {"reaction_count": "The reaction count for the starboard."}
+            )
+            values = {"$set": {"reactions": count}}
 
-        self.starboard_count = count
+            config.update_one(data, values)
+            await ctx.send(
+                f"I have set the reactions needed for the starboard to `{count}`."
+            )
+
+            self.starboard_count = count
+
+        except Exception as e:
+            print(e)
 
     async def add_to_starboard(self, reaction, user):
-        data = starboard.find_one({"_id": reaction.message.id})
+        
+        """Adds something to the starboard (database)"""
 
-        if data:
-            return
+        try:
 
-        if reaction.message.embeds:
-            return
+            data = starboard.find_one({"_id": reaction.message.id})
 
-        if not data:
-            if reaction.emoji == "⭐" and reaction.count > self.starboard_count:
-                await reaction.message.channel.send("Thanks for using this. [WIP]")
-                starboard.insert_one(
-                    {"_id": reaction.message.id, "author": reaction.message.author.id}
-                )
+            if data:
+                return
+
+            if reaction.message.embeds:
+                return
+
+            if not data:
+                if reaction.emoji == "⭐" and reaction.count > self.starboard_count:
+                    await reaction.message.channel.send("Thanks for using this. [WIP]")
+                    starboard.insert_one(
+                        {"_id": reaction.message.id, "author": reaction.message.author.id}
+                    )
+
+        except Exception as e:
+            print(e)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
