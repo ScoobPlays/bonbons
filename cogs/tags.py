@@ -8,69 +8,78 @@ class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]
+        self.index = 0  # Thanks carrot <3
 
-    def tags_autocomp(inter, input: str) -> str:
-        tags = cluster["discord"][str(inter.guild.id)]
+    async def tags_autocomp(inter, input: str) -> str:
+        db_tags = cluster["discord"][str(inter.guild.id)]
+        find_tags = await db_tags.find({}).to_list(10000)
 
         all_tags = []
-        
-        for tags in tags.find({}):
+
+        for tags in find_tags:
             all_tags.append(tags["name"])
 
-        return [tag for tag in all_tags if input.lower() in tag]
-
-    @commands.command()
-    async def tags(self, ctx):
-        """Returns all the tags in the database"""
-        try:
-            self.tags = self.db[str(ctx.guild.id)]
-
-            all_tags = []
-
-            for tags in await self.tags.find({}):
-                all_tags.append(tags["name"])
-                await ctx.send(embed=disnake.Embed(description=", ".join(all_tags)))
-        except disnake.HTTPException:
-            await ctx.send(
-                embed=disnake.Embed(
-                    "There are no tags in the current guild.", color=disnake.Color.red()
-                )
-            )
+        return [tag for tag in all_tags if input.lower() in tag.lower()]
 
     @commands.slash_command()
     @commands.guild_only()
-    async def tag(self, inter):
+    async def tag(self, inter) -> None:
+        """The base command for tag."""
         pass
 
+    @commands.command()
+    async def tags(self, ctx) -> None:
+        """Returns all the tags in the guild."""
+        try:
+            tags_embed = disnake.Embed(
+                title="Tags", description="", color=disnake.Color.greyple()
+            )
+            self.tags = self.db[str(ctx.guild.id)]
+
+            tags = await self.tags.find({}).to_list(10000)
+
+            for name in tags:
+                self.index += 1
+                tags_embed.description += f"\n{self.index}. {name['name']}"
+
+            await ctx.send(embed=tags_embed)
+
+        except Exception as e:
+            print(e)
+
     @commands.slash_command(name="tags")
-    async def tags_slash(self, inter):
-        """Returns all the tags in the database"""
+    async def tags_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
+
+        """Returns all the tags in the guild"""
 
         try:
+            tags_embed = disnake.Embed(
+                title="Tags", description="", color=disnake.Color.greyple()
+            )
             self.tags = self.db[str(inter.guild.id)]
 
-            all_tags = []
+            tags = await self.tags.find({}).to_list(10000)
 
-            for tags in await self.tags.find({}):
-                all_tags.append(tags["name"])
-                await inter.response.send_message(
-                    embed=disnake.Embed(description=", ".join(all_tags)),
-                    ephemeral=False,
-                )
-        except disnake.HTTPException:
-            await inter.response.send_message(
-                embed=disnake.Embed(
-                    "There are no tags in the current guild.",
-                    color=disnake.Color.red(),
-                    ephemeral=False,
-                )
-            )
+            for name in tags:
+                self.index += 1
+                tags_embed.description += f"\n{self.index}. {name['name']}"
+
+            await inter.response.send_message(embed=tags_embed, ephemeral=False)
+
+        except Exception as e:
+            print(e)
 
     @tag.sub_command()
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
-    async def delete(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
-        """Deletes a tag"""
+    async def delete(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        name: str = commands.param(
+            description="The tag's name to delete", autocomp=tags_autocomp
+        ),
+    ) -> None:
+        """Delete's a tag"""
         try:
             self.tags = self.db[str(inter.guild.id)]
             data = await self.tags.find_one({"name": name})
@@ -90,8 +99,14 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @tag.sub_command()
     @commands.guild_only()
-    async def show(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
-        """Displays a tag"""
+    async def show(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        name: str = commands.param(
+            description="The tag's name to display", autocomp=tags_autocomp
+        ),
+    ) -> None:
+        """Display's a tag"""
         self.tags = self.db[str(inter.guild.id)]
         data = await self.tags.find_one({"name": name})
 
@@ -102,7 +117,13 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @tag.sub_command()
     @commands.guild_only()
-    async def info(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
+    async def info(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        name: str = commands.param(
+            description="The tag's name", autocomp=tags_autocomp
+        ),
+    ) -> None:
         """Gives information about a tag"""
         try:
             self.tags = self.db[str(inter.guild.id)]
@@ -134,7 +155,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @tag.sub_command()
     @commands.guild_only()
-    async def create(self, inter, name: str, content: str):
+    async def create(self, inter, name: str, content: str) -> None:
         """Creates a tag"""
         try:
             self.tags = self.db[str(inter.guild.id)]
