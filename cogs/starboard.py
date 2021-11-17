@@ -1,11 +1,14 @@
 from disnake.ext import commands
+import disnake
 from utils.mongo import starboard, config
-
+from datetime import datetime
 
 class Starboard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.starboard_count = 5
+        self.starboard = self.bot.get_channel(910404322947387422)
+
 
     async def set_starboard_count(self, ctx, count):
 
@@ -13,12 +16,12 @@ class Starboard(commands.Cog):
 
         try:
 
-            data = config.find_one(
+            data = await config.find_one(
                 {"reaction_count": "The reaction count for the starboard."}
             )
             values = {"$set": {"reactions": count}}
 
-            config.update_one(data, values)
+            await config.update_one(data, values)
             await ctx.send(
                 f"I have set the reactions needed for the starboard to `{count}`."
             )
@@ -34,7 +37,7 @@ class Starboard(commands.Cog):
 
         try:
 
-            data = starboard.find_one({"_id": reaction.message.id})
+            data = await starboard.find_one({"_id": reaction.message.id})
 
             if data:
                 return
@@ -44,9 +47,21 @@ class Starboard(commands.Cog):
 
             if not data:
                 if reaction.emoji == "⭐" and reaction.count > self.starboard_count:
-                    await reaction.message.channel.send("Thanks for using this. [WIP]")
-                    starboard.insert_one(
-                        {"_id": reaction.message.id, "author": reaction.message.author.id}
+                    await self.starboard.send(
+                        embed=disnake.Embed(
+                            description=reaction.message.content,
+                            color=disnake.Color.greyple(),
+                            timestamp=datetime.utcnow()
+                        ).set_author(
+                            name=reaction.message.author,
+                            icon_url=reaction.message.author.display_avatar
+                        )
+                    )
+                    await starboard.insert_one(
+                        {
+                            "_id": reaction.message.id,
+                            "author": reaction.message.author.id
+                            }
                     )
 
         except Exception as e:
@@ -58,12 +73,14 @@ class Starboard(commands.Cog):
 
     @commands.group(invoke_without_command=True)
     async def starboard(self, ctx):
+        """The base command for starboard."""
         pass
 
-    @starboard.group(name="set reactions")
-    async def _set_reactions(self, ctx, count: int):
+    @starboard.command()
+    async def reactions(self, ctx, count: int):
+        """Sets the reactions needed for the starboard. (Default is 0)"""
         await self.set_starboard_count(ctx, count)
-
 
 def setup(bot):
     bot.add_cog(Starboard(bot))
+

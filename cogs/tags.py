@@ -27,7 +27,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
             all_tags = []
 
-            for tags in self.tags.find({}):
+            for tags in await self.tags.find({}):
                 all_tags.append(tags["name"])
                 await ctx.send(embed=disnake.Embed(description=", ".join(all_tags)))
         except disnake.HTTPException:
@@ -51,7 +51,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
             all_tags = []
 
-            for tags in self.tags.find({}):
+            for tags in await self.tags.find({}):
                 all_tags.append(tags["name"])
                 await inter.response.send_message(
                     embed=disnake.Embed(description=", ".join(all_tags)),
@@ -73,14 +73,14 @@ class Tags(commands.Cog, description="Commands related to tags."):
         """Deletes a tag"""
         try:
             self.tags = self.db[str(inter.guild.id)]
-            data = self.tags.find_one({"name": name})
+            data = await self.tags.find_one({"name": name})
 
             if not data:
                 return await inter.response.send_message(f"Tag was not found.")
 
             await inter.response.send_message(f"Tag was deleted.")
             self.tags.delete_one(data)
-        except Exception as e:
+        except Exception:
             return await inter.response.send_message(
                 embed=disnake.Embed(
                     description="Missing permissions.", color=disnake.Color.red()
@@ -93,7 +93,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     async def show(self, inter, name: str = commands.param(autocomp=tags_autocomp)):
         """Displays a tag"""
         self.tags = self.db[str(inter.guild.id)]
-        data = self.tags.find_one({"name": name})
+        data = await self.tags.find_one({"name": name})
 
         if not data:
             return await inter.response.send_message(f"That is not a valid tag.")
@@ -106,7 +106,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
         """Gives information about a tag"""
         try:
             self.tags = self.db[str(inter.guild.id)]
-            data = self.tags.find_one({"name": name})
+            data = await self.tags.find_one({"name": name})
 
             if not data:
                 return await inter.response.send_message(
@@ -138,7 +138,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
         """Creates a tag"""
         try:
             self.tags = self.db[str(inter.guild.id)]
-            found = self.tags.find_one({"name": name})
+            found = await self.tags.find_one({"name": name})
             if found:
                 return await inter.response.send_message(
                     f"A tag with that name already exists.", ephemeral=False
@@ -152,7 +152,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
                 "content": content,
                 "created_at": (int(datetime.utcnow().timestamp())),
             }
-            self.tags.insert_one(data)
+            await self.tags.insert_one(data)
         except Exception as e:
             print(e)
 
