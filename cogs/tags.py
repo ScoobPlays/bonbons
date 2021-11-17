@@ -8,7 +8,6 @@ class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]
-        self.index = 0  # Thanks carrot <3
 
     async def tags_autocomp(inter, input: str) -> str:
         db_tags = cluster["discord"][str(inter.guild.id)]
@@ -31,6 +30,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     async def tags(self, ctx) -> None:
         """Returns all the tags in the guild."""
         try:
+            index = 0
             tags_embed = disnake.Embed(
                 title="Tags", description="", color=disnake.Color.greyple()
             )
@@ -39,8 +39,8 @@ class Tags(commands.Cog, description="Commands related to tags."):
             tags = await self.tags.find({}).to_list(10000)
 
             for name in tags:
-                self.index += 1
-                tags_embed.description += f"\n{self.index}. {name['name']}"
+                index += 1
+                tags_embed.description += f"\n{index}. {name['name']}"
 
             await ctx.send(embed=tags_embed)
 
@@ -53,6 +53,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
         """Returns all the tags in the guild"""
 
         try:
+            index = 0
             tags_embed = disnake.Embed(
                 title="Tags", description="", color=disnake.Color.greyple()
             )
@@ -61,8 +62,8 @@ class Tags(commands.Cog, description="Commands related to tags."):
             tags = await self.tags.find({}).to_list(10000)
 
             for name in tags:
-                self.index += 1
-                tags_embed.description += f"\n{self.index}. {name['name']}"
+                index += 1
+                tags_embed.description += f"\n{index}. {name['name']}"
 
             await inter.response.send_message(embed=tags_embed, ephemeral=False)
 
