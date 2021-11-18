@@ -1,6 +1,6 @@
 import os
 from utils.bonbons import Bonbons
-from together import Together
+from utils.together import Together
 
 bot = Bonbons()
 client = Together(bot)
