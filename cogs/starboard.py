@@ -4,7 +4,7 @@ from utils.mongo import starboard, config
 from datetime import datetime
 
 
-class Starboard(commands.Cog):
+class Starboard(commands.Cog, description="Starboard related commands."):
     def __init__(self, bot):
         self.bot = bot
         self.starboard_count = 5
@@ -31,7 +31,7 @@ class Starboard(commands.Cog):
         except Exception as e:
             print(e)
 
-    async def add_to_starboard(self, reaction, user):
+    async def add_to_starboard(self, reaction, user) -> None:
 
         """Adds something to the starboard (database)"""
 

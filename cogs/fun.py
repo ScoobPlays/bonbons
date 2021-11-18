@@ -47,8 +47,10 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command()
     async def editsnipe(self, ctx: commands.Context):
-        message = ctx.message
+        
         """Snipes most recently edited message."""
+
+        message = ctx.message
         try:
             if self.before.guild.id == ctx.guild.id:
                 if self.before.channel.id == ctx.channel.id:

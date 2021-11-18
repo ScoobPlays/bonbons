@@ -3,7 +3,6 @@ from disnake.ext import commands
 from datetime import datetime
 from utils.mongo import cluster
 
-
 class Tags(commands.Cog, description="Commands related to tags."):
     def __init__(self, bot):
         self.bot = bot

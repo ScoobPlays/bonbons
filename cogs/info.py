@@ -61,7 +61,7 @@ class Information(commands.Cog, description="Information related commands."):
     async def serverinfo(self, ctx: commands.Context) -> None:
 
         """
-        A command that gets information about a guild.
+        Returns information about a guild.
         """
 
         embed = disnake.Embed(
@@ -92,7 +92,7 @@ class Information(commands.Cog, description="Information related commands."):
     async def serverinfo_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
 
         """
-        A command that gets information about a guild.
+        Returns information about a guild.
         """
 
         embed = disnake.Embed(
@@ -121,8 +121,9 @@ class Information(commands.Cog, description="Information related commands."):
     @commands.command()
     @commands.guild_only()
     async def membercount(self, ctx: commands.Context) -> None:
+
         """
-        A command to display the amount of members in a guild.
+        Returns the amount of members in a guild.
         """
 
         embed = disnake.Embed(
@@ -136,7 +137,7 @@ class Information(commands.Cog, description="Information related commands."):
     async def whois(self, ctx: commands.Context, member: disnake.Member = None) -> None:
 
         """
-        A command to display a member's information.
+        Display's a member's information.
         """
 
         if member is None:
@@ -180,7 +181,7 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        A command to display a member's information.
+        Display's a member's information.
         """
 
         if member is None:
@@ -219,7 +220,7 @@ class Information(commands.Cog, description="Information related commands."):
     async def spotify(self, ctx: commands.Context, member: disnake.Member = None) -> None:
 
         """
-        A command to display a member's spotify activity.
+        Display a member's spotify activity.
         """
 
         if member == None:
@@ -251,7 +252,7 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        A command to display a member's spotify activity.
+        Display a member's spotify activity.
         """
 
         if member == None:
@@ -286,9 +287,9 @@ class Information(commands.Cog, description="Information related commands."):
     async def roleinfo(self, ctx: commands.Context, role: disnake.Role = None) -> None:
 
         """
-        A command to display a roles' stats.
-        If no arguments were passed the author's top role will be taken as the role.
+        Returns information about a role.
         """
+
 
         role_mentionable = None
         role_hoisted = None
@@ -336,7 +337,7 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        A command to display a roles' information.
+        Returns information about a role.
         """
 
         role_mentionable = None
