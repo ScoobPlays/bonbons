@@ -8,7 +8,7 @@ class Threads(commands.Cog, description="Thread related commands."):
 
     @commands.group()
     async def thread(self, ctx):
-        """Thread related commands."""
+        """Base command for thread."""
         pass
 
     @thread.command()
