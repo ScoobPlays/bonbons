@@ -60,7 +60,10 @@ class Starboard(commands.Cog):
                     await starboard.insert_one(
                         {
                             "_id": reaction.message.id,
+                            "channel": reaction.message.channel.id,
                             "author": reaction.message.author.id,
+                            "content": reaction.message.content
+
                         }
                     )
 
@@ -77,6 +80,7 @@ class Starboard(commands.Cog):
         await ctx.send_help("starboard")
 
     @starboard.command()
+    @commands.is_owner()
     async def reactions(self, ctx, count: int):
         """Sets the reactions needed for the starboard. (Default is 0)"""
         await self.set_starboard_count(ctx, count)
