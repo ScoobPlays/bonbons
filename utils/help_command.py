@@ -3,11 +3,12 @@ import disnake
 from disnake.ext import commands
 from .utils import HelpEmbed
 
-class MyHelp(commands.HelpCommand):
+class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(
             command_attrs = {
-                "hidden": True
+                "hidden": True,
+                "help": "Shows help about a cog, group or a command"
             }
         )
 
@@ -27,7 +28,7 @@ class MyHelp(commands.HelpCommand):
                 usable += amount_commands
                 if cog:
                     name = cog.qualified_name
-                    description = cog.description or "No description"
+                    description = cog.description or "No description.."
 
                 embed.add_field(
                     name=f"{name} [{amount_commands}]", value=description
@@ -40,7 +41,7 @@ class MyHelp(commands.HelpCommand):
     async def send_command_help(self, command):
         signature = self.get_command_signature(command)
         embed = HelpEmbed(
-            title=signature, description=command.help or "No help found."
+            title=signature, description=command.help or "No help found.."
         )
 
         if cog := command.cog:
@@ -66,13 +67,13 @@ class MyHelp(commands.HelpCommand):
     async def send_help_embed(
         self, title, description, commands
     ):
-        embed = HelpEmbed(title=title, description=description or "No help found.")
+        embed = HelpEmbed(title=title, description=description or "No help found..")
 
-        if filtered_commands := await self.filter_commands(commands):
+        if filtered_commands := await self.filter_commands(commands, sort=True):
             for command in filtered_commands:
                 embed.add_field(
                     name=self.get_command_signature(command),
-                    value=command.help or "No help found...",
+                    value=command.help or "No help found..",
                 )
 
         await self.send(embed=embed)
@@ -86,3 +87,28 @@ class MyHelp(commands.HelpCommand):
         await self.send_help_embed(
             f"{title} Category", cog.description, cog.get_commands()
         )
+
+class MyNewHelp(commands.MinimalHelpCommand):
+    def __init__(self):
+        super().__init__(
+            command_attrs = {
+                "hidden": True,
+                "help": "Shows help about a cog, group or a command",
+            }
+        )
+
+
+    async def send_bot_help(self, mapping):
+        await self.context.send("This is help")
+       
+   # !help <command>
+    async def send_command_help(self, command):
+        await self.send("This is help command")
+      
+   # !help <group>
+    async def send_group_help(self, group):
+        await self.send("This is help group")
+    
+   # !help <cog>
+    async def send_cog_help(self, cog):
+        await self.send("This is help cog")

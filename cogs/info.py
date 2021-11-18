@@ -7,11 +7,11 @@ class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
 
-    def timestamp(self, value):
+    def timestamp(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
     @commands.command()
-    async def snowflake(self, ctx: commands.Context, argument: str):
+    async def snowflake(self, ctx: commands.Context, argument: str) -> None:
 
         """Displays a snowflake's creation date"""
 
@@ -22,10 +22,10 @@ class Information(commands.Cog, description="Information related commands."):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=("av",))
-    async def avatar(self, ctx: commands.Context, *, member: disnake.Member = None):
+    async def avatar(self, ctx: commands.Context, *, member: disnake.Member = None) -> None:
 
         """
-        A command that displays a member's avatar.
+        Display's a member's avatar.
         """
 
         if member is None:
@@ -44,7 +44,7 @@ class Information(commands.Cog, description="Information related commands."):
     ):
 
         """
-        A command that displays a member's avatar.
+        Display's a member's avatar.
         """
 
         if member is None:
@@ -52,13 +52,13 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             color=disnake.Color.greyple(), timestamp=datetime.utcnow()
-        )
-        embed.set_image(url=member.display_avatar)
+        ).set_image(url=member.display_avatar)
+
         await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(name="serverinfo")
     @commands.guild_only()
-    async def serverinfo(self, ctx: commands.Context):
+    async def serverinfo(self, ctx: commands.Context) -> None:
 
         """
         A command that gets information about a guild.
@@ -89,7 +89,7 @@ class Information(commands.Cog, description="Information related commands."):
 
     @commands.slash_command(name="serverinfo")
     @commands.guild_only()
-    async def serverinfo_slash(self, inter: disnake.ApplicationCommandInteraction):
+    async def serverinfo_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
 
         """
         A command that gets information about a guild.
@@ -120,7 +120,7 @@ class Information(commands.Cog, description="Information related commands."):
 
     @commands.command()
     @commands.guild_only()
-    async def membercount(self, ctx: commands.Context):
+    async def membercount(self, ctx: commands.Context) -> None:
         """
         A command to display the amount of members in a guild.
         """
@@ -133,7 +133,7 @@ class Information(commands.Cog, description="Information related commands."):
 
     @commands.command(aliases=["userinfo"])
     @commands.guild_only()
-    async def whois(self, ctx: commands.Context, member: disnake.Member = None):
+    async def whois(self, ctx: commands.Context, member: disnake.Member = None) -> None:
 
         """
         A command to display a member's information.
@@ -177,7 +177,7 @@ class Information(commands.Cog, description="Information related commands."):
         self,
         inter: disnake.ApplicationCommandInteraction,
         member: disnake.Member = None,
-    ):
+    ) -> None:
 
         """
         A command to display a member's information.
@@ -216,7 +216,7 @@ class Information(commands.Cog, description="Information related commands."):
         await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command()
-    async def spotify(self, ctx: commands.Context, member: disnake.Member = None):
+    async def spotify(self, ctx: commands.Context, member: disnake.Member = None) -> None:
 
         """
         A command to display a member's spotify activity.
@@ -248,7 +248,7 @@ class Information(commands.Cog, description="Information related commands."):
         self,
         inter: disnake.ApplicationCommandInteraction,
         member: disnake.Member = None,
-    ):
+    ) -> None:
 
         """
         A command to display a member's spotify activity.
@@ -276,12 +276,12 @@ class Information(commands.Cog, description="Information related commands."):
 
         if not member.activity:
             await inter.response.send_message(
-                "Member does not have a spotify activity.", ephemeral=False
+                embed=disnake.Embed(description="Member does not have a spotify activity.", color=disnake.Color.red())), ephemeral=False
             )
 
     @commands.command()
     @commands.guild_only()
-    async def roleinfo(self, ctx: commands.Context, role: disnake.Role = None):
+    async def roleinfo(self, ctx: commands.Context, role: disnake.Role = None) -> None:
 
         """
         A command to display a roles' stats.
@@ -331,7 +331,7 @@ class Information(commands.Cog, description="Information related commands."):
     @commands.guild_only()
     async def roleinfo_slash(
         self, inter: disnake.ApplicationCommandInteraction, role: disnake.Role = None
-    ):
+    ) -> None:
 
         """
         A command to display a roles' information.
@@ -379,28 +379,28 @@ class Information(commands.Cog, description="Information related commands."):
         await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(name="ping")
-    async def ping(self, ctx: commands.Context):
+    async def ping(self, ctx: commands.Context) -> None:
 
         """
-        Returns the bots latency
+        Returns the bots latency.
         """
 
         embed = disnake.Embed(
-            description=f"**Ponged!** {round(self.bot.latency * 1000)}ms",
+            description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
             color=disnake.Color.greyple(),
         )
 
         await ctx.reply(embed=embed, mention_author=False)
 
     @commands.slash_command(name="ping")
-    async def ping_slash(self, inter: disnake.ApplicationCommandInteraction):
+    async def ping_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
 
         """
         Returns the bots latency
         """
 
         embed = disnake.Embed(
-            description=f"**Ponged!** {round(self.bot.latency * 1000)}ms",
+            description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
             color=disnake.Color.greyple(),
         )
 

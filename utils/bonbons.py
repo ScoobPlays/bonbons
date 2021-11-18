@@ -3,7 +3,7 @@ from disnake.ext import commands
 import disnake
 import aiohttp
 from keep_alive import keep_alive
-from .help_command import MyHelp
+from .help_command import HelpCommand
 
 class Bonbons(commands.Bot):
     def __init__(self, **kwargs):
@@ -14,7 +14,7 @@ class Bonbons(commands.Bot):
             case_insensitive=True,
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
-            help_command=MyHelp(),
+            help_command=HelpCommand(),
             strip_after_prefix=True,
             **kwargs
             )
