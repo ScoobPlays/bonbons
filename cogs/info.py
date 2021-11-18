@@ -276,8 +276,10 @@ class Information(commands.Cog, description="Information related commands."):
 
         if not member.activity:
             await inter.response.send_message(
-                embed=disnake.Embed(description="Member does not have a spotify activity.", color=disnake.Color.red())), ephemeral=False
-            )
+                embed=disnake.Embed(
+                    description="Member does not have a spotify activity.", color=disnake.Color.red()),
+                    ephemeral=False
+                    )
 
     @commands.command()
     @commands.guild_only()
