@@ -1,5 +1,5 @@
 from datetime import datetime
-import disnake
+from disnake import Embed, Member, Message, ui, ButtonStyle, Color, Interaction, ApplicationCommandInteraction, Forbidden
 from disnake.ext import commands
 import json
 import base64
@@ -29,7 +29,7 @@ class Fun(commands.Cog, description="Random commands."):
         return message
 
     @commands.Cog.listener()
-    async def on_message_delete(self, message: disnake.Message):
+    async def on_message_delete(self, message:  Message):
 
         if message.author.bot:
             return
@@ -55,7 +55,7 @@ class Fun(commands.Cog, description="Random commands."):
             if self.before.guild.id == ctx.guild.id:
                 if self.before.channel.id == ctx.channel.id:
 
-                    before = disnake.Embed(
+                    before =  Embed(
                         description=f"{self.before.content}",
                         timestamp=datetime.utcnow(),
                     )
@@ -65,7 +65,7 @@ class Fun(commands.Cog, description="Random commands."):
                         icon_url=self.before.author.display_avatar,
                     )
 
-                    after = disnake.Embed(
+                    after = Embed(
                         description=f"{self.after.content}", timestamp=datetime.utcnow()
                     )
                     after.set_footer(text=f"Message from {self.after.author}")
@@ -74,12 +74,12 @@ class Fun(commands.Cog, description="Random commands."):
                         icon_url=self.after.author.display_avatar,
                     )
 
-                    class Edit(disnake.ui.View):
+                    class Edit(ui.View):
                         def __init__(self):
                             super().__init__()
 
                         async def interaction_check(
-                            self, interaction: disnake.Interaction
+                            self, interaction: Interaction
                         ) -> bool:
                             if (
                                 interaction.user
@@ -91,21 +91,21 @@ class Fun(commands.Cog, description="Random commands."):
                             )
                             return False
 
-                        @disnake.ui.button(
-                            label="Before", style=disnake.ButtonStyle.grey
+                        @ui.button(
+                            label="Before", style=ButtonStyle.grey
                         )
                         async def before(self, button, inter):
                             await msg.edit(embed=before)
                             await inter.response.defer()
 
-                        @disnake.ui.button(
-                            label="After", style=disnake.ButtonStyle.grey
+                        @ui.button(
+                            label="After", style=ButtonStyle.grey
                         )
                         async def after(self, button, inter):
                             await msg.edit(embed=after)
                             await inter.response.defer()
 
-                        @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.red)
+                        @ui.button(label="Quit", style=ButtonStyle.red)
                         async def quit(self, button, inter):
                             await message.delete()
                             await inter.message.delete()
@@ -114,9 +114,9 @@ class Fun(commands.Cog, description="Random commands."):
 
         except Exception:
             await ctx.send(
-                embed=disnake.Embed(
+                embed=Embed(
                     description="There currently are no recently edited messages.",
-                    color=disnake.Color.red(),
+                    color=Color.red(),
                 )
             )
 
@@ -130,7 +130,7 @@ class Fun(commands.Cog, description="Random commands."):
             if self.last_msg.guild.id == ctx.guild.id:
                 if self.last_msg.channel.id == ctx.channel.id:
 
-                    before = disnake.Embed(
+                    before = Embed(
                         description=f"{self.last_msg.content}",
                         timestamp=datetime.utcnow(),
                     )
@@ -140,12 +140,12 @@ class Fun(commands.Cog, description="Random commands."):
                         icon_url=self.last_msg.author.display_avatar,
                     )
 
-                    class Edit(disnake.ui.View):
+                    class Edit(ui.View):
                         def __init__(self):
                             super().__init__()
 
                         async def interaction_check(
-                            self, interaction: disnake.Interaction
+                            self, interaction: Interaction
                         ) -> bool:
                             if (
                                 interaction.user
@@ -157,8 +157,8 @@ class Fun(commands.Cog, description="Random commands."):
                             )
                             return False
 
-                        @disnake.ui.button(
-                            label="Author", style=disnake.ButtonStyle.grey
+                        @ui.button(
+                            label="Author", style=ButtonStyle.grey
                         )
                         async def before(self, button, inter):
                             await inter.response.send_message(
@@ -166,8 +166,8 @@ class Fun(commands.Cog, description="Random commands."):
                                 ephemeral=True,
                             )
 
-                        @disnake.ui.button(
-                            label="Channel", style=disnake.ButtonStyle.grey
+                        @ui.button(
+                            label="Channel", style=ButtonStyle.grey
                         )
                         async def after(self, button, inter):
                             await inter.response.send_message(
@@ -175,7 +175,7 @@ class Fun(commands.Cog, description="Random commands."):
                                 ephemeral=True,
                             )
 
-                        @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.red)
+                        @ui.button(label="Quit", style=ButtonStyle.red)
                         async def quit(self, button, inter):
                             await message.delete()
                             await inter.message.delete()
@@ -184,9 +184,9 @@ class Fun(commands.Cog, description="Random commands."):
 
         except Exception:
             await ctx.send(
-                embed=disnake.Embed(
+                embed=Embed(
                     description="There currently are no recently deleted messages.",
-                    color=disnake.Color.red(),
+                    color=Color.red(),
                 )
             )
 
@@ -206,7 +206,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.slash_command(name="google")
     async def google_slash(
-        self, inter: disnake.ApplicationCommandInteraction, query: str
+        self, inter: ApplicationCommandInteraction, query: str
     ):
         """Returns a google link for a query"""
 
@@ -220,17 +220,17 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.slash_command(name="say")
     async def say_slash(
-        self, inter: disnake.ApplicationCommandInteraction, argument: str
+        self, inter: ApplicationCommandInteraction, argument: str
     ):
         "Says whatever you want for you"
         await inter.response.send_message(argument, ephemeral=False)
 
     @commands.slash_command()
-    async def base64(self, inter: disnake.ApplicationCommandInteraction):
+    async def base64(self, inter: ApplicationCommandInteraction):
         pass
 
     @base64.sub_command()
-    async def encode(self, inter: disnake.ApplicationCommandInteraction, argument: str):
+    async def encode(self, inter: ApplicationCommandInteraction, argument: str):
         """Encodes a message into a base64 string"""
         try:
             await inter.response.send_message(
@@ -242,7 +242,7 @@ class Fun(commands.Cog, description="Random commands."):
             )
 
     @base64.sub_command()
-    async def decode(self, inter: disnake.ApplicationCommandInteraction, argument: str):
+    async def decode(self, inter: ApplicationCommandInteraction, argument: str):
         """Decodes a base64 string"""
         try:
             await inter.response.send_message(
@@ -286,7 +286,7 @@ class Fun(commands.Cog, description="Random commands."):
                     "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
                 ) as r:
                     artdesc = (await r.json())["extract"]
-                embed = disnake.Embed(
+                embed = Embed(
                     title=f"**{article}**",
                     url=arturl,
                     description=artdesc,
@@ -306,7 +306,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.slash_command(name="wikipedia")
     async def wikipedia_slash(
-        self, inter: disnake.ApplicationCommandInteraction, query: str
+        self, inter: ApplicationCommandInteraction, query: str
     ):
         """Searches for something on the wikipedia"""
         async with self.bot.session.get(
@@ -342,7 +342,7 @@ class Fun(commands.Cog, description="Random commands."):
                     "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
                 ) as r:
                     artdesc = (await r.json())["extract"]
-                embed = disnake.Embed(
+                embed = Embed(
                     title=f"**{article}**",
                     url=arturl,
                     description=artdesc,
@@ -390,7 +390,7 @@ class Fun(commands.Cog, description="Random commands."):
         for name in reversed(names):
             history += name["name"] + "\n"
 
-        embed = disnake.Embed(
+        embed = Embed(
             title=f"User Information For {username}", timestamp=datetime.utcnow()
         )
         embed.add_field(name="Username", value=username)
@@ -402,7 +402,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.slash_command(name="minecraft")
     async def minecraft_slash(
-        self, inter: disnake.ApplicationCommandInteraction, username="Notch"
+        self, inter: ApplicationCommandInteraction, username="Notch"
     ):
         """Fetches information about a minecraft user."""
 
@@ -432,7 +432,7 @@ class Fun(commands.Cog, description="Random commands."):
         for name in reversed(names):
             history += name["name"] + "\n"
 
-        embed = disnake.Embed(
+        embed = Embed(
             title=f"User Information For {username}", timestamp=datetime.utcnow()
         )
         embed.add_field(name="Username", value=username)
@@ -444,7 +444,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command(name="kiss", help="Kisses a user.")
     @commands.guild_only()
-    async def kiss_cmd(self, ctx: commands.Context, member: disnake.Member):
+    async def kiss_cmd(self, ctx: commands.Context, member: Member):
         await ctx.send(
             f"{ctx.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627"
         )
@@ -452,7 +452,7 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.slash_command(name="kiss")
     @commands.guild_only()
     async def kiss_slash(
-        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+        self, inter: ApplicationCommandInteraction, member: Member
     ):
         """Kisses a user"""
         await inter.response.send_message(
@@ -462,7 +462,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command(name="bonk", help="Bonks a user.")
     @commands.guild_only()
-    async def bonk_cmd(self, ctx: commands.Context, member: disnake.Member):
+    async def bonk_cmd(self, ctx: commands.Context, member: Member):
         bonkis = [
             "https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380",
             "https://tenor.com/view/lol-gif-21667170",
@@ -474,7 +474,7 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.slash_command(name="bonk", help="Bonks a user")
     @commands.guild_only()
     async def bonk_slash(
-        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+        self, inter: ApplicationCommandInteraction, member: Member
     ):
         """Bonks a user"""
         bonkis = [
@@ -490,7 +490,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command(name="spank", help="Spanks a user.")
     @commands.guild_only()
-    async def spank_cmd(self, ctx: commands.Context, member: disnake.Member):
+    async def spank_cmd(self, ctx: commands.Context, member: Member):
         await ctx.send(
             f"{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590"
         )
@@ -498,7 +498,7 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.slash_command(name="spank", help="Spanks a user")
     @commands.guild_only()
     async def spank_slash(
-        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+        self, inter: ApplicationCommandInteraction, member: Member
     ):
         """Spanks a user"""
         await inter.response.send_message(
@@ -508,7 +508,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command(name="slap", help="Slaps a user.")
     @commands.guild_only()
-    async def slap_cmd(self, ctx: commands.Context, member: disnake.Member):
+    async def slap_cmd(self, ctx: commands.Context, member: Member):
         await ctx.send(
             f"{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299"
         )
@@ -516,7 +516,7 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.slash_command(name="slap")
     @commands.guild_only()
     async def slap_slash(
-        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+        self, inter: ApplicationCommandInteraction, member: Member
     ):
         """Slaps a user"""
         await inter.response.send_message(
@@ -526,7 +526,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command(name="pat", help="Pats a user.")
     @commands.guild_only()
-    async def pat_cmd(self, ctx: commands.Context, member: disnake.Member):
+    async def pat_cmd(self, ctx: commands.Context, member: Member):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/pat") as r:
                 data = await r.json()
@@ -538,7 +538,7 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.slash_command(name="pat")
     @commands.guild_only()
     async def pat_slash(
-        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+        self, inter: ApplicationCommandInteraction, member: Member
     ):
         """Pats a user"""
         async with aiohttp.ClientSession() as cs:
@@ -552,7 +552,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command(name="hug", help="Hugs a user.")
     @commands.guild_only()
-    async def hug_cmd(self, ctx: commands.Context, member: disnake.Member):
+    async def hug_cmd(self, ctx: commands.Context, member: Member):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/hug") as r:
                 data = await r.json()
@@ -564,7 +564,7 @@ class Fun(commands.Cog, description="Random commands."):
     @commands.slash_command(name="hug")
     @commands.guild_only()
     async def hug_slash(
-        self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
+        self, inter: ApplicationCommandInteraction, member: Member
     ):
         """Hugs a user"""
         async with aiohttp.ClientSession() as cs:
@@ -577,7 +577,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.slash_command(name="afk")
     async def afk_slash(
-        self, inter: disnake.ApplicationCommandInteraction, message=None
+        self, inter: ApplicationCommandInteraction, message=None
     ):
         """Become AFK."""
         if not message:
@@ -587,7 +587,7 @@ class Fun(commands.Cog, description="Random commands."):
         await inter.response.send_message(f"Set your AFK: {message}")
         self.bot.cache["afk"][inter.author.id] = message
 
-        with contextlib.suppress(disnake.Forbidden):
+        with contextlib.suppress(Forbidden):
             await inter.author.edit(nick=f"[AFK] {inter.author.display_name}")
 
     @commands.command()
@@ -602,7 +602,7 @@ class Fun(commands.Cog, description="Random commands."):
         await ctx.send(f"Set your AFK: {argument}")
         self.bot.cache["afk"][ctx.author.id] = argument
 
-        with contextlib.suppress(disnake.Forbidden):
+        with contextlib.suppress(Forbidden):
             await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}")
 
 
