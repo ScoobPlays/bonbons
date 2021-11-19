@@ -84,8 +84,10 @@ class Events(commands.Cog, description="A cog for events/logs."):
             **Channel:** {message.channel.mention} (`{message.channel.id}`)
             **Deleted At:** <t:{int(message.created_at.timestamp())}:F> (<t:{int(message.created_at.timestamp())}:R>)
             """,
-            color=disnake.Color.greyple(),
-        ).add_field(name="Message Content", value=message.content)
+            color=disnake.Color.orange(),
+        )
+        if message.content:
+            embed.add_field(name="Message Content", value=message.content)
 
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
@@ -105,11 +107,14 @@ class Events(commands.Cog, description="A cog for events/logs."):
             **Channel:** {before.channel.mention} (`{before.channel.id}`)
             **Deleted At:** <t:{int(before.created_at.timestamp())}:F> (<t:{int(before.created_at.timestamp())}:R>)
             """,
-                color=disnake.Color.greyple(),
+                color=disnake.Color.green(),
             )
-            .add_field(name="Before Content", value=before.content, inline=False)
-            .add_field(name="After Content", value=after.content, inline=False)
         )
+        if before.content != after.content:
+            embed.add_field(name="Before Content", value=before.content, inline=False)
+            embed.add_field(name="After Content", value=after.content, inline=False)
+
+
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()
