@@ -150,7 +150,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
         if tag_owner != inter.author.id:
             return await inter.response.send_message(
-                "You do not own this tag.", ephemeral=False
+                "You do not own this tag.", ephemeral=True
             )
 
         await inter.response.send_message(
@@ -160,6 +160,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
                 color=disnake.Color.greyple(),
             ),
             view=Buttons(self.bot, inter, tag_data),
+            ephemeral=True
         )
 
     @tag.sub_command()

@@ -86,6 +86,9 @@ class Events(commands.Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.greyple(),
         ).add_field(name="Message Content", value=message.content)
+
+        if message.attachments:
+            embed.set_image(url=message.attachments[0].url)
         await self.logs.send(embed=embed)
 
     @commands.Cog.listener()

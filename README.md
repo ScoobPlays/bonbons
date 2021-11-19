@@ -1,4 +1,4 @@
-![3](https://cdn.discordapp.com/attachments/907598049700888647/908699267693166622/lddncKx4GcAAAAASUVORK5CYII.png)
+![3](https://cdn.discordapp.com/attachments/880387280576061450/911246528851607582/Z.png)
 
 # Tasks
 - Adding back prefixed commands to tags
