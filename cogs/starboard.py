@@ -1,5 +1,8 @@
 from disnake.ext import commands
-import disnake
+from disnake import (
+    Embed,
+    Color
+)
 from utils.mongo import starboard, config
 from datetime import datetime
 
@@ -48,9 +51,9 @@ class Starboard(commands.Cog, description="Starboard related commands."):
             if not data:
                 if reaction.emoji == "⭐" and reaction.count > self.starboard_count:
                     await self.starboard.send(
-                        embed=disnake.Embed(
+                        embed=Embed(
                             description=reaction.message.content,
-                            color=disnake.Color.greyple(),
+                            color=Color.greyple(),
                             timestamp=datetime.utcnow(),
                         ).set_author(
                             name=reaction.message.author,

@@ -1,4 +1,7 @@
-import disnake
+from disnake import (
+    Embed,
+    Color
+)
 from disnake.ext import commands
 
 
@@ -7,7 +10,7 @@ class Threads(commands.Cog, description="Thread related commands."):
         self.bot = bot
 
     @commands.group()
-    async def thread(self, ctx):
+    async def thread(self, ctx: commands.Context):
         """Base command for thread."""
         pass
 
@@ -25,9 +28,9 @@ class Threads(commands.Cog, description="Thread related commands."):
             await ctx.send(", ".join(amount))
         except Exception:
             await ctx.send(
-                embed=disnake.Embed(
+                embed=Embed(
                     description=f'There were no threads called or started with "{argument}".',
-                    color=disnake.Color.red(),
+                    color=Color.red(),
                 )
             )
 

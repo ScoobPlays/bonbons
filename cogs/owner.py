@@ -1,4 +1,7 @@
-import disnake
+from disnake import (
+    Color,
+    Embed
+    )
 from disnake.ext import commands
 import io
 import os
@@ -26,15 +29,15 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                 pages.append(text[last:curr])
             return list(filter(lambda a: a != "", pages))
 
-    def cleanup_code(self, content):
+    def cleanup_code(self, content: str):
         if content.startswith("```") and content.endswith("```"):
             return "\n".join(content.split("\n")[1:-1])
         return content.strip("` \n")
 
-    async def restart_bot(self, ctx):
+    async def restart_bot(self, ctx: commands.Context):
         await ctx.send(
-            embed=disnake.Embed(
-                description="Restarting the bot.", color=disnake.Color.greyple()
+            embed=Embed(
+                description="Restarting the bot.", color=Color.greyple()
             )
         )
 
@@ -112,7 +115,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             await ctx.message.add_reaction("\u2049")
         else:
             await ctx.message.add_reaction("\u2705")
-
 
 def setup(bot):
     bot.add_cog(Owner(bot))

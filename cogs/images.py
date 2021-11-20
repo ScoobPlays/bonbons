@@ -1,4 +1,8 @@
-from disnake import Embed, Color, ApplicationCommandInteraction
+from disnake import (
+    Embed,
+    Color,
+    ApplicationCommandInteraction
+    )
 from disnake.ext import commands
 from aiohttp import ClientSession
 
@@ -57,7 +61,6 @@ class Images(commands.Cog, description="Image related commands."):
                         ),
                         ephemeral=False,
                     )
-
 
 def setup(bot):
     bot.add_cog(Images(bot))

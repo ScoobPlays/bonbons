@@ -1,4 +1,9 @@
-import disnake
+from disnake import (
+    ui,
+    Embed,
+    Color,
+    ApplicationCommandInteraction
+)
 from disnake.ext import commands
 from datetime import datetime
 from utils.mongo import cluster
@@ -7,8 +12,8 @@ from utils.bonbons import Bonbons
 bot = Bonbons()
 
 
-class Buttons(disnake.ui.View):
-    def __init__(self, bot, inter, name):
+class Buttons(ui.View):
+    def __init__(self, bot, inter: ApplicationCommandInteraction, name: str):
         super().__init__()
         self.bot = bot
         self.name = name
@@ -17,7 +22,7 @@ class Buttons(disnake.ui.View):
         self.author = self.inter.author
         self.edit = self.inter.edit_original_message
 
-    async def interaction_check(self, inter) -> bool:
+    async def interaction_check(self, inter: ApplicationCommandInteraction) -> bool:
         if inter.author.id != self.author.id:
             await inter.response.send_message(
                 f"Only `{self.author.mention}` can use the buttons on this message.",
@@ -26,8 +31,8 @@ class Buttons(disnake.ui.View):
             return False
         return True
 
-    @disnake.ui.button(label="Content")
-    async def tag_content(self, button, inter):
+    @ui.button(label="Content")
+    async def tag_content(self, button, inter: ApplicationCommandInteraction):
         self.tags = self.db[str(inter.guild.id)]
 
         await inter.response.send_message(
@@ -42,10 +47,10 @@ class Buttons(disnake.ui.View):
         await self.tags.update_one(self.name, {"$set": {"content": msg.content}})
 
         await self.edit(
-            embed=disnake.Embed(
+            embed=Embed(
                 title="Tag was Edited",
                 description="Tag was successfully edited!",
-                color=disnake.Color.green(),
+                color=Color.green(),
             ),
             view=None,
         )
@@ -56,7 +61,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
         self.bot = bot
         self.db = cluster["discord"]
 
-    async def inter_autocomp(inter, input: str) -> str:
+    async def inter_autocomp(inter: ApplicationCommandInteraction, input: str) -> str:
         db_tags = cluster["discord"][str(inter.guild.id)]
         find_tags = await db_tags.find({}).to_list(10000)
 
@@ -67,7 +72,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
         return [tag for tag in all_tags if input.lower() in tag.lower()]
 
-    async def context_autocomp(ctx, input: str) -> str:
+    async def context_autocomp(ctx: commands.Context, input: str) -> str:
         db_tags = cluster["discord"][str(ctx.guild.id)]
         find_tags = await db_tags.find({}).to_list(10000)
 
@@ -80,17 +85,17 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @commands.slash_command()
     @commands.guild_only()
-    async def tag(self, inter) -> None:
+    async def tag(self, inter: ApplicationCommandInteraction) -> None:
         """The base command for tag."""
         pass
 
     @commands.command()
-    async def tags(self, ctx) -> None:
+    async def tags(self, ctx: commands.Context) -> None:
         """Returns all the tags in the guild."""
         try:
             index = 0
-            tags_embed = disnake.Embed(
-                title="Tags", description="", color=disnake.Color.greyple()
+            tags_embed = Embed(
+                title="Tags", description="", color=Color.greyple()
             )
             self.tags = self.db[str(ctx.guild.id)]
 
@@ -106,14 +111,14 @@ class Tags(commands.Cog, description="Commands related to tags."):
             print(e)
 
     @commands.slash_command(name="tags")
-    async def tags_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
+    async def tags_slash(self, inter: ApplicationCommandInteraction) -> None:
 
         """Returns all the tags in the guild"""
 
         try:
             index = 0
-            tags_embed = disnake.Embed(
-                title="Tags", description="", color=disnake.Color.greyple()
+            tags_embed = Embed(
+                title="Tags", description="", color=Color.greyple()
             )
             self.tags = self.db[str(inter.guild.id)]
 
@@ -132,7 +137,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     @commands.guild_only()
     async def edit(
         self,
-        inter,
+        inter: ApplicationCommandInteraction,
         name: str = commands.Param(
             description="The name of the tag", autocomp=inter_autocomp
         ),
@@ -154,10 +159,10 @@ class Tags(commands.Cog, description="Commands related to tags."):
             )
 
         await inter.response.send_message(
-            embed=disnake.Embed(
+            embed=Embed(
                 title="Editing a Tag",
                 description="Click the button below to edit your tag.",
-                color=disnake.Color.greyple(),
+                color=Color.greyple(),
             ),
             view=Buttons(self.bot, inter, tag_data),
             ephemeral=True
@@ -168,7 +173,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     @commands.has_permissions(kick_members=True)
     async def delete(
         self,
-        inter: disnake.ApplicationCommandInteraction,
+        inter: ApplicationCommandInteraction,
         name: str = commands.param(
             description="The tag's name to delete", autocomp=inter_autocomp
         ),
@@ -185,8 +190,8 @@ class Tags(commands.Cog, description="Commands related to tags."):
             self.tags.delete_one(data)
         except Exception:
             return await inter.response.send_message(
-                embed=disnake.Embed(
-                    description="Missing permissions.", color=disnake.Color.red()
+                embed=Embed(
+                    description="Missing permissions.", color=Color.red()
                 ),
                 ephemeral=True,
             )
@@ -195,7 +200,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     @commands.guild_only()
     async def show(
         self,
-        inter: disnake.ApplicationCommandInteraction,
+        inter: ApplicationCommandInteraction,
         name: str = commands.param(
             description="The tag's name to display", autocomp=inter_autocomp
         ),
@@ -213,7 +218,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
     @commands.guild_only()
     async def info(
         self,
-        inter: disnake.ApplicationCommandInteraction,
+        inter: ApplicationCommandInteraction,
         name: str = commands.param(
             description="The tag's name", autocomp=inter_autocomp
         ),
@@ -225,15 +230,15 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
             if not data:
                 return await inter.response.send_message(
-                    embed=disnake.Embed(
+                    embed=Embed(
                         description="That is not a valid tag.",
-                        color=disnake.Color.red(),
+                        color=Color.red(),
                     )
                 )
 
             author = data["owner"]
 
-            embed = disnake.Embed(title=f"Tag Information", timestamp=datetime.utcnow())
+            embed = Embed(title=f"Tag Information", timestamp=datetime.utcnow())
             embed.add_field(
                 name="Owner", value=f"<@{data['owner']}> (`{author.id}`)", inline=False
             )
@@ -249,7 +254,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
     @tag.sub_command()
     @commands.guild_only()
-    async def create(self, inter, name: str, content: str) -> None:
+    async def create(self, inter: ApplicationCommandInteraction, name: str, content: str) -> None:
         """Creates a tag"""
         try:
             self.tags = self.db[str(inter.guild.id)]
