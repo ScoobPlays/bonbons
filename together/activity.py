@@ -52,7 +52,7 @@ class Together:
             self.debug = False
             print(
                 "\033[93m"
-                + "[WARN] (disnake_together) Debug parameter did not receive a bool object. "
+                + "[WARN] (together) Debug parameter did not receive a bool object. "
                 "Reverting to Debug = False." + "\033[0m"
             )
 
@@ -118,7 +118,7 @@ class Together:
                     print(
                         "\033[95m"
                         + "\033[1m"
-                        + "[DEBUG] (disnake_together) Response Output:\n"
+                        + "[DEBUG] (together) Response Output:\n"
                         + "\033[0m"
                         + str(result)
                     )
@@ -286,7 +286,7 @@ class Together:
                     print(
                         "\033[95m"
                         + "\033[1m"
-                        + "[DEBUG] (disnake_together) Response Output:\n"
+                        + "[DEBUG] (together) Response Output:\n"
                         + "\033[0m"
                         + str(result)
                     )
