@@ -26,31 +26,12 @@ class Errors(commands.Cog):
 
         else:
             await ctx.reply(
-                embed=disnake.Embed(description=error, color=disnake.Color.red())
-            )
-            raise error
-
-    @commands.Cog.listener()
-    async def on_slash_command_error(
-        self, inter: disnake.ApplicationCommandInteraction, error: str
-    ):
-
-        if isinstance(error, commands.MissingPermissions):
-            await inter.response.send_message(
                 embed=disnake.Embed(
-                    description="Missing permissions",
-                    color=disnake.Color.red(),
-                ),
-                ephemeral=True,
-            )
-
-        else:
-            await inter.response.send_message(
-                embed=disnake.Embed(description=error, color=disnake.Color.red()),
-                ephemeral=True,
+                    description=error,
+                    color=disnake.Color.red()
+                )
             )
             raise error
-
 
 def setup(bot):
     bot.add_cog(Errors(bot))
