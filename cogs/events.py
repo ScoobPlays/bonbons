@@ -265,25 +265,5 @@ class Events(Cog, description="A cog for events/logs."):
         )
         await self.logs.send(embed=embed)
 
-    @Cog.listener()
-    async def on_message(self, message: Message):
-
-        if message.author.bot:
-            return
-
-        if message.author.id in self.bot.cache["afk"].keys():
-            del self.bot.cache["afk"][message.author.id]
-            await message.channel.send(
-                f"Welcome back {message.author.display_name}!",
-                delete_after=5.0,
-            )
-            with contextlib.suppress(Forbidden):
-                await message.author.edit(nick=message.author.display_name[6:])
-
-        for mention in message.mentions:
-            if msg := self.bot.cache["afk"].get(mention.id):
-                await message.channel.send(f"{mention.display_name} is AFK: {msg}")
-
-
 def setup(bot):
     bot.add_cog(Events(bot))
