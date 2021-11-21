@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from utils.mongo import cluster
+from utils.secrets import cluster
 
 class Make(disnake.ui.View):
     def __init__(self, bot, inter):

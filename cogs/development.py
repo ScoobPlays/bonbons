@@ -1,12 +1,8 @@
 import disnake
 import aiohttp
 from disnake.ext import commands
+from utils.secrets import headers
 
-
-headers = {
-    'x-rapidapi-host': "mashape-community-urban-dictionary.p.rapidapi.com",
-    'x-rapidapi-key': "c8b299ee91msha4c1921cebbedabp1f70a0jsnc4c1cc4b9c5c"
-    }
 
 url="https://mashape-community-urban-dictionary.p.rapidapi.com/define"
 

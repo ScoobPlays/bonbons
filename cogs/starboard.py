@@ -3,7 +3,7 @@ from disnake import (
     Embed,
     Color
 )
-from utils.mongo import starboard, config
+from utils.secrets import starboard, config
 from datetime import datetime
 
 
