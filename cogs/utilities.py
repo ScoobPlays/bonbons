@@ -61,7 +61,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if after.content.startswith(".run"):
+        if before.content.startswith(".run") and after.content.startswith(".run"):
             await after.add_reaction("🔁")
 
         def check(reaction, user):
