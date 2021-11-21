@@ -1,7 +1,4 @@
-from disnake import (
-    Embed,
-    Color
-)
+import disnake
 from disnake.ext import commands
 from pyston import PystonClient, File
 import re
@@ -19,21 +16,21 @@ class Utilities(commands.Cog):
 
         if not code:
             return await ctx.send(
-                embed=Embed(
-                    description="The code was nonexistent.", color=Color.red()
+                embed=disnake.Embed(
+                    description="The code was nonexistent.", color=disnake.Color.red()
                 )
             )
 
         if not lang:
             return await ctx.send(
-                embed=Embed(
-                    description="No language was hinted.", color=Color.red()
+                embed=disnake.Embed(
+                    description="No language was hinted.", color=disnake.Color.red()
                 )
             )
         output = await self.pysclient.execute(str(lang), [File(code)])
 
         await ctx.send(
-            embed=Embed(description=output, color=Color.greyple())
+            embed=disnake.Embed(description=output, color=Color.greyple())
         )
 
     @commands.command()

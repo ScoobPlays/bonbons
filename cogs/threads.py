@@ -5,9 +5,25 @@ from disnake import (
 from disnake.ext import commands
 
 
-class Threads(commands.Cog, description="Thread related commands."):
+class Threads(commands.Cog, description="Thread utilities."):
     def __init__(self, bot):
         self.bot = bot
+
+    async def find_thread(ctx, name):
+        try:
+            threads = []
+            for channel in ctx.guild.text_channels:
+                for thread in channel.threads:
+                    if thread.name.startswith(name) or thread.name == name:
+                        threads.append(thread.mention)
+            await ctx.send(", ".join(threads))
+        except Exception:
+            await ctx.send(
+                embed=Embed(
+                    description=f'No threads were found.',
+                    color=Color.red(),
+                )
+            )
 
     @commands.group()
     async def thread(self, ctx: commands.Context):
@@ -15,24 +31,12 @@ class Threads(commands.Cog, description="Thread related commands."):
         pass
 
     @thread.command()
-    async def find(self, ctx: commands.Context, *, argument: str):
+    async def find(self, ctx: commands.Context, *, name: str):
 
         """Searches the guild for a thread."""
+        
+        await self.find_thread(ctx, name)
 
-        try:
-            amount = []
-            for channel in ctx.guild.text_channels:
-                for thread in channel.threads:
-                    if thread.name.startswith(argument) or thread.name == argument:
-                        amount.append(thread.mention)
-            await ctx.send(", ".join(amount))
-        except Exception:
-            await ctx.send(
-                embed=Embed(
-                    description=f'There were no threads called or started with "{argument}".',
-                    color=Color.red(),
-                )
-            )
 
     @thread.command()
     @commands.has_permissions(manage_channels=True)

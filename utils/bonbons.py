@@ -30,6 +30,7 @@ class Bonbons(commands.Bot):
 
         keep_alive()
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
+        os.environ['JISHAKU_PY_RES'] = 'false'
         os.environ["JISHAKU_EMBEDDED_JSK"] = "1"
         os.environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
         os.environ.setdefault("JISHAKU_HIDE", "1")
