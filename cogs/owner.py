@@ -21,34 +21,26 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                 pages.append(text[last:curr])
             return list(filter(lambda a: a != "", pages))
 
-    def cleanup_code(self, content: str) -> None:
+    def cleanup_code(self, content: str) -> str:
         if content.startswith("```") and content.endswith("```"):
             return "\n".join(content.split("\n")[1:-1])
         return content.strip("` \n")
 
     async def restart_bot(self, ctx: commands.Context) -> None:
-        await ctx.send(
-            embed=disnake.Embed(
-                description="Restarting the bot.", color=disnake.Color.greyple()
-            )
-        )
-
-        os.execv(sys.executable, ["python"] + sys.argv)
-
-    @commands.command(aliases=("rs",))
-    @commands.is_owner()
-    async def restart(self, ctx: commands.Context) -> None:
         try:
-            await self.restart_bot(ctx)
+            await ctx.send(
+                embed=disnake.Embed(
+                    description="Restarting the bot.", color=disnake.Color.greyple()
+                )
+            )
+            os.execv(sys.executable, ["python"] + sys.argv)
         except Exception:
-            await ctx.send("Couldn't restart the bot.")
+            await ctx.send(embed=disnake.Embed(
+                    description="Bot failed to restart.", color=disnake.Color.greyple()
+                )
+            )
 
-    @commands.command(name="eval", aliases=["e"])
-    @commands.is_owner()
-    async def _eval(self, ctx: commands.Context, *, code: str) -> str:
-
-        """Evaluates python code."""
-
+    async def eval_code(self, ctx: commands.Context, code: str) -> str:
         env = {
             "ctx": ctx,
             "bot": self.bot,
@@ -117,6 +109,20 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             await ctx.message.add_reaction("\u2049")
         else:
             await ctx.message.add_reaction("\u2705")
+
+    @commands.command(aliases=("rs",))
+    @commands.is_owner()
+    async def restart(self, ctx: commands.Context) -> None:
+        await self.restart_bot(ctx)
+
+
+    @commands.command(name="eval", aliases=["e"])
+    @commands.is_owner()
+    async def _eval(self, ctx: commands.Context, *, code: str) -> str:
+
+        """Evaluates python code."""
+
+        await self.eval_code(ctx, code)
 
 def setup(bot):
     bot.add_cog(Owner(bot))

@@ -1,7 +1,4 @@
-from disnake import (
-    Embed,
-    Color
-)
+import disnake
 from disnake.ext import commands
 
 
@@ -19,9 +16,9 @@ class Threads(commands.Cog, description="Thread utilities."):
             await ctx.send(", ".join(threads))
         except Exception:
             await ctx.send(
-                embed=Embed(
+                embed=disnake.Embed(
                     description=f'No threads were found.',
-                    color=Color.red(),
+                    color=disnake.Color.red(),
                 )
             )
 
