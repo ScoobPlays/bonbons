@@ -8,14 +8,12 @@ from disnake import (
     Color,
     Interaction,
     ApplicationCommandInteraction,
-    Forbidden
     )
 from disnake.ext import commands
 import json
 import base64
 import random
 import aiohttp
-import contextlib
 from utils.utils import Google
 
 
@@ -584,36 +582,6 @@ class Fun(commands.Cog, description="Random commands."):
                 await inter.response.send_message(
                     f"{inter.author.mention} hugged {member.mention}!!\n{image}"
                 )
-
-    @commands.slash_command(name="afk")
-    async def afk_slash(
-        self, inter: ApplicationCommandInteraction, message=None
-    ):
-        """Become AFK."""
-        if not message:
-            await inter.response.send_message("You are now AFK.")
-            self.bot.cache["afk"][inter.author.id] = message
-            return
-        await inter.response.send_message(f"Set your AFK: {message}")
-        self.bot.cache["afk"][inter.author.id] = message
-
-        with contextlib.suppress(Forbidden):
-            await inter.author.edit(nick=f"[AFK] {inter.author.display_name}")
-
-    @commands.command()
-    async def afk(self, ctx: commands.Context, argument: str = None):
-
-        """Become AFK."""
-
-        if not argument:
-            await ctx.send("You are now AFK.")
-            self.bot.cache["afk"][ctx.author.id] = argument
-            return
-        await ctx.send(f"Set your AFK: {argument}")
-        self.bot.cache["afk"][ctx.author.id] = argument
-
-        with contextlib.suppress(Forbidden):
-            await ctx.author.edit(nick=f"[AFK] {ctx.author.display_name}")
 
 
 def setup(bot):
