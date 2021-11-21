@@ -1,21 +1,13 @@
-from disnake import (
-    Color,
-    Embed
-    )
+import disnake
 from disnake.ext import commands
-import io
-import os
-import sys
-import textwrap
-import traceback
-import contextlib
+import io, os, sys, textwrap, traceback, contextlib
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
-    def paginate(self, text: str):
+    def paginate(self, text: str) -> str:
         last = 0
         pages = []
 
@@ -29,15 +21,15 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                 pages.append(text[last:curr])
             return list(filter(lambda a: a != "", pages))
 
-    def cleanup_code(self, content: str):
+    def cleanup_code(self, content: str) -> None:
         if content.startswith("```") and content.endswith("```"):
             return "\n".join(content.split("\n")[1:-1])
         return content.strip("` \n")
 
-    async def restart_bot(self, ctx: commands.Context):
+    async def restart_bot(self, ctx: commands.Context) -> None:
         await ctx.send(
-            embed=Embed(
-                description="Restarting the bot.", color=Color.greyple()
+            embed=disnake.Embed(
+                description="Restarting the bot.", color=disnake.Color.greyple()
             )
         )
 
@@ -45,7 +37,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.command(aliases=("rs",))
     @commands.is_owner()
-    async def restart(self, ctx: commands.Context):
+    async def restart(self, ctx: commands.Context) -> None:
         try:
             await self.restart_bot(ctx)
         except Exception:
@@ -53,15 +45,25 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.command(name="eval", aliases=["e"])
     @commands.is_owner()
-    async def _eval(self, ctx: commands.Context, *, code: str):
+    async def _eval(self, ctx: commands.Context, *, code: str) -> str:
+
         """Evaluates python code."""
+
         env = {
             "ctx": ctx,
             "bot": self.bot,
+            "client": self.bot,
             "channel": ctx.channel,
+            "_channel": ctx.channel,
             "author": ctx.author,
             "guild": ctx.guild,
+            "_guild": ctx.guild,
             "message": ctx.message,
+            "_message": ctx.message,
+            "msg": ctx.message,
+            "_msg": ctx.message,
+            "_find": disnake.utils.find,
+            "_get": disnake.utils.get,
         }
 
         env.update(globals())

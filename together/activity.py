@@ -33,7 +33,6 @@ class ActivityLink:
     def __repr__(self):
         return f"https://discord.gg/{self.raw_code}"
 
-
 class Together:
     def __init__(
         self,

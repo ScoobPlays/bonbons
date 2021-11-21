@@ -1,6 +1,6 @@
 utils/mongo.py
-*.pyc
 keep_alive.py
+*.pyc
 .replit
 poetry.lock
 pyproject.toml

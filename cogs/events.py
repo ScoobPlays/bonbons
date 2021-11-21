@@ -8,16 +8,13 @@ from disnake import (
     Invite,
     ThreadMember,
     Color,
-    Forbidden,
-    TextChannel,
-    VoiceChannel,
-    CategoryChannel,
-    StoreChannel
+    Forbidden
     )
 from disnake.ext.commands import Cog
 import contextlib
 from datetime import datetime
-from typing import Union
+import humanize
+
 
 class Events(Cog, description="A cog for events/logs."):
     def __init__(self, bot):
@@ -132,20 +129,20 @@ class Events(Cog, description="A cog for events/logs."):
         await self.logs.send(embed=embed)
 
     @Cog.listener()
-    async def on_guild_channel_create(self, channel: Union[TextChannel, VoiceChannel, CategoryChannel, StoreChannel]):
+    async def on_guild_channel_create(self, channel):
         embed = Embed(
             title="Channel Created",
             description=f"""
             **Guild:** {channel.guild.name} (`{channel.guild.id}`)
-            **Channel:** {channel.name} (`{channel.id}`)
+            **Channel:** {channel.mention} (`{channel.id}`)
             **Created At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
-            color=Color.orange(),
+            color=Color.brand_green(),
         )
         await self.logs.send(embed=embed)
 
     @Cog.listener()
-    async def on_guild_channel_delete(self, channel: Union[TextChannel, VoiceChannel, CategoryChannel, StoreChannel]):
+    async def on_guild_channel_delete(self, channel):
         embed = Embed(
             title="Channel Deleted",
             description=f"""
@@ -153,7 +150,7 @@ class Events(Cog, description="A cog for events/logs."):
             **Channel:** #{channel.name} (`{channel.id}`)
             **Deleted At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
-            color=Color.purple(),
+            color=Color.brand_green(),
         )
         await self.logs.send(embed=embed)
 
