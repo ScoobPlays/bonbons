@@ -24,7 +24,7 @@ class Make(disnake.ui.View):
             )
         self.name = name
 
-    @disnake.ui.button(label="Cntent", style=disnake.ButtonStyle.blurple)
+    @disnake.ui.button(label="Content", style=disnake.ButtonStyle.blurple)
     async def tag_conent(self, button, inter):
         await inter.response.send_message("Okay, what do you want the tag's content to be?", ephemeral=True)
         
@@ -244,7 +244,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
             ephemeral=True
         )
 
-    @tag.sub_command(name="deelte")
+    @tag.sub_command(name="delete")
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def delete_tag(
