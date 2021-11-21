@@ -22,6 +22,7 @@ class Make(disnake.ui.View):
             timeout = 30,
             check=lambda m: m.author.id == self.author.id and m.channel.id == inter.channel.id
             )
+        await name.delete()
         self.name = name
 
     @disnake.ui.button(label="Content", style=disnake.ButtonStyle.blurple)
@@ -33,6 +34,7 @@ class Make(disnake.ui.View):
             timeout = 30,
             check=lambda m: m.author.id == self.author.id and m.channel.id == inter.channel.id
             )
+        await content.delete()
         self.content = content
 
     @disnake.ui.button(label="Confirm", style=disnake.ButtonStyle.green)
@@ -70,7 +72,7 @@ class Editing(disnake.ui.View):
     async def interaction_check(self, inter: disnake.ApplicationCommandInteraction) -> bool:
         if inter.author.id != self.author.id:
             await inter.response.send_message(
-                f"Only `{self.author.mention}` can use the buttons on this message.",
+                f"You are not the owner of this message.",
                 ephemeral=True,
             )
             return False

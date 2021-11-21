@@ -122,7 +122,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name="Information",
-            value=f"• Members: {str(ctx.guild.member_count)}\n• Channels: {len(ctx.guild.channels)}\n• Emojis: {len(ctx.guild.emojis)}\n• Region: {ctx.guild.region}",
+            value=f"• Members: {str(ctx.guild.member_count)}\n• Channels: {len(ctx.guild.channels)}\n• Emojis: {len(ctx.guild.emojis)}",
         )
         embed.add_field(
             name=f"Server Roles [{len(ctx.guild.roles)}]",
@@ -155,7 +155,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name="Information",
-            value=f"• Members: {str(inter.guild.member_count)}\n• Channels: {len(inter.guild.channels)}\n• Emojis: {len(inter.guild.emojis)}\n• Region: {inter.guild.region}",
+            value=f"• Members: {str(inter.guild.member_count)}\n• Channels: {len(inter.guild.channels)}\n• Emojis: {len(inter.guild.emojis)}",
         )
         embed.add_field(
             name=f"Server Roles [{len(inter.guild.roles)}]",

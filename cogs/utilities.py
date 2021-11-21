@@ -2,12 +2,14 @@ import disnake
 from disnake.ext import commands
 from pyston import PystonClient, File
 from utils.utils import created_at
+from utils.bonbons import Bonbons 
 import re
 
 
 class Utilities(commands.Cog, description="Utilities for the bot."):
     def __init__(self, bot):
         self.pysclient = PystonClient()
+        self.bot = Bonbons()
         self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
     async def run_code(self, ctx: commands.Context, code: str):
@@ -15,22 +17,15 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         code = matches[0][2]
         lang = matches[0][0] or matches[0][1]
 
-        if not code:
-            return await ctx.send(
-                embed=disnake.Embed(
-                    description="The code was nonexistent.", color=disnake.Color.red()
-                )
-            )
-
         if not lang:
-            return await ctx.send(
+            return await ctx.reply(
                 embed=disnake.Embed(
                     description="No language was hinted.", color=disnake.Color.red()
                 )
             )
         output = await self.pysclient.execute(str(lang), [File(code)])
 
-        await ctx.send(
+        await ctx.reply(
             embed=disnake.Embed(description=output, color=disnake.Color.greyple())
         )
 
@@ -39,6 +34,22 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         """Runs code, must be typehinted with a language and in a codeblock."""
         await self.run_code(ctx, code)
 
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        channel=after.channel
+        #if after.content.startswith(".run"):
+         #   #await after.add_reaction("🔁")
+
+        def check(reaction, user):
+            return user == before.author and str(reaction.emoji) == '👍'
+
+        try:
+            reaction, user = await self.bot.wait_for("reaction_add", timeout=30, check=check)
+        except Exception as e:
+            print(e)
+        else:
+            await channel.send("a")
+ 
     @commands.command()
     async def echo(self, ctx, member: disnake.Member, *, message):
         """Echo's a message. Member is a required argument. (pass in a mention/id)"""
