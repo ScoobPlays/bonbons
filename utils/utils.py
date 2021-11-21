@@ -14,3 +14,6 @@ class HelpEmbed(disnake.Embed):
         text = "Use help [command] or help [category] for more information."
         self.set_footer(text=text)
         self.color = disnake.Color.greyple()
+
+def created_at(self, value) -> int:
+    return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"

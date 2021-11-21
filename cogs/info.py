@@ -1,15 +1,11 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from typing import Union
-
+from utils.utils import created_at
 
 class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
-
-    def created_at(self, value) -> int:
-        return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
     async def context_send_emojis(self, ctx):
         all_emojis = []
@@ -66,18 +62,6 @@ class Information(commands.Cog, description="Information related commands."):
         """Returns all the emojis in the guild"""
 
         await self.context_send_emojis(inter)
-
-    @commands.command()
-    @commands.guild_only()
-    async def snowflake(self, ctx: commands.Context, argument: str) -> None:
-
-        """Displays a snowflake's creation date."""
-
-        embed = disnake.Embed(
-            description=f"Snowflake was created at {self.created_at(argument)}",
-            color=disnake.Color.greyple(),
-        )
-        await ctx.send(embed=embed)
 
     @commands.command(aliases=("av",))
     @commands.guild_only()
@@ -221,7 +205,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name="Account Created At",
-            value=f"{self.created_at(member.id)}",
+            value=f"{created_at(member.id)}",
             inline=False,
         )
         embed.add_field(
@@ -265,7 +249,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name="Account Created At",
-            value=f"{self.created_at(member.id)}",
+            value=f"{created_at(member.id)}",
             inline=False,
         )
         embed.add_field(
