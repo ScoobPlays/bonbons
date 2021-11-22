@@ -25,15 +25,15 @@ applications = {
     "checkers": "807655087643557919", # Checkers
 }
 
-class ActivityLink:
-    def __init__(self, invite_code: str):
+class ActivityLink(object):
+    def __init__(self, invite_code: str) -> str:
         self.raw_code = invite_code
         self.short_link = f"discord.gg/{invite_code}"
 
     def __repr__(self):
         return f"https://discord.gg/{self.raw_code}"
 
-class Together:
+class Together(object):
     def __init__(
         self,
         client: Union[Client, Bot, AutoShardedClient, AutoShardedBot],
