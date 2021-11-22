@@ -4,6 +4,7 @@ from pyston import PystonClient, File
 from utils.utils import created_at
 import re
 import asyncio
+from typing import Union, Optional
 
 class Utilities(commands.Cog, description="Utilities for the bot."):
     def __init__(self, bot):
@@ -12,7 +13,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         self.bot = bot
         self.last = None
 
-    async def run_code(self, ctx: commands.Context, code: str):
+    async def run_code(self, ctx: commands.Context, code: Optional[str]):
         matches = self.regex.findall(code)
         code = matches[0][2]
         lang = matches[0][0] or matches[0][1]
@@ -30,7 +31,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         )
         self.last = msg
 
-    async def on_run_code(self, before, after: str):
+    async def on_run_code(self, before: Optional[str], after: Optional[str]):
         await after.clear_reactions()
         await self.last.delete()
 
@@ -59,7 +60,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         await self.run_code(ctx, code)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before, after):
+    async def on_message_edit(self, before: str, after: str):
         if before.content.startswith(".run") and after.content.startswith(".run"):
             await after.add_reaction("🔁")
 
@@ -74,11 +75,21 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
             await self.on_run_code(before, after)
  
     @commands.command()
-    async def echo(self, ctx, member: disnake.Member, *, message):
-        """Echo's a message. Member is a required argument. (pass in a mention/id)"""
+    async def echo(self, ctx, channel: Optional[disnake.abc.GuildChannel], member: disnake.User, *, message: Union[str, int]):
+        """
+        Echo's a message.
+
+        .echo <channel> <user> <message>
+
+        .echo <user> <message>
+
+        """
+
+        channel = channel or ctx.channel
+
         await ctx.message.delete()
         avatar = await member.display_avatar.with_static_format('png').read()
-        webhook = await ctx.channel.create_webhook(name=member.name, avatar=avatar)
+        webhook = await channel.create_webhook(name=member.name, avatar=avatar)
         await webhook.send(message)
         await webhook.delete()
 

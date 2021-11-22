@@ -15,5 +15,5 @@ class HelpEmbed(disnake.Embed):
         self.set_footer(text=text)
         self.color = disnake.Color.greyple()
 
-def created_at(self, value) -> int:
+def created_at(value) -> int:
     return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"

@@ -41,18 +41,14 @@ class HelpCommand(commands.HelpCommand):
     async def send_command_help(self, command):
         signature = self.get_command_signature(command)
         embed = HelpEmbed(
-            title=signature, description=command.help or "No help found.."
+            title=f"`{signature}`", description=command.help or "No help found.."
         )
 
         if cog := command.cog:
             embed.add_field(name="Category", value=cog.qualified_name)
 
-        can_run = "No"
-        with contextlib.suppress(commands.CommandError):
-            if await command.can_run(self.context):
-                can_run = "Yes"
-
-        embed.add_field(name="Usable", value=can_run)
+        if command.aliases:
+            embed.add_field(name="Aliases", value=", ".join(command.aliases))
 
         if command._buckets and (
             cooldown := command._buckets._cooldown

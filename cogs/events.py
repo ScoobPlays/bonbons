@@ -11,9 +11,7 @@ from disnake import (
     Forbidden
     )
 from disnake.ext.commands import Cog
-import contextlib
 from datetime import datetime
-import humanize
 
 
 class Events(Cog, description="A cog for events/logs."):

@@ -6,7 +6,7 @@ from utils.secrets import headers
 
 url="https://mashape-community-urban-dictionary.p.rapidapi.com/define"
 
-class Pag(disnake.ui.View):
+class Pag(disnake.ui.View, description="Commands that are a work in progress."):
     def __init__(self, index):
         super().__init__()
         self.index = index
@@ -34,7 +34,7 @@ class Development(commands.Cog):
     def __init__(self, bot):
         self.bot=bot
         
-    async def get_urban_response(self, ctx, term):
+    async def get_urban_response(self, ctx: commands.Context, term: str):
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(url=url, params={"term": term}) as response:
                 data = await response.json()
@@ -48,8 +48,11 @@ class Development(commands.Cog):
 
                 await ctx.send(definition[0], view=Pag(definition))
 
-    @commands.command()
+    @commands.command(aliases=["urban", "meaning"])
     async def define(self, ctx, term):
+        """
+        Display's a meaning of a word
+        """
         await self.get_urban_response(ctx, term)
 
 def setup(bot):

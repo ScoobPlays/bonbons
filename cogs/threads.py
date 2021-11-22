@@ -6,7 +6,7 @@ class Threads(commands.Cog, description="Thread utilities."):
     def __init__(self, bot):
         self.bot = bot
 
-    async def find_thread(ctx, name):
+    async def find_thread(ctx: commands.Context, name: str):
         try:
             threads = []
             for channel in ctx.guild.text_channels:
