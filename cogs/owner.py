@@ -2,7 +2,6 @@ import disnake
 from disnake.ext import commands
 import io, os, sys, textwrap, traceback, contextlib
 
-
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
@@ -44,7 +43,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         env = {
             "ctx": ctx,
             "bot": self.bot,
-            "client": self.bot,
             "channel": ctx.channel,
             "_channel": ctx.channel,
             "author": ctx.author,
