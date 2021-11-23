@@ -2,7 +2,7 @@ import disnake
 from urllib.parse import quote_plus
 
 class Google(disnake.ui.View):
-    def __init__(self, query: str):
+    def __init__(self, query: str) -> str:
         super().__init__()
         query = quote_plus(query)
         url = f"https://www.google.com/search?q={query}"

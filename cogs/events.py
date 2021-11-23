@@ -8,7 +8,7 @@ from disnake import (
     Invite,
     ThreadMember,
     Color,
-    )
+)
 from disnake.ext.commands import Cog
 from datetime import datetime
 
@@ -30,42 +30,36 @@ class Events(Cog, description="A cog for events/logs."):
     async def on_member_update(self, before, after):
         if before.roles != after.roles:
             embed = Embed(
-                title="Member Updated", 
+                title="Member Updated",
                 description=f"""
                 **Member:** {before.mention} (`{before.id}`)
                 **Guild:** {before.guild.name} (`{before.guild.id}`)
                 **Changed At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
                 """,
-                color=Color.greyple()
-                )
+                color=Color.greyple(),
+            )
             embed.add_field(
                 name=f"Old Roles",
-                value=' '.join([role.mention for role in before.roles[1:]])
-                )
+                value=" ".join([role.mention for role in before.roles[1:]]),
+            )
             embed.add_field(
                 name=f"New Roles",
-                value=' '.join([role.mention for role in after.roles[1:]])
-                )
+                value=" ".join([role.mention for role in after.roles[1:]]),
+            )
             await self.logs.send(embed=embed)
 
         if before.display_name != after.display_name:
             embed = Embed(
-                title="Member Updated", 
+                title="Member Updated",
                 description=f"""
                 **Member:** {before.mention} (`{before.id}`)
                 **Guild:** {before.guild.name} (`{before.guild.id}`)
                 **Changed At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
                 """,
-                color=Color.greyple()
-                )
-            embed.add_field(
-                name="Old Nickname",
-                value=before.display_name
-                )
-            embed.add_field(
-                name="New Nickname",
-                value=after.display_name
-                )
+                color=Color.greyple(),
+            )
+            embed.add_field(name="Old Nickname", value=before.display_name)
+            embed.add_field(name="New Nickname", value=after.display_name)
             await self.logs.send(embed=embed)
 
     @Cog.listener()
@@ -148,22 +142,19 @@ class Events(Cog, description="A cog for events/logs."):
         if before.author.bot and after.author.bot:
             return
 
-        embed = (
-            Embed(
-                title="Message Edited",
-                description=f"""
+        embed = Embed(
+            title="Message Edited",
+            description=f"""
             **Author:** {before.author.mention} (`{before.author.id}`)
             **Guild:** {before.guild.name} (`{before.guild.id}`)
             **Channel:** {before.channel.mention} (`{before.channel.id}`)
             **Deleted At:** <t:{int(before.created_at.timestamp())}:F> (<t:{int(before.created_at.timestamp())}:R>)
             """,
-                color=Color.green(),
-            )
+            color=Color.green(),
         )
         if before.content != after.content:
             embed.add_field(name="Before Content", value=before.content, inline=False)
             embed.add_field(name="After Content", value=after.content, inline=False)
-
 
         await self.logs.send(embed=embed)
 
@@ -300,6 +291,7 @@ class Events(Cog, description="A cog for events/logs."):
             name="Description", value=f"{member.mention} was removed from a thread."
         )
         await self.logs.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Events(bot))

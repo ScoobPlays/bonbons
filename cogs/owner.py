@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 import io, os, sys, textwrap, traceback, contextlib
 
+
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
@@ -34,7 +35,8 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             )
             os.execv(sys.executable, ["python"] + sys.argv)
         except Exception:
-            await ctx.send(embed=disnake.Embed(
+            await ctx.send(
+                embed=disnake.Embed(
                     description="Bot failed to restart.", color=disnake.Color.greyple()
                 )
             )
@@ -113,7 +115,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     async def restart(self, ctx: commands.Context) -> None:
         await self.restart_bot(ctx)
 
-
     @commands.command(name="eval", aliases=["e"])
     @commands.is_owner()
     async def _eval(self, ctx: commands.Context, *, code: str) -> str:
@@ -121,6 +122,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         """Evaluates python code."""
 
         await self.eval_code(ctx, code)
+
 
 def setup(bot):
     bot.add_cog(Owner(bot))

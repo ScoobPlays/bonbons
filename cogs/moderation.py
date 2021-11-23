@@ -3,6 +3,7 @@ from disnake.ext import commands
 from datetime import datetime
 from typing import Union
 
+
 class Moderation(commands.Cog, description="Moderation related commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -14,7 +15,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
                     description="You cannot ban a user higher than you.",
                     color=disnake.Color.red(),
                 ),
-                ephemeral=True
+                ephemeral=True,
             )
 
         if user == inter.author:
@@ -22,14 +23,14 @@ class Moderation(commands.Cog, description="Moderation related commands."):
                 embed=disnake.Embed(
                     description="You cannot ban yourself.", color=disnake.Color.red()
                 ),
-                ephemeral=True
+                ephemeral=True,
             )
         if disnake.Forbidden:
             return await inter.response.send_message(
                 embed=disnake.Embed(
                     description="Missing permissions.", color=disnake.Color.red()
                 ),
-                ephemeral=True
+                ephemeral=True,
             )
 
     async def check_ctx(self, ctx, user: disnake.User):
@@ -55,7 +56,9 @@ class Moderation(commands.Cog, description="Moderation related commands."):
                 )
             )
 
-    async def context_change_name(ctx: commands.Context, member: disnake.Member, nickname: str) -> str:
+    async def context_change_name(
+        ctx: commands.Context, member: disnake.Member, nickname: str
+    ) -> str:
         try:
             if ctx.author.top_role.position < member.top_role.position:
                 return await ctx.send(
@@ -82,7 +85,12 @@ class Moderation(commands.Cog, description="Moderation related commands."):
             embed.timestamp = datetime.utcnow()
             await ctx.send(embed=embed)
 
-    async def interaction_change_nickname(self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member, nickname: str) -> str:
+    async def interaction_change_nickname(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        member: disnake.Member,
+        nickname: str,
+    ) -> str:
         try:
             if inter.author.top_role.position < member.top_role.position:
                 return await inter.response.send_message(
@@ -113,10 +121,11 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     @commands.command(aliases=["nick"])
     @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
-    async def nickname(self, ctx: commands.Context, member: disnake.Member, nickname: str) -> str:
+    async def nickname(
+        self, ctx: commands.Context, member: disnake.Member, nickname: str
+    ) -> str:
         """Change a users nickname"""
         await self.context_change_name(ctx, member, nickname)
-
 
     @commands.slash_command(name="nickname")
     @commands.guild_only()
@@ -130,7 +139,6 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         """Change a users nickname"""
 
         await self.interaction_change_nickname(inter, member, nickname)
-
 
     @commands.command()
     @commands.guild_only()
@@ -152,7 +160,12 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx: commands.Context, user: Union[disnake.User, disnake.Member], reason=None):
+    async def ban(
+        self,
+        ctx: commands.Context,
+        user: Union[disnake.User, disnake.Member],
+        reason=None,
+    ):
         """Bans a member"""
 
         await self.check_ctx(ctx, user)
@@ -186,14 +199,17 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     @commands.slash_command(name="unban")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def unban_slash(self, inter: disnake.GuildCommandInteraction, user: disnake.User):
+    async def unban_slash(
+        self, inter: disnake.GuildCommandInteraction, user: disnake.User
+    ):
         """Unbans a member"""
         try:
             await inter.guild.fetch_ban(user)
         except disnake.NotFound:
             return await inter.response.send_message(
                 embed=disnake.Embed(
-                    description="That user is not banned.", color=disnake.Color.greyple()
+                    description="That user is not banned.",
+                    color=disnake.Color.greyple(),
                 ),
                 ephemeral=False,
             )
@@ -217,7 +233,8 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         except disnake.NotFound:
             return await ctx.send(
                 embed=disnake.Embed(
-                    description="That user is not banned.", color=disnake.Color.greyple()
+                    description="That user is not banned.",
+                    color=disnake.Color.greyple(),
                 )
             )
 

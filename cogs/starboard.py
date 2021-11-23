@@ -1,8 +1,5 @@
 from disnake.ext import commands
-from disnake import (
-    Embed,
-    Color
-)
+from disnake import Embed, Color
 from utils.secrets import starboard, config
 from datetime import datetime
 
@@ -65,8 +62,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                             "_id": reaction.message.id,
                             "channel": reaction.message.channel.id,
                             "author": reaction.message.author.id,
-                            "content": reaction.message.content
-
+                            "content": reaction.message.content,
                         }
                     )
 

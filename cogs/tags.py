@@ -3,6 +3,7 @@ from disnake.ext import commands
 from datetime import datetime
 from utils.secrets import cluster
 
+
 class Make(disnake.ui.View):
     def __init__(self, bot, inter):
         super().__init__()
@@ -15,25 +16,31 @@ class Make(disnake.ui.View):
 
     @disnake.ui.button(label="Name", style=disnake.ButtonStyle.blurple)
     async def tag_name(self, button, inter):
-        await inter.response.send_message("Alright what do you want the tag's name to be?", ephemeral=True)
+        await inter.response.send_message(
+            "Alright what do you want the tag's name to be?", ephemeral=True
+        )
 
         name = await self.bot.wait_for(
             "message",
-            timeout = 30,
-            check=lambda m: m.author.id == self.author.id and m.channel.id == inter.channel.id
-            )
+            timeout=30,
+            check=lambda m: m.author.id == self.author.id
+            and m.channel.id == inter.channel.id,
+        )
         await name.delete()
         self.name = name
 
     @disnake.ui.button(label="Content", style=disnake.ButtonStyle.blurple)
     async def tag_conent(self, button, inter):
-        await inter.response.send_message("Okay, what do you want the tag's content to be?", ephemeral=True)
-        
+        await inter.response.send_message(
+            "Okay, what do you want the tag's content to be?", ephemeral=True
+        )
+
         content = await self.bot.wait_for(
             "message",
-            timeout = 30,
-            check=lambda m: m.author.id == self.author.id and m.channel.id == inter.channel.id
-            )
+            timeout=30,
+            check=lambda m: m.author.id == self.author.id
+            and m.channel.id == inter.channel.id,
+        )
         await content.delete()
         self.content = content
 
@@ -45,9 +52,10 @@ class Make(disnake.ui.View):
 
         if found:
             return await inter.response.send_message(
-                f"Creating a tag failed. A tag with that name already exists.", ephemeral=True
-                )
-        
+                f"Creating a tag failed. A tag with that name already exists.",
+                ephemeral=True,
+            )
+
         await inter.response.send_message("Tag has been created.", ephemeral=True)
 
         data = {
@@ -55,7 +63,7 @@ class Make(disnake.ui.View):
             "name": self.name.content,
             "content": self.content.content,
             "created_at": (int(datetime.utcnow().timestamp())),
-            }
+        }
         await self.tags.insert_one(data)
 
 
@@ -69,7 +77,9 @@ class Editing(disnake.ui.View):
         self.author = self.inter.author
         self.edit = self.inter.edit_original_message
 
-    async def interaction_check(self, inter: disnake.ApplicationCommandInteraction) -> bool:
+    async def interaction_check(
+        self, inter: disnake.ApplicationCommandInteraction
+    ) -> bool:
         if inter.author.id != self.author.id:
             await inter.response.send_message(
                 f"You are not the owner of this message.",
@@ -115,30 +125,34 @@ class Tags(commands.Cog, description="Commands related to tags."):
 
             if not data:
                 return await inter.response.send_message(
-                    "That is not a valid tag.",
-                    ephemeral=True
+                    "That is not a valid tag.", ephemeral=True
                 )
 
-
-            embed = disnake.Embed(
-                title=f"Tag Information",
-                color=disnake.Color.greyple(),
-                timestamp=datetime.utcnow()
-                ).add_field(
-                name="Owner",
-                value=f"<@{data['owner']}> (`{data['owner']}`)",
-                inline=False
-            ).add_field(
-                name="Created",
-                value=f"<t:{data['created_at']}:F> (<t:{data['created_at']}:R>)",
-                inline=False,
+            embed = (
+                disnake.Embed(
+                    title=f"Tag Information",
+                    color=disnake.Color.greyple(),
+                    timestamp=datetime.utcnow(),
+                )
+                .add_field(
+                    name="Owner",
+                    value=f"<@{data['owner']}> (`{data['owner']}`)",
+                    inline=False,
+                )
+                .add_field(
+                    name="Created",
+                    value=f"<t:{data['created_at']}:F> (<t:{data['created_at']}:R>)",
+                    inline=False,
+                )
             )
             await inter.response.send_message(embed=embed, ephemeral=False)
 
         except Exception as e:
             print(e)
 
-    async def inter_autocomp(inter: disnake.ApplicationCommandInteraction, input: str) -> str:
+    async def inter_autocomp(
+        inter: disnake.ApplicationCommandInteraction, input: str
+    ) -> str:
         db_tags = cluster["discord"][str(inter.guild.id)]
         find_tags = await db_tags.find({}).to_list(10000)
 
@@ -205,7 +219,6 @@ class Tags(commands.Cog, description="Commands related to tags."):
                 index += 1
                 tags_embed.description += f"\n{index}. {name['name']}"
 
-
             await inter.response.send_message(embed=tags_embed, ephemeral=False)
 
         except Exception as e:
@@ -243,7 +256,7 @@ class Tags(commands.Cog, description="Commands related to tags."):
                 color=disnake.Color.greyple(),
             ),
             view=Editing(self.bot, inter, tag_data),
-            ephemeral=True
+            ephemeral=True,
         )
 
     @tag.sub_command(name="delete")
@@ -311,16 +324,19 @@ class Tags(commands.Cog, description="Commands related to tags."):
         """Creates a tag"""
         try:
             await inter.response.send_message(
-                embed = disnake.Embed(
+                embed=disnake.Embed(
                     title="Making a Tag",
                     description="The process is very simple, you first click `Name` and then `Content`. Once you've done clicking the buttons you then click the `Confirm` button to confirm that you wanna create a tag.",
-                    color=disnake.Color.greyple()
-                ).set_footer(text="You must send a message once you've clicked a button."),
+                    color=disnake.Color.greyple(),
+                ).set_footer(
+                    text="You must send a message once you've clicked a button."
+                ),
                 view=Make(self.bot, inter),
-                ephemeral=True
-                )
+                ephemeral=True,
+            )
         except Exception as e:
             print(e)
+
 
 def setup(bot):
     bot.add_cog(Tags(bot))

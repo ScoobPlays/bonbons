@@ -15,7 +15,9 @@ class Images(commands.Cog, description="Image related commands."):
                 if r.status == 200:
                     data = await r.json()
                     await ctx.send(
-                        embed=disnake.Embed(color=disnake.Color.greyple()).set_image(url=data["file"])
+                        embed=disnake.Embed(color=disnake.Color.greyple()).set_image(
+                            url=data["file"]
+                        )
                     )
 
     @commands.slash_command(name="cat")
@@ -26,7 +28,9 @@ class Images(commands.Cog, description="Image related commands."):
                 if r.status == 200:
                     data = await r.json()
                     await inter.response.send_message(
-                        embed=disnake.Embed(color=disnake.Color.greyple()).set_image(url=data["file"]),
+                        embed=disnake.Embed(color=disnake.Color.greyple()).set_image(
+                            url=data["file"]
+                        ),
                         ephemeral=False,
                     )
 
@@ -57,6 +61,7 @@ class Images(commands.Cog, description="Image related commands."):
                         ),
                         ephemeral=False,
                     )
+
 
 def setup(bot):
     bot.add_cog(Images(bot))

@@ -3,24 +3,24 @@ from disnake.ext import commands
 from datetime import datetime
 from utils.utils import created_at
 
+
 class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
 
     async def context_send_emojis(self, ctx):
         all_emojis = []
-        
+
         for emoji in ctx.guild.emojis:
             full_emoji = f"<:{emoji.name}:{emoji.id}>"
             all_emojis.append(full_emoji)
-
 
         embed = disnake.Embed(
             title=f"Total Emoji's [{len(ctx.guild.emojis)}]",
             description="".join(all_emojis),
             color=disnake.Color.greyple(),
-            timestamp=datetime.utcnow()
-            )
+            timestamp=datetime.utcnow(),
+        )
 
         if len(embed) > 2000:
             return await ctx.send("There were too many emoji's. Embed failed to send.")
@@ -28,27 +28,23 @@ class Information(commands.Cog, description="Information related commands."):
 
     async def interaction_send_emojis(self, inter):
         all_emojis = []
-        
+
         for emoji in inter.guild.emojis:
             full_emoji = f"<:{emoji.name}:{emoji.id}>"
             all_emojis.append(full_emoji)
-
 
         embed = disnake.Embed(
             title=f"Total Emoji's [{len(inter.guild.emojis)}]",
             description="".join(all_emojis),
             color=disnake.Color.greyple(),
-            timestamp=datetime.utcnow()
-            )
+            timestamp=datetime.utcnow(),
+        )
 
         if len(embed) > 2000:
             return await inter.response.send_message(
-                "There were too many emoji's. Embed failed to send.",
-                ephemeral=True
-                )
-        await inter.response.send_message(
-            embed=embed, ephemeral=False
+                "There were too many emoji's. Embed failed to send.", ephemeral=True
             )
+        await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command()
     @commands.guild_only()
@@ -196,7 +192,8 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Member:** {member.mention}\n**ID:** {member.id}",
-            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
+            color=disnake.Color.greyple(),
+            timestamp=datetime.utcnow(),
         )
         embed.set_thumbnail(url=member.display_avatar)
         embed.set_author(
@@ -240,7 +237,8 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Member:** {member.mention}\n**ID:** {member.id}",
-            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
+            color=disnake.Color.greyple(),
+            timestamp=datetime.utcnow(),
         )
         embed.set_thumbnail(url=member.display_avatar)
         embed.set_author(
@@ -436,7 +434,7 @@ class Information(commands.Cog, description="Information related commands."):
 
     @commands.command()
     @commands.guild_only()
-    async def channelinfo(self, ctx, channel: disnake.abc.GuildChannel=None):
+    async def channelinfo(self, ctx, channel: disnake.abc.GuildChannel = None):
         """
         Returns information about a channel.
         """
@@ -445,7 +443,8 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Channel:** {channel.mention}\n**ID:** {channel.id}",
-            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
+            color=disnake.Color.greyple(),
+            timestamp=datetime.utcnow(),
         )
         embed.set_author(name=f"{ctx.author}", icon_url=f"{ctx.author.display_avatar}")
         embed.add_field(
@@ -462,7 +461,7 @@ class Information(commands.Cog, description="Information related commands."):
 
     @commands.slash_command(name="channelinfo")
     @commands.guild_only()
-    async def channelinfo_slash(self, inter, channel: disnake.abc.GuildChannel=None):
+    async def channelinfo_slash(self, inter, channel: disnake.abc.GuildChannel = None):
         """
         Returns information about a channel.
         """
@@ -471,7 +470,8 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Channel:** {channel.mention}\n**ID:** {channel.id}",
-            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
+            color=disnake.Color.greyple(),
+            timestamp=datetime.utcnow(),
         )
         embed.set_author(
             name=f"{inter.author}", icon_url=f"{inter.author.display_avatar}"

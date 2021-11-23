@@ -6,6 +6,7 @@ import re
 import asyncio
 from typing import Union, Optional
 
+
 class Utilities(commands.Cog, description="Utilities for the bot."):
     def __init__(self, bot):
         self.pysclient = PystonClient()
@@ -24,7 +25,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         except Exception:
             await ctx.send(
                 embed=disnake.Embed(
-                    description=f'No threads were found.',
+                    description=f"No threads were found.",
                     color=disnake.Color.red(),
                 )
             )
@@ -38,9 +39,8 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
     async def find(self, ctx: commands.Context, *, name: str):
 
         """Searches the guild for a thread."""
-        
-        await self.find_thread(ctx, name)
 
+        await self.find_thread(ctx, name)
 
     @thread.command()
     @commands.has_permissions(manage_channels=True)
@@ -103,10 +103,12 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
             await after.add_reaction("🔁")
 
         def check(reaction, user):
-                return user == after.author and str(reaction.emoji) == "🔁"
+            return user == after.author and str(reaction.emoji) == "🔁"
 
         try:
-            reaction, user = await self.bot.wait_for("reaction_add", timeout=30, check=check)
+            reaction, user = await self.bot.wait_for(
+                "reaction_add", timeout=30, check=check
+            )
         except asyncio.TimeoutError:
             try:
                 await after.clear_reactions()
@@ -114,9 +116,16 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                 await before.clear_reactions()
         else:
             await self.on_run_code(before, after)
- 
+
     @commands.command()
-    async def echo(self, ctx, channel: Optional[disnake.abc.GuildChannel], member: disnake.User, *, message: Union[str, int]):
+    async def echo(
+        self,
+        ctx,
+        channel: Optional[disnake.abc.GuildChannel],
+        member: disnake.User,
+        *,
+        message: Union[str, int],
+    ):
         """
         Echo's a message.
 
@@ -129,7 +138,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         channel = channel or ctx.channel
 
         await ctx.message.delete()
-        avatar = await member.display_avatar.with_static_format('png').read()
+        avatar = await member.display_avatar.with_static_format("png").read()
         webhook = await channel.create_webhook(name=member.name, avatar=avatar)
         await webhook.send(message)
         await webhook.delete()
@@ -148,6 +157,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
             color=disnake.Color.greyple(),
         )
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

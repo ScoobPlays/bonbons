@@ -1,6 +1,7 @@
 import disnake
 from disnake.ext.commands import Cog, Context, CommandNotFound, MissingRequiredArgument
 
+
 class Errors(Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -26,12 +27,10 @@ class Errors(Cog):
 
         else:
             await ctx.reply(
-                embed=disnake.Embed(
-                    description=error,
-                    color=disnake.Color.red()
-                )
+                embed=disnake.Embed(description=error, color=disnake.Color.red())
             )
             raise error
+
 
 def setup(bot):
     bot.add_cog(Errors(bot))

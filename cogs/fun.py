@@ -46,7 +46,7 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command()
     async def editsnipe(self, ctx: commands.Context):
-        
+
         """Snipes most recently edited message."""
 
         message = ctx.message
@@ -54,7 +54,7 @@ class Fun(commands.Cog, description="Random commands."):
             if self.before.guild.id == ctx.guild.id:
                 if self.before.channel.id == ctx.channel.id:
 
-                    before =  disnake.Embed(
+                    before = disnake.Embed(
                         description=f"{self.before.content}",
                         timestamp=datetime.utcnow(),
                     )
@@ -218,7 +218,11 @@ class Fun(commands.Cog, description="Random commands."):
         pass
 
     @base64.sub_command()
-    async def encode(self, inter: disnake.ApplicationCommandInteraction, argument: str=commands.Param(description="A string")):
+    async def encode(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        argument: str = commands.Param(description="A string"),
+    ):
         """Encodes a message into a base64 string"""
         try:
             await inter.response.send_message(
@@ -230,7 +234,11 @@ class Fun(commands.Cog, description="Random commands."):
             )
 
     @base64.sub_command()
-    async def decode(self, inter: disnake.ApplicationCommandInteraction, argument: str=commands.Param(description="The base64 string")):
+    async def decode(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        argument: str = commands.Param(description="The base64 string"),
+    ):
         """Decodes a base64 string"""
         try:
             await inter.response.send_message(
