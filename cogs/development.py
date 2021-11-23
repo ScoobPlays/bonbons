@@ -6,7 +6,7 @@ from utils.secrets import headers
 
 url="https://mashape-community-urban-dictionary.p.rapidapi.com/define"
 
-class Pag(disnake.ui.View, description="Commands that are a work in progress."):
+class Pag(disnake.ui.View):
     def __init__(self, index):
         super().__init__()
         self.index = index
@@ -30,7 +30,7 @@ class Pag(disnake.ui.View, description="Commands that are a work in progress."):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-class Development(commands.Cog):
+class Development(commands.Cog, description="Commands that are a work in progress."):
     def __init__(self, bot):
         self.bot=bot
         
