@@ -1,10 +1,13 @@
 import disnake
 from disnake.ext import commands
 from pyston import PystonClient, File
+import aiohttp
 from utils.utils import created_at
 import re
 import asyncio
 from typing import Union, Optional
+from .thanks import facepalms
+import random
 
 
 class Utilities(commands.Cog, description="Utilities for the bot."):
@@ -13,6 +16,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
         self.bot = bot
         self.last = None
+        self.facepalms = random.choice(facepalms)
 
     async def find_thread(ctx: commands.Context, name: str):
         try:
@@ -159,7 +163,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def stfu(self, ctx):
+    async def stfu(self, ctx: commands.Context):
         """
         Stfu a message. (Suggested by abdel)
 
@@ -170,8 +174,23 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
 
             await msg.delete()
             await ctx.message.add_reaction("✅")
-        except:
-            await ctx.reply("Reply to a message first.", delete_after=5)
+        except Exception:
+            await ctx.reply(embed=disnake.Embed(description=f"Reply to a message first {self.facepalms}"))
+
+    @commands.command()
+    async def pypi(self, ctx: commands.Context, name: str):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://pypi.org/pypi/{name}/json") as data:
+                raw = await data.json()
+
+                embed = disnake.Embed(
+                    title=name,
+                    description=raw["info"]["summary"],
+                    url=raw["info"]["project_url"],
+                    color=disnake.Color.greyple()
+                ).set_thumbnail(url="https://cdn.discordapp.com/emojis/766274397257334814.png")
+                await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

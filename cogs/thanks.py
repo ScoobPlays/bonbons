@@ -22,10 +22,10 @@ class Thank(commands.Cog, description="Compliment related commands."):
             )
 
         if reason:
-            if len(reason) < 5 or len(reason) > 100:
+            if len(reason) > 100:
                 return await ctx.send(
                     embed=disnake.Embed(
-                        description=f"A reason cannot be {'smaller than 5 characters.' if len(reason) < 5 else 'bigger than 100 characters.'}",
+                        description=f"A reason cannot be bigger than 100 characters.",
                         color=disnake.Color.red(),
                     )
                 )
@@ -104,6 +104,14 @@ class Thank(commands.Cog, description="Compliment related commands."):
         member = member or ctx.author
 
         data = await self.thank.find_one({"_id": member.id})
+        
+        if not data:
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description="That member does not have any stats yet.",
+                    color=disnake.Color.greyple()
+                )
+            )
         await ctx.send(
             embed=disnake.Embed(
                 title=f"{member.display_name}'s Stats", color=disnake.Color.greyple()
