@@ -8,7 +8,6 @@ from disnake import (
     Invite,
     ThreadMember,
     Color,
-    Forbidden
     )
 from disnake.ext.commands import Cog
 from datetime import datetime
@@ -26,6 +25,48 @@ class Events(Cog, description="A cog for events/logs."):
         self.member = self.bot.get_guild(880030618275155998).get_role(
             880030723908722729
         )
+
+    @Cog.listener()
+    async def on_member_update(self, before, after):
+        if before.roles != after.roles:
+            embed = Embed(
+                title="Member Updated", 
+                description=f"""
+                **Member:** {before.mention} (`{before.id}`)
+                **Guild:** {before.guild.name} (`{before.guild.id}`)
+                **Changed At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+                """,
+                color=Color.greyple()
+                )
+            embed.add_field(
+                name=f"Old Roles",
+                value=' '.join([role.mention for role in before.roles[1:]])
+                )
+            embed.add_field(
+                name=f"New Roles",
+                value=' '.join([role.mention for role in after.roles[1:]])
+                )
+            await self.logs.send(embed=embed)
+
+        if before.display_name != after.display_name:
+            embed = Embed(
+                title="Member Updated", 
+                description=f"""
+                **Member:** {before.mention} (`{before.id}`)
+                **Guild:** {before.guild.name} (`{before.guild.id}`)
+                **Changed At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
+                """,
+                color=Color.greyple()
+                )
+            embed.add_field(
+                name="Old Nickname",
+                value=before.display_name
+                )
+            embed.add_field(
+                name="New Nickname",
+                value=after.display_name
+                )
+            await self.logs.send(embed=embed)
 
     @Cog.listener()
     async def on_member_join(self, member: Member):
