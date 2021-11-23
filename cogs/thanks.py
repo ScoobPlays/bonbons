@@ -12,17 +12,7 @@ class Thank(commands.Cog, description="Compliment related commands."):
         self.bot = bot
         self.thank = thank
 
-    @commands.group(invoke_without_command=True)
-    async def thank(
-        self, ctx: commands.Context, member: disnake.Member, *, reason: Optional[str]
-    ):
-
-        """
-        Thank a member for something.
-
-        .thank <member> [reason]
-        """
-
+    async def send_thank(self, ctx, member, reason):
         if member == ctx.author:
             return await ctx.send(
                 embed=disnake.Embed(
@@ -46,33 +36,62 @@ class Thank(commands.Cog, description="Compliment related commands."):
             )
         )
 
-        author = await self.thank.find_one({"_id": ctx.author.id})
+    @commands.group(invoke_without_command=True)
+    async def thank(
+        self, ctx: commands.Context, member: disnake.Member, *, reason: Optional[str]
+    ):
 
-        receiver = await self.thank.find_one({"_id": member.id})
+        """
+        Thank a member for something.
 
-        if not author:
-            await self.thank.insert_one(
-                {
-                    "_id": ctx.author.id,
-                    "sent": 0,
-                    "received": 0,
-                }
-            )
+        .thank <member> [reason]
+        """
 
-        if not receiver:
-            await self.thank.insert_one(
-                {
-                    "_id": member.id,
-                    "sent": 0,
-                    "received": 1,
-                }
-            )
+        await self.send_thank(ctx, member, reason)
 
-        sent = author["sent"] + 1
-        received = receiver["received"] + 1
+        try:
+            author = await self.thank.find_one({"_id": ctx.author.id})
+            receiver = await self.thank.find_one({"_id": member.id})
 
-        await self.thank.update_one(author, {"$set": {"sent": sent}})
-        await self.thank.update_one(receiver, {"$set": {"received": received}})
+            if not author:
+                await self.thank.insert_one(
+                    {
+                        "_id": ctx.author.id,
+                        "sent": 0,
+                        "received": 0,
+                    }
+                )
+                new_receiver = await self.thank.find_one({
+                    "_id": ctx.author.id
+                    })
+
+                new_sent = new_receiver["sent"] + 1
+                await self.thank.update_one(new_receiver, {"$set": {"sent": new_sent}})
+
+            if not receiver:
+                await self.thank.insert_one(
+                    {
+                        "_id": member.id,
+                        "sent": 0,
+                        "received": 0,
+                    }
+                )
+                new_find = await self.thank.find_one({
+                    "_id": member.id
+                })
+
+                new_received = new_find["received"] + 1
+                await self.thank.update_one(new_find, {"$set": {"received": new_received}})
+
+            if author and receiver:
+                sent = author["sent"] + 1
+                received = receiver["received"] + 1
+
+            await self.thank.update_one(author, {"$set": {"sent": sent}})
+            await self.thank.update_one(receiver, {"$set": {"received": received}})
+
+        except UnboundLocalError:
+            return
 
     @thank.command(name="stats")
     async def thank_stats(self, ctx, member: disnake.Member = None):

@@ -158,6 +158,20 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         )
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def stfu(self, ctx):
+        """
+        Stfu a message. (Suggested by abdel)
+
+        .stfu <reply to the message>
+        """
+        try:
+            msg = await ctx.fetch_message(ctx.message.reference.message_id)
+
+            await msg.delete()
+            await ctx.message.add_reaction("✅")
+        except:
+            await ctx.reply("Reply to a message first.", delete_after=5)
 
 def setup(bot):
     bot.add_cog(Utilities(bot))
