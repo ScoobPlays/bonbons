@@ -1,21 +1,21 @@
 import disnake
-from disnake.ext.commands import Cog, Context, CommandNotFound, MissingRequiredArgument
+from disnake.ext import commands
 
 
-class Errors(Cog):
+class Errors(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @Cog.listener()
-    async def on_command_error(self, ctx: Context, error: str):
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx: commands.Context, error: str):
 
         if hasattr(ctx.command, "on_error"):
             return
 
-        if isinstance(error, CommandNotFound):
+        if isinstance(error, commands.CommandNotFound):
             return
 
-        elif isinstance(error, MissingRequiredArgument):
+        elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.reply(
                 embed=disnake.Embed(
                     title="Missing Required Argument",
@@ -30,7 +30,6 @@ class Errors(Cog):
                 embed=disnake.Embed(description=error, color=disnake.Color.red())
             )
             raise error
-
 
 def setup(bot):
     bot.add_cog(Errors(bot))

@@ -27,8 +27,6 @@ class Bonbons(commands.Bot):
         for filename in os.listdir("cogs"):
             if filename.endswith(".py"):
                 self.load_extension(f"cogs.{filename[:-3]}")
-       
-        self.cache = {"afk":{}}
 
         keep_alive()
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"

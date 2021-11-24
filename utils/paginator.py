@@ -7,7 +7,6 @@ class EmbedPaginator(disnake.ui.View):
         self.embeds = embeds
         self.current_page = 0
 
-
     async def show_page(self, inter: disnake.ApplicationCommandInteraction, page: int):
         if self.current_page > len(self.embeds):
             self.current_page = 0

@@ -9,7 +9,6 @@ from typing import Union, Optional
 from .thanks import facepalms
 import random
 
-
 class Utilities(commands.Cog, description="Utilities for the bot."):
     def __init__(self, bot):
         self.pysclient = PystonClient()
@@ -74,27 +73,30 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         self.last = msg
 
     async def on_run_code(self, before: Optional[str], after: Optional[str]):
-        await after.clear_reactions()
-        await self.last.delete()
+        try:
+            await after.clear_reactions()
+            await self.last.delete()
 
-        if after.content.startswith(".run"):
-            after = after.content.split(".run")
+            if after.content.startswith(".run"):
+                after = after.content.split(".run")
 
-        matches = self.regex.findall("".join(after[1]))
-        code = matches[0][2]
-        lang = matches[0][0] or matches[0][1]
+            matches = self.regex.findall("".join(after[1]))
+            code = matches[0][2]
+            lang = matches[0][0] or matches[0][1]
 
-        if not lang:
-            return await before.reply(
-                embed=disnake.Embed(
-                    description="No language was hinted.", color=disnake.Color.red()
+            if not lang:
+                return await before.reply(
+                    embed=disnake.Embed(
+                        description="No language was hinted.", color=disnake.Color.red()
+                    )
                 )
-            )
-        output = await self.pysclient.execute(str(lang), [File(code)])
+            output = await self.pysclient.execute(str(lang), [File(code)])
 
-        await before.reply(
-            embed=disnake.Embed(description=output, color=disnake.Color.greyple())
-        )
+            await before.reply(
+                embed=disnake.Embed(description=output, color=disnake.Color.greyple())
+            )
+        except Exception:
+            await before.reply("a")
 
     @commands.command()
     async def run(self, ctx: commands.Context, *, code: str):
@@ -102,7 +104,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         await self.run_code(ctx, code)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before: str, after: str):
+    async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
         if before.content.startswith(".run") and after.content.startswith(".run"):
             await after.add_reaction("🔁")
 
@@ -114,10 +116,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                 "reaction_add", timeout=30, check=check
             )
         except asyncio.TimeoutError:
-            try:
-                await after.clear_reactions()
-            except:
-                await before.clear_reactions()
+            await after.clear_reaction("🔁")
         else:
             await self.on_run_code(before, after)
 
@@ -132,8 +131,6 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
     ):
         """
         Echo's a message.
-
-        .echo <channel> <user> <message>
 
         .echo <user> <message>
 
@@ -190,7 +187,6 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                     color=disnake.Color.greyple()
                 ).set_thumbnail(url="https://cdn.discordapp.com/emojis/766274397257334814.png")
                 await ctx.send(embed=embed)
-
 
 def setup(bot):
     bot.add_cog(Utilities(bot))

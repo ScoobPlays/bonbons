@@ -3,7 +3,6 @@ from disnake.ext import commands
 from datetime import datetime
 from typing import Union
 
-
 class Moderation(commands.Cog, description="Moderation related commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -187,14 +186,23 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     ):
         """Bans a member"""
 
-        await self.check_slash(inter, user)
-        await inter.guild.ban(user, reason=reason)
-        await inter.response.send_message(
-            embed=disnake.Embed(
-                description=f"{user.mention} was banned!", color=disnake.Color.greyple()
-            ),
-            ephemeral=False,
-        )
+        try:
+
+            await self.check_slash(inter, user)
+            await inter.guild.ban(user, reason=reason)
+            await inter.response.send_message(
+                embed=disnake.Embed(
+                    description=f"{user.mention} was banned!", color=disnake.Color.greyple()
+                ),
+                ephemeral=False,
+            )
+        except disnake.NotFound:
+            await inter.response.send_message(
+                embed=disnake.Embed(
+                    description=f"Member {user} was not found.", color=disnake.Color.red()
+                ),
+                ephemeral=False,
+            )
 
     @commands.slash_command(name="unban")
     @commands.guild_only()
@@ -208,7 +216,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         except disnake.NotFound:
             return await inter.response.send_message(
                 embed=disnake.Embed(
-                    description="That user is not banned.",
+                    description="That user is not banned or does not exist.",
                     color=disnake.Color.greyple(),
                 ),
                 ephemeral=False,
@@ -233,7 +241,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
         except disnake.NotFound:
             return await ctx.send(
                 embed=disnake.Embed(
-                    description="That user is not banned.",
+                    description="That user is not banned or does not exist.",
                     color=disnake.Color.greyple(),
                 )
             )

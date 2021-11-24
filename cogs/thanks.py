@@ -21,14 +21,6 @@ class Thank(commands.Cog, description="Compliment related commands."):
                 )
             )
 
-        if reason:
-            if len(reason) > 100:
-                return await ctx.send(
-                    embed=disnake.Embed(
-                        description=f"A reason cannot be bigger than 100 characters.",
-                        color=disnake.Color.red(),
-                    )
-                )
         await ctx.send(
             embed=disnake.Embed(
                 description=f"You thanked {member.mention}!",
@@ -43,8 +35,6 @@ class Thank(commands.Cog, description="Compliment related commands."):
 
         """
         Thank a member for something.
-
-        .thank <member> [reason]
         """
 
         await self.send_thank(ctx, member, reason)
@@ -97,8 +87,6 @@ class Thank(commands.Cog, description="Compliment related commands."):
     async def thank_stats(self, ctx, member: disnake.Member = None):
         """
         Display a member's stats.
-
-        .thank stats [member]
         """
 
         member = member or ctx.author
