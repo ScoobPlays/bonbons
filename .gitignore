@@ -1,7 +1,9 @@
 utils/secrets.py
-cogs/development.py
+cogs/dev.py
 keep_alive.py
+
 *.pyc
 .replit
+.breakpoints
 poetry.lock
 pyproject.toml
