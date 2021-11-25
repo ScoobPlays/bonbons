@@ -14,7 +14,7 @@ class ProfileView(disnake.ui.View):
     async def display_nfts(self, button, inter):
         await inter.response.defer()
         await inter.edit_original_message(
-            embed=None, content=self.array[0], view=Paginator(self.array)
+            embed=None, content=self.messages[0], view=Paginator(self.messages)
         )
 
 class NFT(commands.Cog, description="NFT related commands."):
