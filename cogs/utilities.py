@@ -54,7 +54,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                 await thread.delete()
                 await ctx.message.add_reaction("✅")
 
-    async def run_code(self, ctx: commands.Context, code: Optional[str]):
+    async def run_code(self, ctx: commands.Context, code: str):
         matches = self.regex.findall(code)
         code = matches[0][2]
         lang = matches[0][0] or matches[0][1]
@@ -96,7 +96,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                 embed=disnake.Embed(description=output, color=disnake.Color.greyple())
             )
         except Exception:
-            await before.reply("a")
+            return
 
     @commands.command()
     async def run(self, ctx: commands.Context, *, code: str):
@@ -105,20 +105,23 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
-        if before.content.startswith(".run") and after.content.startswith(".run"):
-            await after.add_reaction("🔁")
-
-        def check(reaction, user):
-            return user == after.author and str(reaction.emoji) == "🔁"
-
         try:
-            reaction, user = await self.bot.wait_for(
-                "reaction_add", timeout=30, check=check
-            )
-        except asyncio.TimeoutError:
-            await after.clear_reaction("🔁")
-        else:
-            await self.on_run_code(before, after)
+            if before.content.startswith(".run") and after.content.startswith(".run"):
+                await after.add_reaction("🔁")
+
+            def check(reaction, user):
+                return user == after.author and str(reaction.emoji) == "🔁"
+
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", timeout=30, check=check
+                )
+            except asyncio.TimeoutError:
+                await after.clear_reaction("🔁")
+            else:
+                await self.on_run_code(before, after)
+        except Exception:
+            return
 
     @commands.command()
     async def echo(
@@ -138,41 +141,56 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
 
         channel = channel or ctx.channel
 
-        await ctx.message.delete()
-        avatar = await member.display_avatar.with_static_format("png").read()
-        webhook = await channel.create_webhook(name=member.name, avatar=avatar)
-        await webhook.send(message)
-        await webhook.delete()
+        try:
+            await ctx.message.delete()
+            avatar = await member.display_avatar.with_static_format("png").read()
+            webhook = await channel.create_webhook(name=member.name, avatar=avatar)
+            await webhook.send(message)
+            await webhook.delete()
+        except Exception as e:
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description=e,
+                    color=disnake.Color.red()
+                )
+            ) 
 
     @commands.command(name="say", help="Says whatever you want for you.")
-    async def say(self, ctx: commands.Context, *, argument: str):
+    async def say(self, ctx: commands.Context, argument: str):
         await ctx.send(argument)
 
     @commands.command()
-    async def snowflake(self, ctx: commands.Context, argument: str) -> None:
+    async def snowflake(self, ctx: commands.Context, argument: int) -> None:
 
         """Displays a snowflake's creation date."""
 
-        embed = disnake.Embed(
-            description=f"Snowflake was created at {created_at(argument)}",
-            color=disnake.Color.greyple(),
-        )
-        await ctx.send(embed=embed)
+        try:
+            embed = disnake.Embed(
+                description=f"Snowflake was created at {created_at(argument)}",
+                color=disnake.Color.greyple(),
+            )
+            await ctx.send(embed=embed)
+        except ValueError:
+            return await ctx.send(embed=disnake.Embed(description="That is not a valid snowflake.", color=disnake.Color.red()))
+        
+        else:
+            return
 
     @commands.command()
     async def stfu(self, ctx: commands.Context):
         """
-        Stfu a message. (Suggested by abdel)
+        Stfu a message.
 
         .stfu <reply to the message>
         """
         try:
+            if not ctx.message.reference:
+                return await ctx.reply(embed=disnake.Embed(description=f"Reply to a message first {self.facepalms}", color=disnake.Color.red()))
             msg = await ctx.fetch_message(ctx.message.reference.message_id)
-
             await msg.delete()
             await ctx.message.add_reaction("✅")
-        except Exception:
-            await ctx.reply(embed=disnake.Embed(description=f"Reply to a message first {self.facepalms}"))
+        except disnake.Forbidden:
+            await ctx.reply(embed=disnake.Embed(description=f"I don't have enough permissions.", color=disnake.Color.red()))
 
     @commands.command()
     async def pypi(self, ctx: commands.Context, name: str):

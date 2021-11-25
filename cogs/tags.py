@@ -14,6 +14,17 @@ class Make(disnake.ui.View):
         self.content = None
         self.db = cluster["discord"]
 
+    async def interaction_check(
+        self, inter: disnake.ApplicationCommandInteraction
+    ) -> bool:
+        if inter.author.id != self.author.id:
+            await inter.response.send_message(
+                f"You are not the owner of this message.",
+                ephemeral=True,
+            )
+            return False
+        return True
+
     @disnake.ui.button(label="Name", style=disnake.ButtonStyle.blurple)
     async def tag_name(self, button, inter):
         await inter.response.send_message(
@@ -113,7 +124,7 @@ class Editing(disnake.ui.View):
         )
 
 
-class Tags(commands.Cog, description="Commands related to tags."):
+class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]

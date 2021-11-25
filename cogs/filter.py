@@ -12,12 +12,16 @@ class Filter(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        for word in banned_words:
-            if word in message.content:
-                await message.reply(
-                    file=disnake.File(
-                    'utils/assets/gato.png', 'gato.png',)
-                    )
+        if isinstance(message.channel, disnake.TextChannel):
+            if message.guild.id != 880030618275155998:
+                return
+            
+            for word in banned_words:
+                if word in message.content:
+                    await message.reply(
+                        file=disnake.File(
+                        'utils/assets/gato.png', 'gato.png',)
+                        )
 
 def setup(bot):
     bot.add_cog(Filter(bot))

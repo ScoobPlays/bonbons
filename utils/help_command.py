@@ -34,7 +34,7 @@ class HelpCommand(commands.HelpCommand):
                     name=f"{name} [{amount_commands}]", value=description
                 )
 
-        embed.description = f"{len(self.context.bot.commands)} commands | {usable} usable"
+        embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands."
 
         await self.send(embed=embed)
 
