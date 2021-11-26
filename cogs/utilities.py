@@ -1,13 +1,10 @@
-import disnake
 from disnake.ext import commands
 from pyston import PystonClient, File
-import aiohttp
 from utils.utils import created_at
-import re
-import asyncio
-from typing import Union, Optional
 from .thanks import facepalms
-import random
+import re, random, asyncio, aiohttp
+from typing import Union, Optional
+import disnake
 
 class Utilities(commands.Cog, description="Utilities for the bot."):
     def __init__(self, bot):
@@ -205,6 +202,28 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                     color=disnake.Color.greyple()
                 ).set_thumbnail(url="https://cdn.discordapp.com/emojis/766274397257334814.png")
                 await ctx.send(embed=embed)
+
+    @commands.group(invoke_without_command=True)
+    async def emoji(self, ctx):
+        """The base command for emoji."""
+        await ctx.send_help("emoji")
+
+    @emoji.command()
+    @commands.has_permissions(manage_emojis=True)
+    async def copy(self, ctx, argument: int, name: Optional[str]):
+
+        """
+        Copies an emoji using ID. 
+        A command for people who don't have nitro.
+        """
+
+        name = name or "emoji"
+
+        async with aiohttp.ClientSession() as ses:
+            async with ses.get(f"https://cdn.discordapp.com/emojis/{argument}.png?size=80") as data:
+                emoji = await data.read()
+                emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
+                await ctx.send(emote)
 
 def setup(bot):
     bot.add_cog(Utilities(bot))
