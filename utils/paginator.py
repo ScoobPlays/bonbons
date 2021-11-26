@@ -38,7 +38,7 @@ class EmbedPaginator(disnake.ui.View):
         await self.show_page(inter, self.current_page + 1)
 
     @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.red)
-    async def uit(self, button: disnake.ui.Button, inter: disnake.ApplicationCommandInteraction):
+    async def quit(self, button: disnake.ui.Button, inter: disnake.ApplicationCommandInteraction):
         await inter.response.defer()
         await inter.delete_original_message()
 

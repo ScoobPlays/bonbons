@@ -225,5 +225,21 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                 emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
                 await ctx.send(emote)
 
+    @emoji.command()
+    @commands.has_permissions(manage_emojis=True)
+    async def create(self, ctx, url: str, name: str):
+
+        """
+        Creates an emoji by link. 
+        """
+
+        name = name or "emoji"
+
+        async with aiohttp.ClientSession() as ses:
+            async with ses.get(url) as data:
+                emoji = await data.read()
+                emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
+                await ctx.send(emote)
+
 def setup(bot):
     bot.add_cog(Utilities(bot))

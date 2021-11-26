@@ -16,13 +16,20 @@ class Errors(commands.Cog):
             return
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.reply(
+            await ctx.send(
                 embed=disnake.Embed(
                     title="Missing Required Argument",
                     description=error,
                     color=disnake.Color.red(),
-                ),
-                mention_author=False,
+                )
+                )
+
+        elif isinstance(error, disnake.Forbidden):
+            await ctx.send(
+                embed=disnake.Embed(
+                    description="I do not have enough permissions to invoke this command.",
+                    color=disnake.Color.red()
+                )
             )
 
         else:

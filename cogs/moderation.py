@@ -7,53 +7,46 @@ class Moderation(commands.Cog, description="Moderation related commands."):
     def __init__(self, bot):
         self.bot = bot
 
-    async def check_slash(self, inter, user: disnake.User):
-        if inter.author.top_role.position < user.top_role.position:
-            return await inter.response.send_message(
+    async def check_ctx(self, ctx, member: disnake.Member):
+
+        user = await ctx.guild.fetch_ban(member)
+
+        if user:
+            return await ctx.send(
                 embed=disnake.Embed(
-                    description="You cannot ban a user higher than you.",
-                    color=disnake.Color.red(),
-                ),
-                ephemeral=True,
+                    description="That user is already banned.", color=disnake.Color.red()
+                )
             )
 
-        if user == inter.author:
-            return await inter.response.send_message(
+        if member == self.bot.user:
+            return await ctx.send(
                 embed=disnake.Embed(
-                    description="You cannot ban yourself.", color=disnake.Color.red()
-                ),
-                ephemeral=True,
-            )
-        if disnake.Forbidden:
-            return await inter.response.send_message(
-                embed=disnake.Embed(
-                    description="Missing permissions.", color=disnake.Color.red()
-                ),
-                ephemeral=True,
+                    description="I cannot ban myself.", color=disnake.Color.red()
+                )
             )
 
-    async def check_ctx(self, ctx, user: disnake.User):
-
-        if user == ctx.author:
+        if member == ctx.author:
             return await ctx.send(
                 embed=disnake.Embed(
                     description="You cannot ban yourself.", color=disnake.Color.red()
                 )
             )
-        if disnake.Forbidden:
-            return await ctx.send(
-                embed=disnake.Embed(
-                    description="Missing permissions.", color=disnake.Color.red()
-                )
-            )
 
-        if ctx.author.top_role.position < user.top_role.position:
+        if ctx.author.top_role.position < member.top_role.position:
             return await ctx.send(
                 embed=disnake.Embed(
                     description="You cannot ban a user higher than you.",
                     color=disnake.Color.red(),
                 )
             )
+
+        else:
+            await ctx.guild.ban(user)
+            embed = disnake.Embed(
+                description=f"{user.mention} was banned.",
+                color=disnake.Color.greyple(),
+            )
+            await ctx.send(embed=embed)
 
     async def context_change_name(
         ctx: commands.Context, member: disnake.Member, nickname: str
@@ -169,68 +162,6 @@ class Moderation(commands.Cog, description="Moderation related commands."):
 
         await self.check_ctx(ctx, user)
 
-        await ctx.guild.ban(user, reason=reason)
-        embed = disnake.Embed(
-            description=f"{user.mention} was banned!",
-            color=disnake.Color.red(),
-        )
-        await ctx.send(embed=embed)
-
-    @commands.slash_command(name="ban")
-    @commands.has_permissions(ban_members=True)
-    async def ban_slash(
-        self,
-        inter: disnake.GuildCommandInteraction,
-        user: disnake.Member,
-        reason=None,
-    ):
-        """Bans a member"""
-
-        try:
-
-            await self.check_slash(inter, user)
-            await inter.guild.ban(user, reason=reason)
-            await inter.response.send_message(
-                embed=disnake.Embed(
-                    description=f"{user.mention} was banned!", color=disnake.Color.greyple()
-                ),
-                ephemeral=False,
-            )
-        except disnake.NotFound:
-            await inter.response.send_message(
-                embed=disnake.Embed(
-                    description=f"Member {user} was not found.", color=disnake.Color.red()
-                ),
-                ephemeral=False,
-            )
-
-    @commands.slash_command(name="unban")
-    @commands.guild_only()
-    @commands.has_permissions(ban_members=True)
-    async def unban_slash(
-        self, inter: disnake.GuildCommandInteraction, user: disnake.User
-    ):
-        """Unbans a member"""
-        try:
-            await inter.guild.fetch_ban(user)
-        except disnake.NotFound:
-            return await inter.response.send_message(
-                embed=disnake.Embed(
-                    description="That user is not banned or does not exist.",
-                    color=disnake.Color.greyple(),
-                ),
-                ephemeral=False,
-            )
-
-        await inter.guild.unban(user)
-        await inter.response.send_message(
-            embed=disnake.Embed(
-                description=f"{user.mention} was unbanned.",
-                color=disnake.Color.greyple(),
-            ),
-            ephemeral=False,
-        )
-
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
@@ -251,8 +182,7 @@ class Moderation(commands.Cog, description="Moderation related commands."):
             embed=disnake.Embed(
                 description=f"{user.mention} was unbanned.",
                 color=disnake.Color.greyple(),
-            ),
-            ephemeral=False,
+            )
         )
 
 
