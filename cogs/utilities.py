@@ -241,5 +241,26 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
                 emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
                 await ctx.send(emote)
 
+    @emoji.command()
+    @commands.has_permissions(manage_emojis=True)
+    async def delete(self, ctx, name: Union[disnake.Emoji, int]):
+
+        """
+        Deletes an emoji by ID or emote. 
+        """
+
+        if name == int:
+            emoji = await self.bot.get_emoji(name)
+            await emoji.delete()
+            await ctx.message.add_reaction("✅")
+
+        if name == disnake.Emoji:
+            await name.delete()
+            await ctx.message.add_reaction("✅")
+
+        else:
+            await ctx.send("An error occurred while deleting the emoji.")
+
+
 def setup(bot):
     bot.add_cog(Utilities(bot))
