@@ -101,7 +101,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         await self.run_code(ctx, code)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
+    async def on_message_edit(self,before: disnake.Message,after: disnake.Message):
         try:
             if before.content.startswith(".run") and after.content.startswith(".run"):
                 await after.add_reaction("🔁")
@@ -178,7 +178,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         """
         Stfu a message.
 
-        .stfu <reply to the message>
+        .stfu `<reply to the message>`
         """
         try:
             if not ctx.message.reference:
@@ -191,6 +191,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
 
     @commands.command()
     async def pypi(self, ctx: commands.Context, name: str):
+        """Finds a package on the python package index."""
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://pypi.org/pypi/{name}/json") as data:
                 raw = await data.json()

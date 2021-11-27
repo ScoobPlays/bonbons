@@ -72,11 +72,11 @@ class NFT(commands.Cog, description="NFT related commands."):
         )
 
     @nft.command()
-    async def lookup(self, ctx, argument: Union[int, str]):
+    async def lookup(self, ctx, name: Union[int, str]):
         """ "Find's an NFT by name/id."""
 
-        data = await self.nft.find_one({"name": argument}) or await self.nft.find_one(
-            {"_id": argument}
+        data = await self.nft.find_one({"name": name}) or await self.nft.find_one(
+            {"_id": name}
         )
 
         if not data:
@@ -100,6 +100,19 @@ class NFT(commands.Cog, description="NFT related commands."):
 
         await ctx.send(total_nfts[0], view=Paginator(total_nfts))
 
+    @nft.command()
+    async def buy(self, ctx, name: Union[int, str]):
+
+
+        data = await self.nft.find_one({"name": name}) or await self.nft.find_one(
+            {"_id": name}
+        )
+
+        if not data:
+            return await ctx.send(f"That NFT does not exist.")
+
+        await ctx.send(f"You bought `{data['name']}` (ID: {data['_id']})")
+        await self.nft.update_one(data, {"$set": {"owner": ctx.author.id}})
 
 def setup(bot):
     bot.add_cog(NFT(bot))

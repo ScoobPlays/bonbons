@@ -39,7 +39,7 @@ class HelpCommand(commands.HelpCommand):
         await self.send(embed=embed)
 
     async def send_command_help(self, command):
-        signature = self.get_command_signature(command)
+        signature = self.get_command_signature(command).replace(".", "").strip()
         embed = HelpEmbed(
             title=f"`{signature}`", description=command.help or "No help found.."
         )
@@ -75,7 +75,7 @@ class HelpCommand(commands.HelpCommand):
         await self.send(embed=embed)
 
     async def send_group_help(self, group):
-        title = self.get_command_signature(group)
+        title = self.get_command_signature(group).replace(".", "").strip()
         await self.send_help_embed(title, group.help, group.commands)
 
     async def send_cog_help(self, cog):
@@ -83,28 +83,3 @@ class HelpCommand(commands.HelpCommand):
         await self.send_help_embed(
             f"{title} Category", cog.description, cog.get_commands()
         )
-
-class MyNewHelp(commands.MinimalHelpCommand):
-    def __init__(self):
-        super().__init__(
-            command_attrs = {
-                "hidden": True,
-                "help": "Shows help about a cog, group or a command",
-            }
-        )
-
-
-    async def send_bot_help(self, mapping):
-        await self.context.send("This is help")
-       
-   # !help <command>
-    async def send_command_help(self, command):
-        await self.send("This is help command")
-      
-   # !help <group>
-    async def send_group_help(self, group):
-        await self.send("This is help group")
-    
-   # !help <cog>
-    async def send_cog_help(self, cog):
-        await self.send("This is help cog")

@@ -3,7 +3,6 @@ from disnake.ext import commands
 from datetime import datetime
 from utils.utils import created_at
 
-
 class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot

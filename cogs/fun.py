@@ -8,6 +8,57 @@ import aiohttp
 from utils.utils import Google
 
 
+class EditSnipeView(disnake.ui.View):
+    def __init__(self, ctx, before, after):
+        super().__init__()
+        self.ctx = ctx
+        self.before = before
+        self.after = after
+
+    async def interaction_check(self, interaction: disnake.Interaction) -> bool:
+        if interaction.user and interaction.user.id == self.ctx.author.id:
+            return True
+        await interaction.response.send_message(
+            "You are not the owner of this message.", ephemeral=True
+        )
+        return False
+
+    @disnake.ui.button(label="Before", style=disnake.ButtonStyle.grey)
+    async def before(self, button, inter):
+
+        await inter.response.defer()
+
+        before_embed = disnake.Embed(
+            description=f"{self.before.content}",
+            timestamp=datetime.utcnow(),
+            ).set_footer(text=f"Message from {self.before.author}").set_author(
+                name=f"{self.before.author}",
+                icon_url=self.before.author.display_avatar,
+                )
+
+        await inter.edit_original_message(embed=before_embed)
+
+    @disnake.ui.button(label="After", style=disnake.ButtonStyle.grey)
+    async def after(self, button, inter):
+
+        await inter.response.defer()
+
+        after_embed = disnake.Embed(
+            description=f"{self.after.content}",
+            timestamp=datetime.utcnow(),
+            ).set_footer(text=f"Message from {self.after.author}").set_author(
+                name=f"{self.after.author}",
+                icon_url=self.after.author.display_avatar,
+                )
+
+        await inter.edit_original_message(embed=after_embed)
+
+    @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.red)
+    async def quit(self, button, inter):
+        await inter.response.defer()
+        await inter.delete_original_message()
+        await self.ctx.message.delete()
+
 class Fun(commands.Cog, description="Random commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -36,7 +87,7 @@ class Fun(commands.Cog, description="Random commands."):
         self.last_msg = message
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before: str, after: str):
+    async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
 
         if before.author.bot or after.author.bot:
             return
@@ -49,7 +100,6 @@ class Fun(commands.Cog, description="Random commands."):
 
         """Snipes most recently edited message."""
 
-        message = ctx.message
         try:
             if self.before.guild.id == ctx.guild.id:
                 if self.before.channel.id == ctx.channel.id:
@@ -73,43 +123,7 @@ class Fun(commands.Cog, description="Random commands."):
                         icon_url=self.after.author.display_avatar,
                     )
 
-                    class Edit(disnake.ui.View):
-                        def __init__(self):
-                            super().__init__()
-
-                        async def interaction_check(
-                            self, interaction: disnake.Interaction
-                        ) -> bool:
-                            if (
-                                interaction.user
-                                and interaction.user.id == ctx.author.id
-                            ):
-                                return True
-                            await interaction.response.send_message(
-                                "You are not the owner of this message.", ephemeral=True
-                            )
-                            return False
-
-                        @disnake.ui.button(
-                            label="Before", style=disnake.ButtonStyle.grey
-                        )
-                        async def before(self, button, inter):
-                            await msg.edit(embed=before)
-                            await inter.response.defer()
-
-                        @disnake.ui.button(
-                            label="After", style=disnake.ButtonStyle.grey
-                        )
-                        async def after(self, button, inter):
-                            await msg.edit(embed=after)
-                            await inter.response.defer()
-
-                        @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.red)
-                        async def quit(self, button, inter):
-                            await message.delete()
-                            await inter.message.delete()
-
-                    msg = await ctx.send(embed=before, view=Edit())
+                    await ctx.send(embed=before, view=EditSnipeView(ctx, self.before, self.after))
 
         except Exception:
             await ctx.send(
