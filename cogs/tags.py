@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 from utils.secrets import cluster
+from typing import Optional
 
 
 class Make(disnake.ui.View):
@@ -58,6 +59,7 @@ class Make(disnake.ui.View):
     @disnake.ui.button(label="Confirm", style=disnake.ButtonStyle.green)
     async def tag_confirm(self, button, inter):
         self.tags = self.db[str(inter.guild.id)]
+        tag_data = await self.tags.find({}).to_list(1000)
 
         found = await self.tags.find_one({"name": self.name.content})
 
@@ -67,9 +69,12 @@ class Make(disnake.ui.View):
                 ephemeral=True,
             )
 
+        tag_id = len(tag_data) + 1
+
         await inter.response.send_message("Tag has been created.", ephemeral=True)
 
         data = {
+            "_id": tag_id,
             "owner": self.name.author.id,
             "name": self.name.content,
             "content": self.content.content,
@@ -123,13 +128,12 @@ class Editing(disnake.ui.View):
             view=None,
         )
 
-
 class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]
 
-    async def send_tag_info(self, inter, name):
+    async def send_tag_info_inter(self, inter: disnake.ApplicationCommandInteraction, name: str):
         try:
             self.tags = self.db[str(inter.guild.id)]
             data = await self.tags.find_one({"name": name})
@@ -141,7 +145,7 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
 
             embed = (
                 disnake.Embed(
-                    title=f"Tag Information",
+                    title=f"Tag Information (ID: {data['_id']})",
                     color=disnake.Color.greyple(),
                     timestamp=datetime.utcnow(),
                 )
@@ -157,6 +161,38 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
                 )
             )
             await inter.response.send_message(embed=embed, ephemeral=False)
+
+        except Exception as e:
+            print(e)
+
+    async def send_tag_info_context(self, ctx: commands.Context, name: str):
+        try:
+            self.tags = self.db[str(ctx.guild.id)]
+            data = await self.tags.find_one({"name": name})
+
+            if not data:
+                return await ctx.send(
+                    "That is not a valid tag."
+                )
+
+            embed = (
+                disnake.Embed(
+                    title=f"Tag Information (ID: {data['_id']})",
+                    color=disnake.Color.greyple(),
+                    timestamp=datetime.utcnow(),
+                )
+                .add_field(
+                    name="Owner",
+                    value=f"<@{data['owner']}> (`{data['owner']}`)",
+                    inline=False,
+                )
+                .add_field(
+                    name="Created",
+                    value=f"<t:{data['created_at']}:F> (<t:{data['created_at']}:R>)",
+                    inline=False,
+                )
+            )
+            await ctx.send(embed=embed)
 
         except Exception as e:
             print(e)
@@ -185,14 +221,34 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
 
         return [tag for tag in all_tags if input.lower() in tag.lower()]
 
-    @commands.slash_command()
+    @commands.slash_command(name="tag")
     @commands.guild_only()
-    async def tag(self, inter: disnake.ApplicationCommandInteraction) -> None:
+    async def tag_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
         """The base command for tag."""
         pass
 
-    @commands.command()
-    async def tags(self, ctx: commands.Context) -> None:
+    @commands.group(invoke_without_command=True)
+    @commands.guild_only()
+    async def tag(self, ctx: commands.Context, name: Optional[str]=None) -> None:
+
+        """The base command for tag."""
+
+        if not name:
+            await ctx.send_help('tag')
+
+        else:
+            self.tags = self.db[str(ctx.guild.id)]
+            data = await self.tags.find_one({"name": name})
+
+            if data:
+                return await ctx.send(data["content"])
+
+            else:
+                return await ctx.send("A tag with that name does not exist.")
+
+
+    @tag.command()
+    async def all(self, ctx: commands.Context) -> None:
         """Returns all the tags in the guild."""
         try:
             index = 0
@@ -212,8 +268,41 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
         except Exception as e:
             print(e)
 
-    @commands.slash_command(name="tags")
-    async def tags_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
+    @tag.command(name="edit")
+    @commands.guild_only()
+    async def edit(
+        self,
+        ctx: commands.Context,
+        name: str,
+        *,
+        content: str
+        ):
+
+        """Edit's a tag you own"""
+
+        self.tags = self.db[str(ctx.guild.id)]
+
+        tag_data = await self.tags.find_one({"name": name})
+        tag_owner = tag_data["owner"]
+
+        if not tag_data:
+            return await ctx.send(
+                "A tag with this name does not exist."
+            )
+
+        if tag_owner != ctx.author.id:
+            return await ctx.send(
+                "You do not own this tag."
+            )
+
+        await ctx.send("Tag was successfully edited.")
+
+        await self.tags.update_one(tag_data, {"$set": {"content": content}})
+
+
+
+    @tag_slash.sub_command(name="all")
+    async def tags_all(self, inter: disnake.ApplicationCommandInteraction) -> None:
 
         """Returns all the tags in the guild"""
 
@@ -235,9 +324,9 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
         except Exception as e:
             print(e)
 
-    @tag.sub_command()
+    @tag_slash.sub_command(name="edit")
     @commands.guild_only()
-    async def edit(
+    async def tag_edit(
         self,
         inter: disnake.ApplicationCommandInteraction,
         name: str = commands.Param(
@@ -270,7 +359,7 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
             ephemeral=True,
         )
 
-    @tag.sub_command(name="delete")
+    @tag_slash.sub_command(name="delete")
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def delete_tag(
@@ -298,7 +387,7 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
                 ephemeral=True,
             )
 
-    @tag.sub_command(name="show")
+    @tag_slash.sub_command(name="show")
     @commands.guild_only()
     async def show_tag(
         self,
@@ -316,7 +405,7 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
 
         await inter.response.send_message(f"{data['content']}")
 
-    @tag.sub_command(name="info")
+    @tag_slash.sub_command(name="info")
     @commands.guild_only()
     async def tag_info(
         self,
@@ -327,9 +416,9 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
     ) -> None:
         """Gives information about a tag"""
 
-        await self.send_tag_info(inter, name)
+        await self.send_tag_info_inter(inter, name)
 
-    @tag.sub_command(name="make")
+    @tag_slash.sub_command(name="make")
     @commands.guild_only()
     async def make_tag(self, inter: disnake.ApplicationCommandInteraction):
         """Creates a tag"""

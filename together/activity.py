@@ -58,4 +58,3 @@ class Together(object):
 
         except Exception as e:
             print(e)
-

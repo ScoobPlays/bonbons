@@ -41,7 +41,7 @@ class HelpCommand(commands.HelpCommand):
     async def send_command_help(self, command):
         signature = self.get_command_signature(command).replace(".", "").strip()
         embed = HelpEmbed(
-            title=f"`{signature}`", description=command.help or "No help found.."
+            title=f"{signature}", description=command.help or "No help found.."
         )
 
         if cog := command.cog:
