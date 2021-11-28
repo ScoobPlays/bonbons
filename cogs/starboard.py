@@ -1,6 +1,6 @@
 from disnake.ext import commands
 from disnake import Embed, Color
-from utils.secrets import starboard, config
+from utils.env import starboard, config
 from datetime import datetime
 
 

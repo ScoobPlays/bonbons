@@ -1,5 +1,5 @@
 from disnake.ext import commands
-from utils.secrets import db
+from utils.env import db
 from utils.paginator import Paginator
 import disnake
 from typing import Union, List

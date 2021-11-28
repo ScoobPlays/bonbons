@@ -1,10 +1,11 @@
-import os
-from disnake.ext import commands
-import disnake
-import aiohttp
 from keep_alive import keep_alive
 from .help_command import HelpCommand
 from cogs.dev import Calculator
+from datetime import datetime
+from disnake.ext import commands
+import disnake
+import aiohttp
+import os
 
 class Bonbons(commands.Bot):
     def __init__(self, **kwargs):
@@ -45,3 +46,6 @@ class Bonbons(commands.Bot):
 
         if not hasattr(self, "session"):
             self.session = aiohttp.ClientSession(loop=self.loop)
+
+bot = Bonbons()
+bot.uptime = datetime.utcnow().timestamp()

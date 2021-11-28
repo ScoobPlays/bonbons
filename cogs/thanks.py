@@ -1,4 +1,4 @@
-from utils.secrets import thank
+from utils.env import thank
 from disnake.ext import commands
 import random
 import disnake

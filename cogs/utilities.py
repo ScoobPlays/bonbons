@@ -1,6 +1,5 @@
 from disnake.ext import commands
 from pyston import PystonClient, File
-from utils.utils import created_at
 from .thanks import facepalms
 import re, random, asyncio, aiohttp
 from typing import Union, Optional
@@ -14,7 +13,10 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         self.last = None
         self.facepalms = random.choice(facepalms)
 
-    async def find_thread(ctx: commands.Context, name: str):
+    def created_at(self, value) -> int:
+        return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
+
+    async def find_thread(self, ctx: commands.Context, name: str):
         try:
             threads = []
             for channel in ctx.guild.text_channels:
@@ -163,7 +165,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
 
         try:
             embed = disnake.Embed(
-                description=f"Snowflake was created at {created_at(argument)}",
+                description=f"Snowflake was created at {self.created_at(argument)}",
                 color=disnake.Color.greyple(),
             )
             await ctx.send(embed=embed)

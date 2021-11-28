@@ -1,8 +1,12 @@
-utils/secrets.py
+#Files
+utils/env.py
 cogs/dev.py
 keep_alive.py
 
+#Python
 *.pyc
+
+#Replit
 .replit
 .breakpoints
 poetry.lock

@@ -1,7 +1,13 @@
+from disnake.ext import commands
 import contextlib
 import disnake
-from disnake.ext import commands
-from .utils import HelpEmbed
+
+class HelpEmbed(disnake.Embed):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        text = "Use help [command] or help [category] for more information."
+        self.set_footer(text=text)
+        self.color = disnake.Color.greyple()
 
 class HelpCommand(commands.HelpCommand):
     def __init__(self):

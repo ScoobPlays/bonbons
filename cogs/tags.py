@@ -1,7 +1,7 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from utils.secrets import cluster
+from utils.env import cluster
 from typing import Optional
 
 

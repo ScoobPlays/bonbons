@@ -1,11 +1,13 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
-from utils.utils import created_at
 
 class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
+
+    def created_at(self, value) -> int:
+        return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
     async def context_send_emojis(self, ctx):
         all_emojis = []
@@ -201,7 +203,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name="Account Created At",
-            value=f"{created_at(member.id)}",
+            value=f"{self.created_at(member.id)}",
             inline=False,
         )
         embed.add_field(
@@ -246,7 +248,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name="Account Created At",
-            value=f"{created_at(member.id)}",
+            value=f"{self.created_at(member.id)}",
             inline=False,
         )
         embed.add_field(

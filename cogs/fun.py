@@ -1,12 +1,14 @@
 from datetime import datetime
-import disnake
+from urllib.parse import quote_plus
 from disnake.ext import commands
-import json
-import base64
-import random
-import aiohttp
-from utils.utils import Google
+import disnake, json, base64, random, aiohttp
 
+class Google(disnake.ui.View):
+    def __init__(self, query: str) -> str:
+        super().__init__()
+        query = quote_plus(query)
+        url = f"https://www.google.com/search?q={query}"
+        self.add_item(disnake.ui.Button(label="Click Here", url=url))
 
 class EditSnipeView(disnake.ui.View):
     def __init__(self, ctx, before, after):
