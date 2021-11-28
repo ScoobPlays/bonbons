@@ -1,6 +1,5 @@
 #Files
 utils/env.py
-cogs/dev.py
 keep_alive.py
 
 #Python
