@@ -39,7 +39,7 @@ class HelpCommand(commands.HelpCommand):
                     name=f"{name} [{amount_commands}]", value=description
                 )
 
-        embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands."
+        embed.description = f"**About:** bonbons is a bot with not so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands."
 
         await self.send(embed=embed)
 
@@ -86,12 +86,15 @@ class HelpCommand(commands.HelpCommand):
         await self.send_help_embed(title, group.help, group.commands)
 
     async def send_cog_help(self, cog):
-        the_cog_name = cog.qualified_name.title()
-        the_new_cog = self.context.bot.get_cog(the_cog_name)
+        #the_cog_name = cog.qualified_name.title()
+        #the_new_cog = self.context.bot.get_cog(the_cog_name)
 
-        if the_new_cog is not None:
+        #if the_new_cog is not None:
 
-            title = the_new_cog.qualified_name or "No"
-            await self.send_help_embed(
-                f"{title} Category", the_new_cog.description, the_new_cog.get_commands()
+        title = cog.qualified_name or "No"
+        await self.send_help_embed(
+            f"{title} Category", cog.description, the_new_cog.cog()
             )
+
+    async def on_help_command_error(self, ctx, error):
+        await ctx.send("oops")
