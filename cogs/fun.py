@@ -3,12 +3,14 @@ from urllib.parse import quote_plus
 from disnake.ext import commands
 import disnake, json, base64, random, aiohttp
 
+
 class Google(disnake.ui.View):
     def __init__(self, query: str) -> str:
         super().__init__()
         query = quote_plus(query)
         url = f"https://www.google.com/search?q={query}"
         self.add_item(disnake.ui.Button(label="Click Here", url=url))
+
 
 class EditSnipeView(disnake.ui.View):
     def __init__(self, ctx, before, after):
@@ -30,13 +32,17 @@ class EditSnipeView(disnake.ui.View):
 
         await inter.response.defer()
 
-        before_embed = disnake.Embed(
-            description=f"{self.before.content}",
-            timestamp=datetime.utcnow(),
-            ).set_footer(text=f"Message from {self.before.author}").set_author(
+        before_embed = (
+            disnake.Embed(
+                description=f"{self.before.content}",
+                timestamp=datetime.utcnow(),
+            )
+            .set_footer(text=f"Message from {self.before.author}")
+            .set_author(
                 name=f"{self.before.author}",
                 icon_url=self.before.author.display_avatar,
-                )
+            )
+        )
 
         await inter.edit_original_message(embed=before_embed)
 
@@ -45,13 +51,17 @@ class EditSnipeView(disnake.ui.View):
 
         await inter.response.defer()
 
-        after_embed = disnake.Embed(
-            description=f"{self.after.content}",
-            timestamp=datetime.utcnow(),
-            ).set_footer(text=f"Message from {self.after.author}").set_author(
+        after_embed = (
+            disnake.Embed(
+                description=f"{self.after.content}",
+                timestamp=datetime.utcnow(),
+            )
+            .set_footer(text=f"Message from {self.after.author}")
+            .set_author(
                 name=f"{self.after.author}",
                 icon_url=self.after.author.display_avatar,
-                )
+            )
+        )
 
         await inter.edit_original_message(embed=after_embed)
 
@@ -60,6 +70,7 @@ class EditSnipeView(disnake.ui.View):
         await inter.response.defer()
         await inter.delete_original_message()
         await self.ctx.message.delete()
+
 
 class Fun(commands.Cog, description="Random commands."):
     def __init__(self, bot):
@@ -125,7 +136,9 @@ class Fun(commands.Cog, description="Random commands."):
                         icon_url=self.after.author.display_avatar,
                     )
 
-                    await ctx.send(embed=before, view=EditSnipeView(ctx, self.before, self.after))
+                    await ctx.send(
+                        embed=before, view=EditSnipeView(ctx, self.before, self.after)
+                    )
 
         except Exception:
             await ctx.send(

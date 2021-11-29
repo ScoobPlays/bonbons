@@ -128,12 +128,15 @@ class Editing(disnake.ui.View):
             view=None,
         )
 
+
 class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
     def __init__(self, bot):
         self.bot = bot
         self.db = cluster["discord"]
 
-    async def send_tag_info_inter(self, inter: disnake.ApplicationCommandInteraction, name: str):
+    async def send_tag_info_inter(
+        self, inter: disnake.ApplicationCommandInteraction, name: str
+    ):
         try:
             self.tags = self.db[str(inter.guild.id)]
             data = await self.tags.find_one({"name": name})
@@ -171,9 +174,7 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
             data = await self.tags.find_one({"name": name})
 
             if not data:
-                return await ctx.send(
-                    "That is not a valid tag."
-                )
+                return await ctx.send("That is not a valid tag.")
 
             embed = (
                 disnake.Embed(
@@ -229,12 +230,12 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
 
     @commands.group(invoke_without_command=True)
     @commands.guild_only()
-    async def tag(self, ctx: commands.Context, name: Optional[str]=None) -> None:
+    async def tag(self, ctx: commands.Context, name: Optional[str] = None) -> None:
 
         """The base command for tag."""
 
         if not name:
-            await ctx.send_help('tag')
+            await ctx.send_help("tag")
 
         else:
             self.tags = self.db[str(ctx.guild.id)]
@@ -245,7 +246,6 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
 
             else:
                 return await ctx.send("A tag with that name does not exist.")
-
 
     @tag.command()
     async def all(self, ctx: commands.Context) -> None:
@@ -270,13 +270,7 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
 
     @tag.command(name="edit")
     @commands.guild_only()
-    async def edit(
-        self,
-        ctx: commands.Context,
-        name: str,
-        *,
-        content: str
-        ):
+    async def edit(self, ctx: commands.Context, name: str, *, content: str):
 
         """Edit's a tag you own"""
 
@@ -286,20 +280,14 @@ class Tags(commands.Cog, description="Commands related to tags. (/tag)"):
         tag_owner = tag_data["owner"]
 
         if not tag_data:
-            return await ctx.send(
-                "A tag with this name does not exist."
-            )
+            return await ctx.send("A tag with this name does not exist.")
 
         if tag_owner != ctx.author.id:
-            return await ctx.send(
-                "You do not own this tag."
-            )
+            return await ctx.send("You do not own this tag.")
 
         await ctx.send("Tag was successfully edited.")
 
         await self.tags.update_one(tag_data, {"$set": {"content": content}})
-
-
 
     @tag_slash.sub_command(name="all")
     async def tags_all(self, inter: disnake.ApplicationCommandInteraction) -> None:

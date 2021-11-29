@@ -1,6 +1,7 @@
 from disnake.ext import commands
 import disnake
 
+
 class HelpEmbed(disnake.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -8,12 +9,13 @@ class HelpEmbed(disnake.Embed):
         self.set_footer(text=text)
         self.color = disnake.Color.greyple()
 
+
 class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(
-            command_attrs = {
+            command_attrs={
                 "hidden": True,
-                "help": "Shows help about a cog, group or a command"
+                "help": "Shows help about a cog, group or a command",
             }
         )
 
@@ -35,9 +37,7 @@ class HelpCommand(commands.HelpCommand):
                     name = cog.qualified_name
                     description = cog.description or "No description.."
 
-                embed.add_field(
-                    name=f"{name} [{amount_commands}]", value=description
-                )
+                embed.add_field(name=f"{name} [{amount_commands}]", value=description)
 
         embed.description = f"**About:** bonbons is a bot with not so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands."
 
@@ -55,11 +55,7 @@ class HelpCommand(commands.HelpCommand):
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
 
-
-
-        if command._buckets and (
-            cooldown := command._buckets._cooldown
-        ):
+        if command._buckets and (cooldown := command._buckets._cooldown):
             embed.add_field(
                 name="Cooldown",
                 value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
@@ -67,9 +63,7 @@ class HelpCommand(commands.HelpCommand):
 
         await self.send(embed=embed)
 
-    async def send_help_embed(
-        self, title, description, commands
-    ):
+    async def send_help_embed(self, title, description, commands):
         embed = HelpEmbed(title=title, description=description or "No help found..")
 
         if filtered_commands := await self.filter_commands(commands, sort=True):
@@ -86,15 +80,10 @@ class HelpCommand(commands.HelpCommand):
         await self.send_help_embed(title, group.help, group.commands)
 
     async def send_cog_help(self, cog):
-        #the_cog_name = cog.qualified_name.title()
-        #the_new_cog = self.context.bot.get_cog(the_cog_name)
-
-        #if the_new_cog is not None:
-
         title = cog.qualified_name or "No"
         await self.send_help_embed(
-            f"{title} Category", cog.description, the_new_cog.cog()
-            )
+            f"{title} Category", cog.description, cog.get_commands()
+        )
 
     async def on_help_command_error(self, ctx, error):
-        await ctx.send("oops")
+        await ctx.send(error)

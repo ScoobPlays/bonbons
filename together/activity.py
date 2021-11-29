@@ -3,6 +3,7 @@ from aiohttp import ClientSession
 from typing import Union
 from .enums import applications
 
+
 class Together(object):
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -27,7 +28,8 @@ class Together(object):
                 data = {
                     "max_age": 1800,
                     "max_uses": None,
-                    "target_application_id": int(activity) or applications[str(activity)],
+                    "target_application_id": int(activity)
+                    or applications[str(activity)],
                     "target_type": 2,
                     "temporary": False,
                     "validate": None,

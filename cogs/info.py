@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from datetime import datetime
 
+
 class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -9,56 +10,27 @@ class Information(commands.Cog, description="Information related commands."):
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
-    async def context_send_emojis(self, ctx):
-        all_emojis = []
-
-        for emoji in ctx.guild.emojis:
-            full_emoji = f"<:{emoji.name}:{emoji.id}>"
-            all_emojis.append(full_emoji)
-
-        embed = disnake.Embed(
-            title=f"Total Emoji's [{len(ctx.guild.emojis)}]",
-            description="".join(all_emojis),
-            color=disnake.Color.greyple(),
-            timestamp=datetime.utcnow(),
-        )
-
-        if len(embed) > 2000:
-            return await ctx.send("There were too many emoji's. Embed failed to send.")
-        await ctx.send(embed=embed)
-
-    async def interaction_send_emojis(self, inter):
-        all_emojis = []
-
-        for emoji in inter.guild.emojis:
-            full_emoji = f"<:{emoji.name}:{emoji.id}>"
-            all_emojis.append(full_emoji)
-
-        embed = disnake.Embed(
-            title=f"Total Emoji's [{len(inter.guild.emojis)}]",
-            description="".join(all_emojis),
-            color=disnake.Color.greyple(),
-            timestamp=datetime.utcnow(),
-        )
-
-        if len(embed) > 2000:
-            return await inter.response.send_message(
-                "There were too many emoji's. Embed failed to send.", ephemeral=True
-            )
-        await inter.response.send_message(embed=embed, ephemeral=False)
-
     @commands.command()
-    @commands.guild_only()
-    async def emojis(self, ctx):
-        """Returns all the emojis in the guild."""
-        await self.context_send_emojis(ctx)
+    async def snowflake(self, ctx: commands.Context, argument: int) -> None:
 
-    @commands.slash_command(name="emojis")
-    @commands.guild_only()
-    async def emojis_slash(self, inter):
-        """Returns all the emojis in the guild"""
+        """Displays a snowflake's creation date."""
 
-        await self.context_send_emojis(inter)
+        try:
+            embed = disnake.Embed(
+                description=f"Snowflake was created at {self.created_at(argument)}",
+                color=disnake.Color.greyple(),
+            )
+            await ctx.send(embed=embed)
+        except ValueError:
+            return await ctx.send(
+                embed=disnake.Embed(
+                    description="That is not a valid snowflake.",
+                    color=disnake.Color.red(),
+                )
+            )
+
+        else:
+            return
 
     @commands.command(aliases=("av",))
     @commands.guild_only()

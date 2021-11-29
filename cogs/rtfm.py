@@ -5,6 +5,7 @@ import io, os, re, zlib
 from typing import Dict
 import disnake
 
+
 class SphinxObjectFileReader:
     BUFSIZE = 16 * 1024
 
@@ -37,7 +38,10 @@ class SphinxObjectFileReader:
                 pos = buf.find(b"\n")
 
 
-class RTFM(commands.Cog, description="Commands for fetching documentation for Python libraries."):
+class RTFM(
+    commands.Cog,
+    description="Commands for fetching documentation for Python libraries.",
+):
     def __init__(self, bot):
         self.bot = bot
 
@@ -49,7 +53,7 @@ class RTFM(commands.Cog, description="Commands for fetching documentation for Py
             raise RuntimeError("Invalid objects.inv file version.")
 
         projname = stream.readline().rstrip()[11:]
-        stream.readline().rstrip()[11:] 
+        stream.readline().rstrip()[11:]
 
         line = stream.readline()
         if "zlib" not in line:
@@ -132,10 +136,10 @@ class RTFM(commands.Cog, description="Commands for fetching documentation for Py
         e = disnake.Embed(colour=disnake.Colour.blurple())
         if len(matches) == 0:
             responses = (
-                'I looked far and wide but nothing was found',
-                'I could not find anything related to your query.',
-                'Could not find anything. Sorry.',
-                'I didn\'t find anything related to your query.' 
+                "I looked far and wide but nothing was found",
+                "I could not find anything related to your query.",
+                "Could not find anything. Sorry.",
+                "I didn't find anything related to your query.",
             )
             return await ctx.send(choice(responses))
 
@@ -150,7 +154,7 @@ class RTFM(commands.Cog, description="Commands for fetching documentation for Py
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
         """
         Retrieve documentation on Python libraries.
-        
+
         If no argument's were passed then `disnake` will be the documentation to lookup."""
         await self.do_rtfm(ctx, "disnake", obj)
 

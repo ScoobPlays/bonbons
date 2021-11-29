@@ -17,6 +17,7 @@ class ProfileView(disnake.ui.View):
             embed=None, content=self.messages[0], view=Paginator(self.messages)
         )
 
+
 class NFT(commands.Cog, description="NFT related commands."):
     def __init__(self, bot):
         self.bot = bot
@@ -48,7 +49,7 @@ class NFT(commands.Cog, description="NFT related commands."):
         await ctx.send("Your NFT has been created.")
 
     @nft.command()
-    async def profile(self, ctx, member: disnake.Member=None):
+    async def profile(self, ctx, member: disnake.Member = None):
         """ "Display NFT stat's for a member."""
 
         member = member or ctx.author
@@ -103,7 +104,6 @@ class NFT(commands.Cog, description="NFT related commands."):
     @nft.command()
     async def buy(self, ctx, name: Union[int, str]):
 
-
         data = await self.nft.find_one({"name": name}) or await self.nft.find_one(
             {"_id": name}
         )
@@ -113,6 +113,7 @@ class NFT(commands.Cog, description="NFT related commands."):
 
         await ctx.send(f"You bought `{data['name']}` (ID: {data['_id']})")
         await self.nft.update_one(data, {"$set": {"owner": ctx.author.id}})
+
 
 def setup(bot):
     bot.add_cog(NFT(bot))

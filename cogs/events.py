@@ -129,7 +129,7 @@ class Events(Cog, description="A cog for events/logs."):
 
     @Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
-        
+
         if before.author.bot and after.author.bot:
             return
 

@@ -51,9 +51,7 @@ class Thank(commands.Cog, description="Compliment related commands."):
                         "received": 0,
                     }
                 )
-                new_receiver = await self.thank.find_one({
-                    "_id": ctx.author.id
-                    })
+                new_receiver = await self.thank.find_one({"_id": ctx.author.id})
 
                 new_sent = new_receiver["sent"] + 1
                 await self.thank.update_one(new_receiver, {"$set": {"sent": new_sent}})
@@ -66,12 +64,12 @@ class Thank(commands.Cog, description="Compliment related commands."):
                         "received": 0,
                     }
                 )
-                new_find = await self.thank.find_one({
-                    "_id": member.id
-                })
+                new_find = await self.thank.find_one({"_id": member.id})
 
                 new_received = new_find["received"] + 1
-                await self.thank.update_one(new_find, {"$set": {"received": new_received}})
+                await self.thank.update_one(
+                    new_find, {"$set": {"received": new_received}}
+                )
 
             if author and receiver:
                 sent = author["sent"] + 1
@@ -92,12 +90,12 @@ class Thank(commands.Cog, description="Compliment related commands."):
         member = member or ctx.author
 
         data = await self.thank.find_one({"_id": member.id})
-        
+
         if not data:
             return await ctx.send(
                 embed=disnake.Embed(
                     description="That member does not have any stats yet.",
-                    color=disnake.Color.greyple()
+                    color=disnake.Color.greyple(),
                 )
             )
         await ctx.send(
