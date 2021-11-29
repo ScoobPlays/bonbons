@@ -1,2 +1,2 @@
 from .activity import *
-from .applications import *
+from .enums import *

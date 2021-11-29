@@ -1,13 +1,13 @@
 from disnake.ext.commands import Bot
 from aiohttp import ClientSession
 from typing import Union
-from .applications import applications
+from .enums import applications
 
 class Together(object):
     def __init__(self, bot: Bot):
         self.bot = bot
 
-    async def create_link(self, voice_channel: int, activity: Union[str, int]):
+    async def create_activity(self, voice_channel: int, activity: Union[str, int]):
         try:
             if not isinstance(voice_channel, int):
                 raise TypeError(

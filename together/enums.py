@@ -1,4 +1,4 @@
-class Activity(object):
+class EmbeddedActivity(object):
     awkword = 879863881349087252
     betrayal = 773336526917861400
     checkers_in_the_park = 832013003968348200
