@@ -2,6 +2,7 @@ from typing import Union, Optional
 from datetime import datetime
 from disnake.ext import commands
 import disnake
+import aiohttp
 
 
 class Emojis(commands.Cog, description="Emoji utilities."):
@@ -23,13 +24,13 @@ class Emojis(commands.Cog, description="Emoji utilities."):
         """
 
         name = name or "emoji"
-        async with ctx.typing:
+        async with ctx.typing():
             async with self.bot.session.get(
                 f"https://cdn.discordapp.com/emojis/{argument}.png?size=80"
-            ) as data:
-                emoji = await data.read()
-                emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
-                await ctx.send(emote)
+                ) as data:
+                    emoji = await data.read()
+                    emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
+                    await ctx.send(emote)
 
     @emoji.command()
     @commands.has_permissions(manage_emojis=True)
@@ -41,7 +42,7 @@ class Emojis(commands.Cog, description="Emoji utilities."):
 
         name = name or "emoji"
 
-        async with ctx.typing:
+        async with ctx.typing():
             async with self.bot.session.get(url) as data:
                 emoji = await data.read()
                 emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
