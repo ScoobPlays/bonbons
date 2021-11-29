@@ -14,10 +14,6 @@ class Bonbons(commands.Bot):
 
         super().__init__(
             command_prefix=".",
-            test_guilds=[
-                880030618275155998,  # Kayle's Hub
-                912724631616651294,  # Feou's Server
-            ],
             case_insensitive=True,
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
@@ -25,6 +21,7 @@ class Bonbons(commands.Bot):
             strip_after_prefix=True,
             **kwargs,
         )
+        self.uptime = datetime.utcnow().timestamp()
         # self.persistent_views_added = False
 
     async def on_ready(self):
@@ -46,6 +43,7 @@ class Bonbons(commands.Bot):
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
         os.environ["JISHAKU_PY_RES"] = "false"
         os.environ["JISHAKU_EMBEDDED_JSK"] = "1"
+        os.environ['JISHAKU_EMBEDDED_JSK_COLOUR'] = "0x99aab5"
         os.environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
         os.environ.setdefault("JISHAKU_HIDE", "1")
         self.load_extension("jishaku")
