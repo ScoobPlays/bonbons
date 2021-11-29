@@ -1,5 +1,4 @@
 from disnake.ext import commands
-import contextlib
 import disnake
 
 class HelpEmbed(disnake.Embed):
@@ -48,13 +47,15 @@ class HelpCommand(commands.HelpCommand):
         signature = self.get_command_signature(command).replace(".", "").strip()
         embed = HelpEmbed(
             title=f"{signature}", description=command.help or "No help found.."
-        )
+        ).add_field(name="Hidden", value=command.hidden)
 
         if cog := command.cog:
             embed.add_field(name="Category", value=cog.qualified_name)
 
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
+
+
 
         if command._buckets and (
             cooldown := command._buckets._cooldown
@@ -85,7 +86,12 @@ class HelpCommand(commands.HelpCommand):
         await self.send_help_embed(title, group.help, group.commands)
 
     async def send_cog_help(self, cog):
-        title = cog.qualified_name or "No"
-        await self.send_help_embed(
-            f"{title} Category", cog.description, cog.get_commands()
-        )
+        the_cog_name = cog.qualified_name.title()
+        the_new_cog = self.context.bot.get_cog(the_cog_name)
+
+        if the_new_cog is not None:
+
+            title = the_new_cog.qualified_name or "No"
+            await self.send_help_embed(
+                f"{title} Category", the_new_cog.description, the_new_cog.get_commands()
+            )

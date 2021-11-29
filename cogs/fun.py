@@ -209,7 +209,7 @@ class Fun(commands.Cog, description="Random commands."):
     async def joke(self, ctx: commands.Context):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/joke") as r:
-                data = await r.json()
+                data = await r.json(content_type=None)
                 await ctx.send(data["joke"])
 
     @commands.command(name="google")
@@ -538,10 +538,10 @@ class Fun(commands.Cog, description="Random commands."):
 
     @commands.command(name="pat", help="Pats a user.")
     @commands.guild_only()
-    async def pat_cmd(self, ctx: commands.Context, member: disnake.Member):
+    async def pat(self, ctx: commands.Context, member: disnake.Member):
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/pat") as r:
-                data = await r.json()
+                data = await r.json(content_type=None)
                 image = data["link"]
                 await ctx.send(
                     f"{ctx.author.mention} patted {member.mention}!!\n{image}"

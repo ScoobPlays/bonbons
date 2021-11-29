@@ -1,7 +1,7 @@
-import disnake
-from disnake.ext import commands
 import io, os, sys, textwrap, traceback, contextlib
-
+from disnake.ext import commands
+from together import *
+import disnake
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
@@ -37,7 +37,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         except Exception:
             await ctx.send(
                 embed=disnake.Embed(
-                    description="Bot failed to restart.", color=disnake.Color.greyple()
+                    description="Bot failed to restart.", color=disnake.Color.red()
                 )
             )
 

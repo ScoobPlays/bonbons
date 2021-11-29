@@ -1,22 +1,7 @@
 from disnake.ext.commands import Bot
 from aiohttp import ClientSession
 from typing import Union
-
-applications = {
-    "youtube": "755600276941176913",  # Youtube
-    "youtubedev": "880218832743055411",  # Youtube Development
-    "poker": "755827207812677713",  # Poker
-    "betrayal": "773336526917861400",  # Betrayal
-    "fishing": "814288819477020702",  # Fishing
-    "chess": "832012774040141894",  # Chess
-    "chessdev": "832012586023256104",  # Chess Development
-    "lettertile": "879863686565621790",  # Lettertile
-    "wordsnack": "879863976006127627",  # Wordsnack
-    "doodlecrew": "878067389634314250",  # Doodlecrew
-    "spellcast": "852509694341283871",  # Spellcast
-    "checkers": "807655087643557919",  # Checkers
-}
-
+from .applications import applications
 
 class Together(object):
     def __init__(self, bot: Bot):
