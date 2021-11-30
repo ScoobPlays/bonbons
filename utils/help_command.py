@@ -1,4 +1,4 @@
-from utils.paginator import EmbedPaginator
+from utils.paginator import BonbonsHelpPaginator
 from disnake.ext import commands
 import disnake
 
@@ -26,5 +26,5 @@ class BonbonsHelpCommand(commands.MinimalHelpCommand):
             embeds = [embed, about]
 
             await destination.send(
-                embed=embeds[0], view=EmbedPaginator(self.context, embeds)
+                embed=embeds[0], view=BonbonsHelpPaginator(self.context, embeds)
             )
