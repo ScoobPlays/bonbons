@@ -17,6 +17,7 @@ class ProfileView(disnake.ui.View):
             embed=None, content=self.messages[0], view=Paginator(self.messages)
         )
 
+
 class NFT(commands.Cog, description="NFT related commands."):
     def __init__(self, bot):
         self.bot = bot

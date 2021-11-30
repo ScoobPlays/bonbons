@@ -6,12 +6,14 @@ from disnake.ext import commands
 from datetime import datetime
 from typing import Optional
 
+
 class Google(disnake.ui.View):
     def __init__(self, query: str) -> str:
         super().__init__()
         query = quote_plus(query)
         url = f"https://www.google.com/search?q={query}"
         self.add_item(disnake.ui.Button(label="Click Here", url=url))
+
 
 class EditSnipeView(disnake.ui.View):
     def __init__(self, ctx, before, after):
