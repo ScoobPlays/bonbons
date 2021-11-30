@@ -1,7 +1,5 @@
 from keep_alive import keep_alive
 from .help_command import HelpCommand
-
-# from cogs.dev import Calculator
 from datetime import datetime
 from disnake.ext import commands
 import disnake
@@ -15,6 +13,9 @@ class Bonbons(commands.Bot):
         super().__init__(
             command_prefix=".",
             case_insensitive=True,
+            test_guilds = [
+                880030618275155998 #Kayle's hub
+            ],
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
             help_command=HelpCommand(),
@@ -22,14 +23,9 @@ class Bonbons(commands.Bot):
             **kwargs,
         )
         self.uptime = datetime.utcnow().timestamp()
-        # self.persistent_views_added = False
 
     async def on_ready(self):
         print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")
-
-        # if not self.persistent_views_added:
-        #    self.add_view(Calculator())
-        #    self.persistent_views_added = True
 
         for filename in os.listdir("cogs"):
             if filename.endswith(".py"):

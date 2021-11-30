@@ -5,7 +5,6 @@ import re, random, asyncio, aiohttp
 from typing import Union, Optional
 import disnake
 
-
 class Utilities(commands.Cog, description="Utilities for the bot."):
     def __init__(self, bot):
         self.pysclient = PystonClient()
@@ -17,7 +16,11 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
-    async def run_code(self, ctx: commands.Context, code: str):
+    async def run_code(
+        self,
+        ctx: commands.Context,
+        code: str
+        ):
         matches = self.regex.findall(code)
         code = matches[0][2]
         lang = matches[0][0] or matches[0][1]
@@ -35,7 +38,11 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         )
         self.last = msg
 
-    async def on_run_code(self, before: Optional[str], after: Optional[str]):
+    async def on_run_code(
+        self,
+        before: disnake.Message,
+        after: disnake.Message,
+        ):
         try:
             await after.clear_reactions()
             await self.last.delete()
@@ -67,7 +74,11 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
         await self.run_code(ctx, code)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
+    async def on_message_edit(
+        self,
+        before: disnake.Message,
+        after: disnake.Message
+        ):
         try:
             if before.content.startswith(".run") and after.content.startswith(".run"):
                 await after.add_reaction("🔁")
@@ -89,7 +100,7 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
     @commands.command()
     async def echo(
         self,
-        ctx,
+        ctx: commands.Context,
         channel: Optional[disnake.abc.GuildChannel],
         member: disnake.User,
         *,
@@ -147,20 +158,24 @@ class Utilities(commands.Cog, description="Utilities for the bot."):
 
     @commands.command()
     async def pypi(self, ctx: commands.Context, name: str):
-        """Finds a package on the python package index."""
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://pypi.org/pypi/{name}/json") as data:
-                raw = await data.json()
+        """Finds a package on the Python Package Index."""
+        async with ctx.typing():
+            async with self.bot.session.get(f"https://pypi.org/pypi/{name}/json") as data:
+                if data.status == 200:
+                    raw = await data.json()
 
-                embed = disnake.Embed(
-                    title=name,
-                    description=raw["info"]["summary"],
-                    url=raw["info"]["project_url"],
-                    color=disnake.Color.greyple(),
-                ).set_thumbnail(
-                    url="https://cdn.discordapp.com/emojis/766274397257334814.png"
-                )
-                await ctx.send(embed=embed)
+                    embed = disnake.Embed(
+                        title=name,
+                        description=raw["info"]["summary"],
+                        url=raw["info"]["project_url"],
+                        color=disnake.Color.greyple(),
+                    ).set_thumbnail(
+                        url="https://cdn.discordapp.com/emojis/766274397257334814.png"
+                    )
+                    await ctx.send(embed=embed)
+
+                else:
+                    await ctx.send("A package with that name does not exist.")
 
 
 def setup(bot):
