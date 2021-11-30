@@ -1,5 +1,5 @@
 from keep_alive import keep_alive
-from .help_command import HelpCommand
+from .help_command import BonbonsHelpCommand
 from cogs.roles import SelfRoles
 from datetime import datetime
 from disnake.ext import commands
@@ -17,7 +17,7 @@ class Bonbons(commands.Bot):
             test_guilds=[880030618275155998],  # Kayle's hub
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
-            help_command=None,
+            help_command=BonbonsHelpCommand(),
             strip_after_prefix=True,
             **kwargs,
         )

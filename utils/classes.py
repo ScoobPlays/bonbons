@@ -1,6 +1,5 @@
 import disnake
 
-
 class Calculator(disnake.ui.View):
     def __init__(self):
         super().__init__(timeout=None)

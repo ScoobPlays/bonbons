@@ -6,14 +6,12 @@ from disnake.ext import commands
 from datetime import datetime
 from typing import Optional
 
-
 class Google(disnake.ui.View):
     def __init__(self, query: str) -> str:
         super().__init__()
         query = quote_plus(query)
         url = f"https://www.google.com/search?q={query}"
         self.add_item(disnake.ui.Button(label="Click Here", url=url))
-
 
 class EditSnipeView(disnake.ui.View):
     def __init__(self, ctx, before, after):
@@ -626,6 +624,61 @@ class Fun(commands.Cog, description="Random commands."):
                 image = data["link"]
                 await inter.response.send_message(
                     f"{inter.author.mention} patted {member.mention}!!\n{image}",
+                    ephemeral=False,
+                )
+
+    @commands.command(name="cat")
+    async def cat(self, ctx: commands.Context) -> None:
+        """Sends a random cat image"""
+        async with ctx.typing():
+            async with self.bot.session.get("http://aws.random.cat/meow") as r:
+                if r.status == 200:
+                    data = await r.json()
+                    await ctx.send(
+                        embed=disnake.Embed(color=disnake.Color.greyple()).set_image(
+                            url=data["file"]
+                        )
+                    )
+
+    @commands.slash_command(name="cat")
+    async def cat_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
+        """Sends a random cat image"""
+        async with self.bot.session.get("http://aws.random.cat/meow") as r:
+            if r.status == 200:
+                data = await r.json()
+                await inter.response.send_message(
+                    embed=disnake.Embed(color=disnake.Color.greyple()).set_image(
+                        url=data["file"]
+                    ),
+                    ephemeral=False,
+                )
+
+    @commands.command(name="dog")
+    async def dog(self, ctx: commands.Context):
+        """Sends a random dog image"""
+        async with ctx.typing():
+            async with self.bot.session.get(
+                "https://dog.ceo/api/breeds/image/random"
+            ) as r:
+                if r.status == 200:
+                    data = await r.json()
+                    await ctx.send(
+                        embed=disnake.Embed(color=disnake.Color.greyple()).set_image(
+                            url=data["message"]
+                        )
+                    )
+
+    @commands.slash_command(name="dog")
+    async def dog_slash(self, inter: disnake.ApplicationCommandInteraction):
+        """Sends a random dog image"""
+        async with self.botsession.get("https://dog.ceo/api/breeds/image/random") as r:
+            if r.status == 200:
+                data = await r.json()
+
+                await inter.response.send_message(
+                    embed=disnake.Embed(color=disnake.Color.greyple()).set_image(
+                        url=data["message"]
+                    ),
                     ephemeral=False,
                 )
 
