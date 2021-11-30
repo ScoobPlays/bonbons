@@ -139,15 +139,15 @@ class Events(Cog, description="A cog for events/logs."):
             **Author:** {before.author.mention} (`{before.author.id}`)
             **Guild:** {before.guild.name} (`{before.guild.id}`)
             **Channel:** {before.channel.mention} (`{before.channel.id}`)
-            **Deleted At:** <t:{int(before.created_at.timestamp())}:F> (<t:{int(before.created_at.timestamp())}:R>)
+            **Edited At:** <t:{int(before.created_at.timestamp())}:F> (<t:{int(before.created_at.timestamp())}:R>)
             """,
-            color=disnake.Color.green(),
+            color=disnake.Color.greyple(),
         )
         if before.content != after.content:
             embed.add_field(name="Before Content", value=before.content, inline=False)
             embed.add_field(name="After Content", value=after.content, inline=False)
 
-        await self.logs.send(embed=embed)
+            await self.logs.send(embed=embed)
 
     @Cog.listener()
     async def on_guild_channel_create(self, channel: disnake.abc.GuildChannel):
