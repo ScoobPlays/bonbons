@@ -4,11 +4,9 @@ class EmbeddedActivity(object):
     checkers_in_the_park = 832013003968348200
     checkers_in_the_park_dev = 832012682520428625
     checkers_in_the_park_staging = 832012938398400562
-    checkers_in_the_park_qa = 832012894068801636
     chess_in_the_park = 832012774040141894
     chess_in_the_park_dev = 832012586023256104
     chest_in_the_park_staging = 832012730599735326
-    chest_in_the_park_qa = 832012815819604009
     decoders_dev = 891001866073296967
     doodle_crew = 878067389634314250
     doodle_crew_dev = 878067427668275241
@@ -29,19 +27,20 @@ class EmbeddedActivity(object):
     watch_together_dev = 880218832743055411
     word_snacks = 879863976006127627
     word_snacks_dev = 879864010126786570
-    youtube_together = 755600276941176913
+    youtube = 755600276941176913
+
 
 applications = {
-    'youtube': '755600276941176913', 
-    'youtubedev': '880218832743055411',
-    'poker': '755827207812677713',  
-    'betrayal': '773336526917861400',  
-    'fishing': '814288819477020702',  
-    'chess': '832012774040141894',  
-    'chessdev': '832012586023256104',  
-    'lettertile': '879863686565621790',  
-    'wordsnack': '879863976006127627',  
-    'doodlecrew': '878067389634314250',  
-    'spellcast': '852509694341283871',  
-    'checkers': '807655087643557919',  
+    "youtube": "755600276941176913",
+    "youtubedev": "880218832743055411",
+    "poker": "755827207812677713",
+    "betrayal": "773336526917861400",
+    "fishing": "814288819477020702",
+    "chess": "832012774040141894",
+    "chessdev": "832012586023256104",
+    "lettertile": "879863686565621790",
+    "wordsnack": "879863976006127627",
+    "doodlecrew": "878067389634314250",
+    "spellcast": "852509694341283871",
+    "checkers": "807655087643557919",
 }

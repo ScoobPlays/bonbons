@@ -1,12 +1,14 @@
 import io, os, sys, textwrap, traceback, contextlib
 from disnake.ext import commands
-from together import *
+from together import EmbeddedActivity, Together
+from typing import Optional, Union
 import disnake
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
+        self.client = Together(self.bot)
 
     def paginate(self, text: str) -> str:
         last = 0
@@ -123,6 +125,16 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         """Evaluates python code."""
 
         await self.eval_code(ctx, code)
+
+    @commands.command()
+    @commands.is_owner()
+    async def activity(
+        self, ctx, vc: Optional[Union[int, disnake.VoiceChannel]], activity
+    ):
+        data = getattr(EmbeddedActivity, activity)
+        vc = vc or ctx.author.voice.channel.id
+
+        await ctx.send(await self.client.create_activity(vc, data))
 
 
 def setup(bot):

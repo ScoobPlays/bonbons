@@ -1,5 +1,6 @@
 from keep_alive import keep_alive
 from .help_command import HelpCommand
+from cogs.roles import SelfRoles
 from datetime import datetime
 from disnake.ext import commands
 import disnake
@@ -13,19 +14,21 @@ class Bonbons(commands.Bot):
         super().__init__(
             command_prefix=".",
             case_insensitive=True,
-            test_guilds = [
-                880030618275155998 #Kayle's hub
-            ],
+            test_guilds=[880030618275155998],  # Kayle's hub
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
-            help_command=HelpCommand(),
+            help_command=None,
             strip_after_prefix=True,
             **kwargs,
         )
         self.uptime = datetime.utcnow().timestamp()
+        self.persistent_views_added = False
 
     async def on_ready(self):
         print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")
+
+        self.add_view(SelfRoles())
+        self.persistent_views_added = True
 
         for filename in os.listdir("cogs"):
             if filename.endswith(".py"):
@@ -39,7 +42,7 @@ class Bonbons(commands.Bot):
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
         os.environ["JISHAKU_PY_RES"] = "false"
         os.environ["JISHAKU_EMBEDDED_JSK"] = "1"
-        os.environ['JISHAKU_EMBEDDED_JSK_COLOUR'] = "0x99aab5"
+        os.environ["JISHAKU_EMBEDDED_JSK_COLOUR"] = "0x99aab5"
         os.environ.setdefault("JISHAKU_NO_UNDERSCORE", "1")
         os.environ.setdefault("JISHAKU_HIDE", "1")
         self.load_extension("jishaku")

@@ -1,13 +1,14 @@
-from utils.env import thank
+from typing import Union, Optional
+from datetime import datetime
 from disnake.ext import commands
-import random
 import disnake
-from typing import Optional
+from utils.env import thank
+import random
 
 facepalms = ("🤦‍♂️", "🤦‍♀️", "🤦")
 
 
-class Thank(commands.Cog, description="Compliment related commands."):
+class Utilities(commands.Cog, description="Utilities for anything."):
     def __init__(self, bot):
         self.bot = bot
         self.thank = thank
@@ -106,6 +107,102 @@ class Thank(commands.Cog, description="Compliment related commands."):
             .add_field(name="Thanks Received", value=data["received"], inline=False)
         )
 
+    async def find_thread(self, ctx: commands.Context, name: str):
+        try:
+            threads = []
+            for channel in ctx.guild.text_channels:
+                for thread in channel.threads:
+                    if thread.name.startswith(name) or thread.name == name:
+                        threads.append(thread.mention)
+            await ctx.send(", ".join(threads))
+        except Exception:
+            await ctx.send(
+                embed=disnake.Embed(
+                    description=f"No threads were found.",
+                    color=disnake.Color.red(),
+                )
+            )
+
+    @commands.group()
+    async def thread(self, ctx: commands.Context):
+        """Base command for thread."""
+        pass
+
+    @thread.command()
+    async def find(self, ctx: commands.Context, *, name: str):
+
+        """Searches the guild for a thread."""
+
+        await self.find_thread(ctx, name)
+
+    @thread.command()
+    @commands.has_permissions(manage_channels=True)
+    async def massdelete(self, ctx: commands.Context):
+        """Deletes every thread in the guild."""
+        for channel in ctx.guild.text_channels:
+            for thread in channel.threads:
+                await thread.delete()
+                await ctx.message.add_reaction("✅")
+
+    @commands.group(invoke_without_command=True)
+    async def emoji(self, ctx):
+        """The base command for emoji."""
+        await ctx.send_help("emoji")
+
+    @emoji.command()
+    @commands.has_permissions(manage_emojis=True)
+    async def copy(self, ctx, argument: int, name: Optional[str]):
+
+        """
+        Copies an emoji using ID.
+        A command for people who don't have nitro.
+        """
+
+        name = name or "emoji"
+        async with ctx.typing():
+            async with self.bot.session.get(
+                f"https://cdn.discordapp.com/emojis/{argument}.png?size=80"
+            ) as data:
+                emoji = await data.read()
+                emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
+                await ctx.send(emote)
+
+    @emoji.command()
+    @commands.has_permissions(manage_emojis=True)
+    async def create(self, ctx, url: str, name: str):
+
+        """
+        Creates an emoji by link.
+        """
+
+        name = name or "emoji"
+
+        async with ctx.typing():
+            async with self.bot.session.get(url) as data:
+                emoji = await data.read()
+                emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
+                await ctx.send(emote)
+
+    @emoji.command()
+    @commands.has_permissions(manage_emojis=True)
+    async def delete(self, ctx, name: Union[disnake.Emoji, int]):
+
+        """
+        Deletes an emoji by ID or emote.
+        """
+
+        if name == int:
+            emoji = await self.bot.get_emoji(name)
+            await emoji.delete()
+            await ctx.message.add_reaction("✅")
+
+        if name == disnake.Emoji:
+            await name.delete()
+            await ctx.message.add_reaction("✅")
+
+        else:
+            await ctx.send("An error occurred while deleting the emoji.")
+
 
 def setup(bot):
-    bot.add_cog(Thank(bot))
+    bot.add_cog(Utilities(bot))

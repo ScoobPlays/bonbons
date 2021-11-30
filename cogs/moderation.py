@@ -3,6 +3,7 @@ from disnake.ext import commands
 from datetime import datetime
 from typing import Union
 
+
 class Moderation(commands.Cog, description="Moderation related commands."):
     def __init__(self, bot):
         self.bot = bot

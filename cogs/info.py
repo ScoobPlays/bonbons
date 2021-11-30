@@ -10,6 +10,30 @@ class Information(commands.Cog, description="Information related commands."):
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
+    async def context_send_emojis(self, ctx):
+        all_emojis = []
+
+        for emoji in ctx.guild.emojis:
+            full_emoji = f"<:{emoji.name}:{emoji.id}>"
+            all_emojis.append(full_emoji)
+
+        embed = disnake.Embed(
+            title=f"Total Emoji's [{len(ctx.guild.emojis)}]",
+            description="".join(all_emojis),
+            color=disnake.Color.greyple(),
+            timestamp=datetime.utcnow(),
+        )
+
+        if len(embed) > 2000:
+            return await ctx.send("There were too many emoji's. Embed failed to send.")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.guild_only()
+    async def emojis(self, ctx):
+        """Returns all the emojis in the guild."""
+        await self.context_send_emojis(ctx)
+
     @commands.command()
     async def snowflake(self, ctx: commands.Context, argument: int) -> None:
 

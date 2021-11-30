@@ -46,7 +46,7 @@ class HelpCommand(commands.HelpCommand):
     async def send_command_help(self, command):
         signature = self.get_command_signature(command).replace(".", "").strip()
         embed = HelpEmbed(
-            title=f"{signature}", description=command.help or "No help found.."
+            title=f"{signature}", description=command.help or "..."
         ).add_field(name="Hidden", value=command.hidden)
 
         if cog := command.cog:
@@ -64,13 +64,13 @@ class HelpCommand(commands.HelpCommand):
         await self.send(embed=embed)
 
     async def send_help_embed(self, title, description, commands):
-        embed = HelpEmbed(title=title, description=description or "No help found..")
+        embed = HelpEmbed(title=title, description=description or "...")
 
         if filtered_commands := await self.filter_commands(commands, sort=True):
             for command in filtered_commands:
                 embed.add_field(
                     name=self.get_command_signature(command),
-                    value=command.help or "No help found..",
+                    value=command.help or "...",
                 )
 
         await self.send(embed=embed)
@@ -84,6 +84,3 @@ class HelpCommand(commands.HelpCommand):
         await self.send_help_embed(
             f"{title} Category", cog.description, cog.get_commands()
         )
-
-    async def on_help_command_error(self, ctx, error):
-        await ctx.send(error)
