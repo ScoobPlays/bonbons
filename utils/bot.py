@@ -1,5 +1,5 @@
-from keep_alive import keep_alive
 from .help_command import BonbonsHelpCommand
+from .survive import survive
 from cogs.roles import SelfRoles
 from datetime import datetime
 from disnake.ext import commands
@@ -38,7 +38,7 @@ class Bonbons(commands.Bot):
             if filename.endswith(".py"):
                 self.load_extension(f"cogs.utilities.{filename[:-3]}")
 
-        keep_alive()
+        survive()
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
         os.environ["JISHAKU_PY_RES"] = "false"
         os.environ["JISHAKU_EMBEDDED_JSK"] = "1"

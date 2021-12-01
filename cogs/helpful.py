@@ -48,6 +48,10 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         self.last = None
         self.facepalms = random.choice(facepalms)
 
+    @commands.Cog.listener()
+    async def on_command(self, ctx):
+        await 
+
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
@@ -330,6 +334,10 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         """Retrieve's documentation about the Disnake library."""
         await self.do_rtfm(ctx, "disnake", obj)
 
+    @commands.command()
+    async def info(self, ctx):
+        """Returns the bots info."""
+        ...
 
 def setup(bot):
     bot.add_cog(Helpful(bot))
