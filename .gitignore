@@ -1,5 +1,6 @@
 #Files
 utils/env.py
+cogs/sc.py
 keep_alive.py
 
 #Python
