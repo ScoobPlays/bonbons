@@ -16,7 +16,6 @@ class Events(Cog, description="A cog for events/logs."):
             880030723908722729
         )
 
-
     @Cog.listener()
     async def on_member_update(self, before: disnake.Member, after: disnake.Member):
         if before.roles != after.roles:

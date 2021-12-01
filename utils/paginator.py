@@ -1,6 +1,7 @@
 import disnake
 from typing import List
 
+
 class BonbonsHelpPaginator(disnake.ui.View):
     def __init__(self, ctx, embeds: List[disnake.Embed]):
         super().__init__()
@@ -47,6 +48,7 @@ class BonbonsHelpPaginator(disnake.ui.View):
     ):
         await inter.response.defer()
         await inter.delete_original_message()
+
 
 class EmbedPaginator(disnake.ui.View):
     def __init__(self, ctx, embeds: List[disnake.Embed]):

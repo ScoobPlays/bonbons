@@ -2,6 +2,7 @@ from disnake.ext import commands
 from utils.env import cluster
 import disnake
 
+
 class RPS(disnake.ui.View):
     def __init__(self, ctx, member):
         super().__init__()
@@ -20,32 +21,24 @@ class RPS(disnake.ui.View):
             if self.member.id not in self.picks["rock"]:
                 self.picks["rock"].append(self.member.id)
                 print(self.picks["rock"])
-                await inter.response.send_message(
-                    "You chose rock.",
-                    ephemeral=True
-                )
+                await inter.response.send_message("You chose rock.", ephemeral=True)
 
             else:
                 await inter.response.send_message(
-                    "You already chose rock!",
-                    ephemeral=True
+                    "You already chose rock!", ephemeral=True
                 )
-                
 
         if self.author.id == inter.author.id:
             if self.author.id not in self.picks["rock"]:
                 self.picks["rock"].append(self.author.id)
                 print(self.picks["rock"])
-                await inter.response.send_message(
-                    "You chose rock.",
-                    ephemeral=True
-                )
+                await inter.response.send_message("You chose rock.", ephemeral=True)
 
             else:
                 await inter.response.send_message(
-                    "You already chose rock!",
-                    ephemeral=True
+                    "You already chose rock!", ephemeral=True
                 )
+
 
 class Development(commands.Cog, description="Commands that are a work in progress."):
     def __init__(self, bot):

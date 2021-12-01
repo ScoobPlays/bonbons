@@ -2,12 +2,14 @@ import disnake
 from urllib.parse import quote_plus
 from datetime import datetime
 
+
 class Google(disnake.ui.View):
     def __init__(self, query: str) -> str:
         super().__init__()
         query = quote_plus(query)
         url = f"https://www.google.com/search?q={query}"
         self.add_item(disnake.ui.Button(label="Click Here", url=url))
+
 
 class EditSnipeView(disnake.ui.View):
     def __init__(self, ctx, before, after):
@@ -67,6 +69,7 @@ class EditSnipeView(disnake.ui.View):
         await inter.response.defer()
         await inter.delete_original_message()
         await self.ctx.message.delete()
+
 
 class Calculator(disnake.ui.View):
     def __init__(self):
