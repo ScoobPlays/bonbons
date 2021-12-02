@@ -339,5 +339,6 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         """Returns the bots info."""
         ...
 
+
 def setup(bot):
     bot.add_cog(Helpful(bot))
