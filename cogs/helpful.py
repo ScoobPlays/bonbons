@@ -50,7 +50,7 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        await 
+        ...
 
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"

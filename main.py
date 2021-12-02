@@ -1,4 +1,4 @@
-from utils.bonbons import Bonbons
+from utils.bot import Bonbons
 from together import Together
 import os
 
