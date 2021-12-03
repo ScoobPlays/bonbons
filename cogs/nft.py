@@ -30,7 +30,7 @@ class NFT(commands.Cog, description="NFT related commands."):
 
     @nft.command()
     async def create(self, ctx, link, *, name):
-        """ "Create's an NFT."""
+        """Create's an NFT."""
         if not link.endswith(".png") or link.endswith(".gif"):
             return await ctx.send("The link must end with `png` or `gif`.")
         data = await self.nft.find({}).to_list(1000)
@@ -50,7 +50,7 @@ class NFT(commands.Cog, description="NFT related commands."):
 
     @nft.command()
     async def profile(self, ctx, member: disnake.Member = None):
-        """ "Display NFT stat's for a member."""
+        """Display NFT stat's for a member."""
 
         member = member or ctx.author
         data = await self.nft.find({}).to_list(1000)
@@ -74,7 +74,7 @@ class NFT(commands.Cog, description="NFT related commands."):
 
     @nft.command()
     async def lookup(self, ctx, name: Union[int, str]):
-        """ "Find's an NFT by name/id."""
+        """Find's an NFT by name/id."""
 
         data = await self.nft.find_one({"name": name}) or await self.nft.find_one(
             {"_id": name}
@@ -103,6 +103,8 @@ class NFT(commands.Cog, description="NFT related commands."):
 
     @nft.command()
     async def buy(self, ctx, name: Union[int, str]):
+
+        """Buy an NFT."""
 
         data = await self.nft.find_one({"name": name}) or await self.nft.find_one(
             {"_id": name}

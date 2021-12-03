@@ -1,6 +1,7 @@
 from .utilities.utilsforanything import facepalms
 import re, random, asyncio, io, os, zlib
 from typing import Union, Optional, Dict
+from utils.env import db
 from pyston import PystonClient, File
 from disnake.ext import commands
 from utils.rtfm import fuzzy
@@ -46,11 +47,19 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
         self.bot = bot
         self.last = None
+        self.bot_db = db["bot"]
         self.facepalms = random.choice(facepalms)
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        ...
+        tag = await self.bot_db.find_one({"_id": self.bot.user.id})
+
+        if not tag:
+            await self.bot_db.insert_one({"_id": self.bot.user.id, "uses": 0})
+
+        uses = tag["uses"] + 1
+
+        await self.bot_db.update_one(tag, {"$set": {"uses": int(uses)}})
 
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
@@ -201,16 +210,6 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
                 else:
                     await ctx.send("A package with that name does not exist.")
 
-    @commands.command()
-    async def uptime(self, ctx):
-        embed = disnake.Embed(
-            title="My Uptime",
-            description=f"I have been online since <t:{int(self.bot.uptime)}:R>",
-            color=disnake.Color.greyple(),
-        )
-
-        await ctx.send(embed=embed)
-
     def parse_object_inv(self, stream: SphinxObjectFileReader, url: str) -> Dict:
         result = {}
         inv_version = stream.readline().rstrip()
@@ -334,10 +333,22 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         """Retrieve's documentation about the Disnake library."""
         await self.do_rtfm(ctx, "disnake", obj)
 
-    @commands.command()
+    @commands.command(aliases=("uptime", "commands", "botinfo", "bot"))
     async def info(self, ctx):
         """Returns the bots info."""
-        ...
+        embed = disnake.Embed(
+            title="My Information",
+            color=disnake.Color.greyple(),
+            description=f"I have access to {len(self.bot.guilds)} guilds and can see {len(self.bot.users)} users. ",
+        )
+
+        data = await self.bot_db.find_one({"_id": self.bot.user.id})
+        embed.add_field(name="Commands", value=f"**{data['uses']}** have been invoked.")
+        embed.add_field(
+            name="Uptime",
+            value=f"I have been online since <t:{int(self.bot.uptime)}:R>",
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
