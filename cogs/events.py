@@ -6,15 +6,16 @@ from datetime import datetime
 class Events(Cog, description="A cog for events/logs."):
     def __init__(self, bot):
         self.bot = bot
-        self.logs = self.bot.get_guild(880030618275155998).get_channel(
-            907820956733558784
-        )
-        self.general = self.bot.get_guild(880030618275155998).get_channel(
-            880387280576061450
-        )
-        self.member = self.bot.get_guild(880030618275155998).get_role(
-            880030723908722729
-        )
+        
+
+    async def send_log(self, embed: disnake.Embed):
+        name = "Bonbons Logs"
+        channel = self.bot.get_channel(907820956733558784) or await self.bot.fetch_channel(907820956733558784)
+
+        webhooks = await channel.webhooks()
+        webhook = disnake.utils.find(lambda w: w.name == name, webhooks)
+
+        await webhook.send(embed=embed)
 
     @Cog.listener()
     async def on_member_update(self, before: disnake.Member, after: disnake.Member):
@@ -36,7 +37,7 @@ class Events(Cog, description="A cog for events/logs."):
                 name=f"New Roles",
                 value=" ".join([role.mention for role in after.roles[1:]]),
             )
-            await self.logs.send(embed=embed)
+            await self.send_log(embed=embed)
 
         if before.display_name != after.display_name:
             embed = disnake.Embed(
@@ -50,7 +51,7 @@ class Events(Cog, description="A cog for events/logs."):
             )
             embed.add_field(name="Old Nickname", value=before.display_name)
             embed.add_field(name="New Nickname", value=after.display_name)
-            await self.logs.send(embed=embed)
+            await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_member_join(self, member: disnake.Member):
@@ -60,8 +61,24 @@ class Events(Cog, description="A cog for events/logs."):
         if member.guild.id != 880030618275155998:
             return
 
-        await member.add_roles(self.member)
-        await self.general.send(
+        general = self.bot.get_channel(
+            880387280576061450
+        ) or await self.bot.fetch_channel(
+            880387280576061450
+        )
+
+        guild = self.bot.get_guild(
+            880030618275155998
+            ) or await self.bot.fetch_guild(
+                880030618275155998
+                )
+
+        member = guild.get_role(
+            880030723908722729
+        ) 
+
+        await member.add_roles(member)
+        await general.send(
             embed=disnake.Embed(
                 title="Welcome!",
                 description=f"{member.mention} joined! Hope you stay!!",
@@ -77,17 +94,24 @@ class Events(Cog, description="A cog for events/logs."):
             **Joined At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_member_remove(self, member: disnake.Member):
 
+        await self.bot.wait_until_ready()
+
+
         if member.guild.id != 880030618275155998:
             return
 
-        await self.bot.wait_until_ready()
+        general = self.bot.get_channel(
+            880387280576061450
+        ) or await self.bot.fetch_channel(
+            880387280576061450
+        )
 
-        await self.general.send(
+        await general.send(
             embed=disnake.Embed(
                 title="Goodbye!",
                 description=f"{member.mention} left.. :cry:",
@@ -103,7 +127,7 @@ class Events(Cog, description="A cog for events/logs."):
             **Left At:** <t:{int(datetime.utcnow().timestamp())}:F> (<t:{int(datetime.utcnow().timestamp())}:R>)
             """,
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_message_delete(self, message: disnake.Message):
@@ -125,7 +149,7 @@ class Events(Cog, description="A cog for events/logs."):
 
         if message.attachments:
             embed.set_image(url=message.attachments[0].url)
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
@@ -147,7 +171,7 @@ class Events(Cog, description="A cog for events/logs."):
             embed.add_field(name="Before Content", value=before.content, inline=False)
             embed.add_field(name="After Content", value=after.content, inline=False)
 
-            await self.logs.send(embed=embed)
+            await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_guild_channel_create(self, channel: disnake.abc.GuildChannel):
@@ -160,7 +184,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.brand_green(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_guild_channel_delete(self, channel: disnake.abc.GuildChannel):
@@ -173,7 +197,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.brand_green(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_member_ban(self, guild: disnake.Guild, user: disnake.User):
@@ -186,7 +210,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.darker_gray(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_member_unban(self, guild: disnake.Guild, user: disnake.User):
@@ -199,7 +223,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.darker_gray(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_invite_delete(self, invite: disnake.Invite):
@@ -212,7 +236,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.fuchsia(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_invite_create(self, invite: disnake.Invite):
@@ -225,7 +249,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.fuchsia(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_thread_join(self, thread: disnake.Thread):
@@ -238,7 +262,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.orange(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_thread_delete(self, thread: disnake.Thread):
@@ -251,7 +275,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.orange(),
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_thread_member_join(self, member: disnake.ThreadMember):
@@ -265,7 +289,7 @@ class Events(Cog, description="A cog for events/logs."):
             """,
             color=disnake.Color.orange(),
         ).add_field(name="Description", value=f"{member.mention} joined a thread.")
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
     @Cog.listener()
     async def on_thread_member_remove(self, member: disnake.ThreadMember):
@@ -281,7 +305,7 @@ class Events(Cog, description="A cog for events/logs."):
         ).add_field(
             name="Description", value=f"{member.mention} was removed from a thread."
         )
-        await self.logs.send(embed=embed)
+        await self.send_log(embed=embed)
 
 
 def setup(bot):

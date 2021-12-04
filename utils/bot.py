@@ -21,17 +21,12 @@ class Bonbons(commands.Bot):
             **kwargs,
         )
         self.uptime = datetime.utcnow().timestamp()
+        self._BotBase__cogs  = commands.core._CaseInsensitiveDict()
+        self.main_guild = self.get_guild(880030618275155998)
+
 
     async def on_ready(self):
         print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")
-
-        for filename in os.listdir("cogs"):
-            if filename.endswith(".py"):
-                self.load_extension(f"cogs.{filename[:-3]}")
-
-        for filename in os.listdir("cogs/utilities"):
-            if filename.endswith(".py"):
-                self.load_extension(f"cogs.utilities.{filename[:-3]}")
 
         survive()
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
@@ -44,6 +39,16 @@ class Bonbons(commands.Bot):
 
         if not hasattr(self, "session"):
             self.session = aiohttp.ClientSession(loop=self.loop)
+
+
+    def load(self):
+        for filename in os.listdir("cogs"):
+            if filename.endswith(".py"):
+                self.load_extension(f"cogs.{filename[:-3]}")
+
+        for filename in os.listdir("cogs/utilities"):
+            if filename.endswith(".py"):
+                self.load_extension(f"cogs.utilities.{filename[:-3]}")
 
     async def on_command_error(self, ctx: commands.Context, error: str):
 
