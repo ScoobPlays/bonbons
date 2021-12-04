@@ -6,11 +6,12 @@ from datetime import datetime
 class Events(Cog, description="A cog for events/logs."):
     def __init__(self, bot):
         self.bot = bot
-        
 
     async def send_log(self, embed: disnake.Embed):
         name = "Bonbons Logs"
-        channel = self.bot.get_channel(907820956733558784) or await self.bot.fetch_channel(907820956733558784)
+        channel = self.bot.get_channel(
+            907820956733558784
+        ) or await self.bot.fetch_channel(907820956733558784)
 
         webhooks = await channel.webhooks()
         webhook = disnake.utils.find(lambda w: w.name == name, webhooks)
@@ -63,19 +64,13 @@ class Events(Cog, description="A cog for events/logs."):
 
         general = self.bot.get_channel(
             880387280576061450
-        ) or await self.bot.fetch_channel(
-            880387280576061450
+        ) or await self.bot.fetch_channel(880387280576061450)
+
+        guild = self.bot.get_guild(880030618275155998) or await self.bot.fetch_guild(
+            880030618275155998
         )
 
-        guild = self.bot.get_guild(
-            880030618275155998
-            ) or await self.bot.fetch_guild(
-                880030618275155998
-                )
-
-        member = guild.get_role(
-            880030723908722729
-        ) 
+        member = guild.get_role(880030723908722729)
 
         await member.add_roles(member)
         await general.send(
@@ -101,15 +96,12 @@ class Events(Cog, description="A cog for events/logs."):
 
         await self.bot.wait_until_ready()
 
-
         if member.guild.id != 880030618275155998:
             return
 
         general = self.bot.get_channel(
             880387280576061450
-        ) or await self.bot.fetch_channel(
-            880387280576061450
-        )
+        ) or await self.bot.fetch_channel(880387280576061450)
 
         await general.send(
             embed=disnake.Embed(
