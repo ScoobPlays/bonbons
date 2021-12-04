@@ -1,5 +1,4 @@
 from typing import Union, Optional
-from datetime import datetime
 from disnake.ext import commands
 import disnake
 from utils.env import thank
@@ -13,7 +12,7 @@ class Utilities(commands.Cog, description="Utilities for anything."):
         self.bot = bot
         self.thank = thank
 
-    async def send_thank(self, ctx, member, reason):
+    async def send_thank(self, ctx: commands.Context, member: disnake.Member, reason: str):
         if member == ctx.author:
             return await ctx.send(
                 embed=disnake.Embed(
@@ -31,56 +30,61 @@ class Utilities(commands.Cog, description="Utilities for anything."):
 
     @commands.group(invoke_without_command=True)
     async def thank(
-        self, ctx: commands.Context, member: disnake.Member, *, reason: Optional[str]
+        self, ctx: commands.Context, member: disnake.Member=None, *, reason: Optional[str]
     ):
 
         """
         Thank a member for something.
         """
 
-        await self.send_thank(ctx, member, reason)
+        if not member:
+            await ctx.send_help('thank')
 
-        try:
-            author = await self.thank.find_one({"_id": ctx.author.id})
-            receiver = await self.thank.find_one({"_id": member.id})
+        else:
 
-            if not author:
-                await self.thank.insert_one(
-                    {
-                        "_id": ctx.author.id,
-                        "sent": 0,
-                        "received": 0,
-                    }
-                )
-                new_receiver = await self.thank.find_one({"_id": ctx.author.id})
+            await self.send_thank(ctx, member, reason)
 
-                new_sent = new_receiver["sent"] + 1
-                await self.thank.update_one(new_receiver, {"$set": {"sent": new_sent}})
+            try:
+                author = await self.thank.find_one({"_id": ctx.author.id})
+                receiver = await self.thank.find_one({"_id": member.id})
 
-            if not receiver:
-                await self.thank.insert_one(
-                    {
-                        "_id": member.id,
-                        "sent": 0,
-                        "received": 0,
-                    }
-                )
-                new_find = await self.thank.find_one({"_id": member.id})
+                if not author:
+                    await self.thank.insert_one(
+                        {
+                            "_id": ctx.author.id,
+                            "sent": 0,
+                            "received": 0,
+                        }
+                    )
+                    new_receiver = await self.thank.find_one({"_id": ctx.author.id})
 
-                new_received = new_find["received"] + 1
-                await self.thank.update_one(
-                    new_find, {"$set": {"received": new_received}}
-                )
+                    new_sent = new_receiver["sent"] + 1
+                    await self.thank.update_one(new_receiver, {"$set": {"sent": new_sent}})
 
-            if author and receiver:
-                sent = author["sent"] + 1
-                received = receiver["received"] + 1
+                if not receiver:
+                    await self.thank.insert_one(
+                        {
+                            "_id": member.id,
+                            "sent": 0,
+                            "received": 0,
+                        }
+                    )
+                    new_find = await self.thank.find_one({"_id": member.id})
 
-            await self.thank.update_one(author, {"$set": {"sent": sent}})
-            await self.thank.update_one(receiver, {"$set": {"received": received}})
+                    new_received = new_find["received"] + 1
+                    await self.thank.update_one(
+                        new_find, {"$set": {"received": new_received}}
+                    )
 
-        except UnboundLocalError:
-            return
+                if author and receiver:
+                    sent = author["sent"] + 1
+                    received = receiver["received"] + 1
+
+                await self.thank.update_one(author, {"$set": {"sent": sent}})
+                await self.thank.update_one(receiver, {"$set": {"received": received}})
+
+            except UnboundLocalError:
+                return
 
     @thank.command(name="stats")
     async def thank_stats(self, ctx, member: disnake.Member = None):
@@ -126,7 +130,7 @@ class Utilities(commands.Cog, description="Utilities for anything."):
     @commands.group()
     async def thread(self, ctx: commands.Context):
         """Base command for thread."""
-        pass
+        await ctx.send_help('thread')
 
     @thread.command()
     async def find(self, ctx: commands.Context, *, name: str):

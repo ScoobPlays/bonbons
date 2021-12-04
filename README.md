@@ -1,7 +1,7 @@
-# TODO
-- Adding back prefixed commands to tags.
-- Paginator for tags.
+## Bonbons
 
-~~Paginator for urban.~~ Added.
+- Bonbons is a bot made by kayle~
 
-~~Remove `together` folder when pypi reaches `2.3`.~~ Made an alternative.
+## Credits
+
+Carrot, Geno

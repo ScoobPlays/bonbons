@@ -1,6 +1,5 @@
 from .help_command import BonbonsHelpCommand
 from .survive import survive
-from cogs.roles import SelfRoles
 from datetime import datetime
 from disnake.ext import commands
 import disnake
@@ -22,13 +21,9 @@ class Bonbons(commands.Bot):
             **kwargs,
         )
         self.uptime = datetime.utcnow().timestamp()
-        self.persistent_views_added = False
 
     async def on_ready(self):
         print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")
-
-        self.add_view(SelfRoles())
-        self.persistent_views_added = True
 
         for filename in os.listdir("cogs"):
             if filename.endswith(".py"):
