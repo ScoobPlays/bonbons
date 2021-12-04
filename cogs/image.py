@@ -17,7 +17,9 @@ class Image(commands.Cog, description="Image related commands."):
 
     @commands.command(hidden=True)
     async def nft(self, ctx):
-        await ctx.send("Are you looking for the nft command? Well, that command has changed to `image` instead of `nft`. Try it out! `.image`")
+        await ctx.send(
+            "Are you looking for the nft command? Well, that command has changed to `image` instead of `nft`. Try it out! `.image`"
+        )
 
     @image.command()
     async def create(self, ctx: commands.Context, link: str, *, name: str):
@@ -48,7 +50,15 @@ class Image(commands.Cog, description="Image related commands."):
         member = member or ctx.author
         data = await self.images.find({}).to_list(10000)
 
-        images, names, owners, ids, embeds, image_ids, links = [], [], [], [], [], [], []
+        images, names, owners, ids, embeds, image_ids, links = (
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+        )
 
         for item in data:
             images.append(item["link"])

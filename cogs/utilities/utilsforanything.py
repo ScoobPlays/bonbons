@@ -12,7 +12,9 @@ class Utilities(commands.Cog, description="Utilities for anything."):
         self.bot = bot
         self.thank = thank
 
-    async def send_thank(self, ctx: commands.Context, member: disnake.Member, reason: str):
+    async def send_thank(
+        self, ctx: commands.Context, member: disnake.Member, reason: str
+    ):
         if member == ctx.author:
             return await ctx.send(
                 embed=disnake.Embed(
@@ -30,7 +32,11 @@ class Utilities(commands.Cog, description="Utilities for anything."):
 
     @commands.group(invoke_without_command=True)
     async def thank(
-        self, ctx: commands.Context, member: disnake.Member=None, *, reason: Optional[str]
+        self,
+        ctx: commands.Context,
+        member: disnake.Member = None,
+        *,
+        reason: Optional[str],
     ):
 
         """
@@ -38,7 +44,7 @@ class Utilities(commands.Cog, description="Utilities for anything."):
         """
 
         if not member:
-            await ctx.send_help('thank')
+            await ctx.send_help("thank")
 
         else:
 
@@ -59,7 +65,9 @@ class Utilities(commands.Cog, description="Utilities for anything."):
                     new_receiver = await self.thank.find_one({"_id": ctx.author.id})
 
                     new_sent = new_receiver["sent"] + 1
-                    await self.thank.update_one(new_receiver, {"$set": {"sent": new_sent}})
+                    await self.thank.update_one(
+                        new_receiver, {"$set": {"sent": new_sent}}
+                    )
 
                 if not receiver:
                     await self.thank.insert_one(
@@ -130,7 +138,7 @@ class Utilities(commands.Cog, description="Utilities for anything."):
     @commands.group()
     async def thread(self, ctx: commands.Context):
         """Base command for thread."""
-        await ctx.send_help('thread')
+        await ctx.send_help("thread")
 
     @thread.command()
     async def find(self, ctx: commands.Context, *, name: str):
