@@ -1,4 +1,4 @@
-from .help_command import BonbonsHelpCommand
+from .help_command import HelpCommand
 from .survive import survive
 from datetime import datetime
 from disnake.ext import commands
@@ -16,13 +16,13 @@ class Bonbons(commands.Bot):
             test_guilds=[880030618275155998],  # Kayle's hub
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
-            help_command=BonbonsHelpCommand(),
+            help_command=HelpCommand(),
             strip_after_prefix=True,
             **kwargs,
         )
         self.uptime = datetime.utcnow().timestamp()
         self._BotBase__cogs = commands.core._CaseInsensitiveDict()
-        self.main_guild = self.get_guild(880030618275155998)
+        self.used_commands = 0
 
     async def on_ready(self):
         print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")
@@ -44,9 +44,9 @@ class Bonbons(commands.Bot):
             if filename.endswith(".py"):
                 self.load_extension(f"cogs.{filename[:-3]}")
 
-        for filename in os.listdir("cogs/utilities"):
+        for filename in os.listdir("cogs/groups"):
             if filename.endswith(".py"):
-                self.load_extension(f"cogs.utilities.{filename[:-3]}")
+                self.load_extension(f"cogs.groups.{filename[:-3]}")
 
     async def on_command_error(self, ctx: commands.Context, error: str):
 
@@ -57,28 +57,14 @@ class Bonbons(commands.Bot):
             return
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(
-                embed=disnake.Embed(
-                    title="Missing Required Argument",
-                    description=error,
-                    color=disnake.Color.red(),
-                )
-            )
+            await ctx.send(error)
 
         elif isinstance(error, disnake.Forbidden):
-            await ctx.send(
-                embed=disnake.Embed(
-                    description="I do not have enough permissions to invoke this command.",
-                    color=disnake.Color.red(),
-                )
-            )
+            await ctx.send(error)
 
         else:
-            await ctx.reply(
-                embed=disnake.Embed(description=error, color=disnake.Color.red())
-            )
+            await ctx.reply(error)
             raise error
 
 
 bot = Bonbons()
-bot.uptime = datetime.utcnow().timestamp()

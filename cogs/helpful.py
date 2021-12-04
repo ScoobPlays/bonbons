@@ -1,4 +1,4 @@
-from .utilities.utilsforanything import facepalms
+from .groups.utilsforanything import facepalms
 import re, random, asyncio, io, os, zlib
 from typing import Union, Optional, Dict
 from utils.env import db
@@ -60,6 +60,7 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         uses = tag["uses"] + 1
 
         await self.bot_db.update_one(tag, {"$set": {"uses": int(uses)}})
+        self.bot.used_commands = uses
 
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"

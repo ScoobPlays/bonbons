@@ -1,6 +1,5 @@
 from utils.bot import Bonbons
 from together import Together
-from disnake.ext import commands
 import os
 
 bot = Bonbons()
