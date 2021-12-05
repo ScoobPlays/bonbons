@@ -65,15 +65,17 @@ class Image(commands.Cog, description="Image related commands."):
                     description=f"Displaying `{name}` by <@{owner}> (ID: {image_id})",
                     color=disnake.Color.blurple(),
                 ).set_image(url=link)
-
+                )
+        
         await ctx.send(
             embed=disnake.Embed(
                 title=f"{member}'s Profile",
                 description=f"Images: {image_ids}",
-                color=disnake.Color.blurple(),
-            ),
-            view=EmbedPaginator(ctx, embeds),
-        )
+                color=disnake.Color.blurple()
+                ), view=EmbedPaginator(
+                    ctx, embeds
+                    )
+                    )
 
     @image.command()
     async def lookup(self, ctx, name: Union[int, str]):

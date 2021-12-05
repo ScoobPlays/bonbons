@@ -71,17 +71,36 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         lang = matches[0][0] or matches[0][1]
 
         if not lang:
-            return await ctx.reply(
-                embed=disnake.Embed(
-                    description="No language was hinted.", color=disnake.Color.red()
-                )
-            )
+            return await ctx.reply("No language was hinted in the codeblock.")
         output = await self.pysclient.execute(str(lang), [File(code)])
 
-        msg = await ctx.reply(
-            embed=disnake.Embed(description=output, color=disnake.Color.greyple())
-        )
-        self.last = msg
+        if output.raw_json['run']['stdout'] == '' and output.raw_json['run']['stderr']:
+            new = await ctx.reply(
+                embed=disnake.Embed(
+                    description=output, color=disnake.Color.red()
+                    )
+                )
+            self.last = new
+            return
+
+
+        if output.raw_json['run']['stdout'] == '':            
+            old = await ctx.reply(
+                embed=disnake.Embed(
+                    description="**[No output]**", color=disnake.Color.yellow()
+                    )
+                )
+            self.last = old
+            return
+
+        else:
+            msg = await ctx.reply(
+                embed=disnake.Embed(
+                    description=output, color=disnake.Color.green()
+                )
+            )
+            self.last = msg
+            return
 
     async def on_run_code(
         self,
@@ -106,17 +125,36 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
                     )
                 )
             output = await self.pysclient.execute(str(lang), [File(code)])
+            print(output.raw_json)
 
-            await before.reply(
-                embed=disnake.Embed(description=output, color=disnake.Color.greyple())
-            )
-        except Exception:
-            return
+
+            if output.raw_json['run']['stdout'] == '' and output.raw_json['run']['stderr']:
+                return await before.reply(
+                    embed=disnake.Embed(
+                        description=output, color=disnake.Color.red()
+                        )
+                    )
+
+            if output.raw_json['run']['stdout'] == '':            
+                return await before.reply(
+                    embed=disnake.Embed(
+                    description="**[No output]**", color=disnake.Color.yellow()
+                    )
+                )
+            else:
+                await before.reply(
+                    embed=disnake.Embed(
+                        description=output, color=disnake.Color.green()
+                    )
+                )
+        except Exception as e:
+            print(e)
 
     @commands.command()
     async def run(self, ctx: commands.Context, *, code: str):
         """Runs code, must be typehinted with a language and in a codeblock."""
-        await self.run_code(ctx, code)
+        async with ctx.typing():
+            await self.run_code(ctx, code)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
@@ -132,7 +170,7 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
                     "reaction_add", timeout=30, check=check
                 )
             except asyncio.TimeoutError:
-                await after.clear_reaction("🔁")
+                await after.clear_reactions()
             else:
                 await self.on_run_code(before, after)
         except Exception:
