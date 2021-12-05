@@ -70,8 +70,8 @@ class Fun(commands.Cog, description="Random commands."):
                 mention_data = await afk_db.find_one({"_id": member.id})
                 if mention_data:
                     if member.id == mention_data["_id"]:
-                        timestamp = mention_data['timestamp']
-                        reason = mention_data.get('reason')
+                        timestamp = mention_data["timestamp"]
+                        reason = mention_data.get("reason")
                         if reason:
                             await message.channel.send(
                                 embed=disnake.Embed(
@@ -87,7 +87,7 @@ class Fun(commands.Cog, description="Random commands."):
                             await message.channel.send(
                                 embed=disnake.Embed(
                                     description=f"{member.mention} is AFK. Since <t:{timestamp}:R>",
-                                    color=message.author.top_role.color
+                                    color=message.author.top_role.color,
                                 ),
                                 allowed_mentions=disnake.AllowedMentions(
                                     everyone=False, users=False, roles=False
