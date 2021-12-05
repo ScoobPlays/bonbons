@@ -70,20 +70,24 @@ class Fun(commands.Cog, description="Random commands."):
                 mention_data = await afk_db.find_one({"_id": member.id})
                 if mention_data:
                     if member.id == mention_data["_id"]:
-                        if mention_data["reason"]:
+                        timestamp = mention_data['timestamp']
+                        reason = mention_data.get('reason')
+                        if reason:
                             await message.channel.send(
                                 embed=disnake.Embed(
-                                    description=f"{member.mention} is AFK: `{mention_data['reason']}` <t:{mention_data['timestamp']}:R>",
+                                    description=f"{member.mention} is AFK: `{reason}` <t:{timestamp}:R>",
                                     color=message.author.top_role.color,
                                 ),
                                 allowed_mentions=disnake.AllowedMentions(
                                     everyone=False, users=False, roles=False
                                 ),
                             )
-                        else:
+
+                        if not reason:
                             await message.channel.send(
                                 embed=disnake.Embed(
-                                    description=f"{member.mention} is AFK. Since <t:{mention_data['timestamp']}:R>"
+                                    description=f"{member.mention} is AFK. Since <t:{timestamp}:R>",
+                                    color=message.author.top_role.color
                                 ),
                                 allowed_mentions=disnake.AllowedMentions(
                                     everyone=False, users=False, roles=False
@@ -681,7 +685,7 @@ class Fun(commands.Cog, description="Random commands."):
         await self.get_urban_response(ctx, term)
 
     @commands.command()
-    async def afk(self, ctx: commands.Context, reason: Optional[str]):
+    async def afk(self, ctx: commands.Context, *, reason: Optional[str]):
         """Become AFK."""
 
         afk_db = self.afk[str(ctx.guild.id)]
