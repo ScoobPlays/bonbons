@@ -1,32 +1,28 @@
-from disnake.ext import commands
+import contextlib
 import disnake
-
+from disnake.ext import commands
 
 class HelpEmbed(disnake.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         text = "Use help [command] or help [category] for more information."
         self.set_footer(text=text)
-        self.color = disnake.Color.blurple()
-
+        self.color = disnake.Color.greyple()
 
 class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(
-            command_attrs={
+            command_attrs = {
                 "hidden": True,
-                "help": "Shows help about a cog, group or a command",
+                "help": "Shows help about a cog, group or a command"
             }
         )
-
-    def get_ending_note(self, category: bool):
-        return f"Use .{self.invoked_with} [{'Category' if category else 'command'}] for more info on {'all commands' if category else 'the command'}"
 
     async def send(self, **kwargs):
         await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping):
-        embed = HelpEmbed(title="Help Menu")
+        embed = HelpEmbed(title="Help Menu").set_footer(text="Use help [command] or help [category] for more information.", icon_url=self.context.author.display_avatar)
         usable = 0
 
         for (
@@ -40,64 +36,55 @@ class HelpCommand(commands.HelpCommand):
                     name = cog.qualified_name
                     description = cog.description or "No description.."
 
-                embed.add_field(name=f"{name} [{amount_commands}]", value=description)
-        embed.description = f"**About:** bonbons is a bot with not so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands."
+                embed.add_field(
+                    name=f"{name} [{amount_commands}]", value=description
+                )
+
+        embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands. I am also on [Github](https://github.com/kaylebetter/bonbons)!"
 
         await self.send(embed=embed)
 
     async def send_command_help(self, command):
-        desc = command.description
-        aliases = command.aliases
+        signature = self.get_command_signature(command).replace(".", "").strip()
+        embed = HelpEmbed(
+            title=f"{signature}", description=command.help or "..."
+        ).set_footer(text="Use help [command] or help [category] for more information.", icon_url=self.context.author.display_avatar)
 
-        if not aliases:
-            aliases = str("...")
+        if command.aliases == []:
+            command.aliases.append('This command has no aliases.')
 
-        else:
-            aliases = ", ".join(aliases)
 
-        em = (
-            disnake.Embed(
-                title=command.name, description=desc, color=disnake.Color.blurple()
-            )
-            .add_field(
-                name="Syntax",
-                value=f"`{self.get_command_signature(command)}`",
-                inline=True,
-            )
-            .add_field(
-                name="Aliases",
-                value=aliases,
-                inline=True,
-            )
-            .set_author(
-                name=self.context.author, icon_url=self.context.author.avatar.url
-            )
-            .set_footer(
-                text=f"Requested by {self.context.author}",
-                icon_url=self.context.author.avatar.url,
-            )
+        embed.add_field(
+            name="Syntax",
+            value=self.get_command_signature(command)
         )
+        if cog := command.cog:
+            embed.add_field(name="Category", value=cog.qualified_name)
 
-        await self.send(embed=em)
+        if command.aliases:
+            embed.add_field(name="Aliases", value=", ".join(command.aliases))
 
-    async def send_help_embed(self, title, description, commands):
-        embed = (
-            HelpEmbed(
-                title=title,
-                description=f"{description}\n\n**Available Subcommands**\n\n",
+        if command._buckets and (
+            cooldown := command._buckets._cooldown
+        ):
+            embed.add_field(
+                name="Cooldown",
+                value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
             )
-            .set_author(
-                name=self.context.author, icon_url=self.context.author.avatar.url
-            )
-            .set_footer(
-                text=f"Requested by {self.context.author}",
-                icon_url=self.context.author.avatar.url,
-            )
-        )
+
+        await self.send(embed=embed)
+
+    async def send_help_embed(
+        self, title, description, commands
+    ):
+        embed = HelpEmbed(title=title, description=description or "...").set_footer(text="Use help [command] or help [category] for more information.", icon_url=self.context.author.display_avatar)
 
         if filtered_commands := await self.filter_commands(commands, sort=True):
             for command in filtered_commands:
-                embed.description += f"`{command.name}`,"
+                embed.add_field(
+                    name=self.get_command_signature(command),
+                    value=command.help or "...",
+                )
 
         await self.send(embed=embed)
 
@@ -106,17 +93,7 @@ class HelpCommand(commands.HelpCommand):
         await self.send_help_embed(title, group.help, group.commands)
 
     async def send_cog_help(self, cog):
-        em = disnake.Embed(
-            title=f"{cog.qualified_name} Command's",
-            description="",
-            color=disnake.Color.blurple(),
+        title = cog.qualified_name or "No"
+        await self.send_help_embed(
+            f"{title} Category", cog.description, cog.get_commands()
         )
-
-        for cmd in cog.get_commands():
-            em.description += f"`{cmd.name}`,"
-
-        em.set_author(name=self.context.author, icon_url=self.context.author.avatar.url)
-        em.set_footer(
-            text=self.get_ending_note(False), icon_url=self.context.author.avatar.url
-        )
-        await self.send(embed=em)

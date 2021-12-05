@@ -15,12 +15,6 @@ class Image(commands.Cog, description="Image related commands."):
         """The base command for image."""
         await ctx.send_help("image")
 
-    @commands.command(hidden=True)
-    async def nft(self, ctx):
-        await ctx.send(
-            "Are you looking for the nft command? Well, that command has changed to `image` instead of `nft`. Try it out! `.image`"
-        )
-
     @image.command()
     async def create(self, ctx: commands.Context, link: str, *, name: str):
 
@@ -50,9 +44,7 @@ class Image(commands.Cog, description="Image related commands."):
         member = member or ctx.author
         data = await self.images.find({}).to_list(10000)
 
-        images, names, owners, ids, embeds, image_ids, links = (
-            [],
-            [],
+        names, owners, embeds, image_ids, links = (
             [],
             [],
             [],
@@ -61,23 +53,20 @@ class Image(commands.Cog, description="Image related commands."):
         )
 
         for item in data:
-            images.append(item["link"])
-            names.append(item["name"])
-            owners.append(item["owner"])
-            ids.append(item["_id"])
+            if item["owner"] == member.id:
+                image_ids.append(item["_id"])
+                links.append(item["link"])
+                names.append(item["name"])
+                owners.append(item['owner'])
 
-        for link, name, owner, image_id in zip(images, names, owners, ids):
+
+        for image_id, link, name, owner in zip(image_ids, links, names, owners):
             embeds.append(
                 disnake.Embed(
                     description=f"Displaying `{name}` by <@{owner}> (ID: {image_id})",
                     color=disnake.Color.blurple(),
                 ).set_image(url=link)
             )
-
-        for item in data:
-            if item["owner"] == member.id:
-                image_ids.append(item["_id"])
-                links.append(item["link"])
 
         await ctx.send(
             embed=disnake.Embed(
