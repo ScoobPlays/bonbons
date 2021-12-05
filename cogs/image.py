@@ -57,8 +57,7 @@ class Image(commands.Cog, description="Image related commands."):
                 image_ids.append(item["_id"])
                 links.append(item["link"])
                 names.append(item["name"])
-                owners.append(item['owner'])
-
+                owners.append(item["owner"])
 
         for image_id, link, name, owner in zip(image_ids, links, names, owners):
             embeds.append(
