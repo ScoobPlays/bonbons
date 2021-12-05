@@ -66,7 +66,6 @@ class Image(commands.Cog, description="Image related commands."):
                     description=f"Displaying `{name}` by <@{owner}> (ID: {image_id})",
                     color=disnake.Color.blurple(),
                 ).set_image(url=link)
-            )
 
         await ctx.send(
             embed=disnake.Embed(
