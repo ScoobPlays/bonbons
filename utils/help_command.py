@@ -2,6 +2,7 @@ import contextlib
 import disnake
 from disnake.ext import commands
 
+
 class HelpEmbed(disnake.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -9,12 +10,13 @@ class HelpEmbed(disnake.Embed):
         self.set_footer(text=text)
         self.color = disnake.Color.greyple()
 
+
 class HelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(
-            command_attrs = {
+            command_attrs={
                 "hidden": True,
-                "help": "Shows help about a cog, group or a command"
+                "help": "Shows help about a cog, group or a command",
             }
         )
 
@@ -22,7 +24,10 @@ class HelpCommand(commands.HelpCommand):
         await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping):
-        embed = HelpEmbed(title="Help Menu").set_footer(text="Use help [command] or help [category] for more information.", icon_url=self.context.author.display_avatar)
+        embed = HelpEmbed(title="Help Menu").set_footer(
+            text="Use help [command] or help [category] for more information.",
+            icon_url=self.context.author.display_avatar,
+        )
         usable = 0
 
         for (
@@ -36,9 +41,7 @@ class HelpCommand(commands.HelpCommand):
                     name = cog.qualified_name
                     description = cog.description or "No description.."
 
-                embed.add_field(
-                    name=f"{name} [{amount_commands}]", value=description
-                )
+                embed.add_field(name=f"{name} [{amount_commands}]", value=description)
 
         embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands. I am also on [Github](https://github.com/kaylebetter/bonbons)!"
 
@@ -48,25 +51,22 @@ class HelpCommand(commands.HelpCommand):
         signature = self.get_command_signature(command).replace(".", "").strip()
         embed = HelpEmbed(
             title=f"{signature}", description=command.help or "..."
-        ).set_footer(text="Use help [command] or help [category] for more information.", icon_url=self.context.author.display_avatar)
+        ).set_footer(
+            text="Use help [command] or help [category] for more information.",
+            icon_url=self.context.author.display_avatar,
+        )
 
         if command.aliases == []:
-            command.aliases.append('This command has no aliases.')
+            command.aliases.append("This command has no aliases.")
 
-
-        embed.add_field(
-            name="Syntax",
-            value=self.get_command_signature(command)
-        )
+        embed.add_field(name="Syntax", value=self.get_command_signature(command))
         if cog := command.cog:
             embed.add_field(name="Category", value=cog.qualified_name)
 
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
 
-        if command._buckets and (
-            cooldown := command._buckets._cooldown
-        ):
+        if command._buckets and (cooldown := command._buckets._cooldown):
             embed.add_field(
                 name="Cooldown",
                 value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
@@ -74,10 +74,11 @@ class HelpCommand(commands.HelpCommand):
 
         await self.send(embed=embed)
 
-    async def send_help_embed(
-        self, title, description, commands
-    ):
-        embed = HelpEmbed(title=title, description=description or "...").set_footer(text="Use help [command] or help [category] for more information.", icon_url=self.context.author.display_avatar)
+    async def send_help_embed(self, title, description, commands):
+        embed = HelpEmbed(title=title, description=description or "...").set_footer(
+            text="Use help [command] or help [category] for more information.",
+            icon_url=self.context.author.display_avatar,
+        )
 
         if filtered_commands := await self.filter_commands(commands, sort=True):
             for command in filtered_commands:
