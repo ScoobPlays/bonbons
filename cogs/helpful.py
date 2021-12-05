@@ -74,30 +74,25 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
             return await ctx.reply("No language was hinted in the codeblock.")
         output = await self.pysclient.execute(str(lang), [File(code)])
 
-        if output.raw_json['run']['stdout'] == '' and output.raw_json['run']['stderr']:
+        if output.raw_json["run"]["stdout"] == "" and output.raw_json["run"]["stderr"]:
             new = await ctx.reply(
-                embed=disnake.Embed(
-                    description=output, color=disnake.Color.red()
-                    )
-                )
+                embed=disnake.Embed(description=output, color=disnake.Color.red())
+            )
             self.last = new
             return
 
-
-        if output.raw_json['run']['stdout'] == '':            
+        if output.raw_json["run"]["stdout"] == "":
             old = await ctx.reply(
                 embed=disnake.Embed(
                     description="**[No output]**", color=disnake.Color.yellow()
-                    )
                 )
+            )
             self.last = old
             return
 
         else:
             msg = await ctx.reply(
-                embed=disnake.Embed(
-                    description=output, color=disnake.Color.green()
-                )
+                embed=disnake.Embed(description=output, color=disnake.Color.green())
             )
             self.last = msg
             return
@@ -127,25 +122,23 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
             output = await self.pysclient.execute(str(lang), [File(code)])
             print(output.raw_json)
 
+            if (
+                output.raw_json["run"]["stdout"] == ""
+                and output.raw_json["run"]["stderr"]
+            ):
+                return await before.reply(
+                    embed=disnake.Embed(description=output, color=disnake.Color.red())
+                )
 
-            if output.raw_json['run']['stdout'] == '' and output.raw_json['run']['stderr']:
+            if output.raw_json["run"]["stdout"] == "":
                 return await before.reply(
                     embed=disnake.Embed(
-                        description=output, color=disnake.Color.red()
-                        )
-                    )
-
-            if output.raw_json['run']['stdout'] == '':            
-                return await before.reply(
-                    embed=disnake.Embed(
-                    description="**[No output]**", color=disnake.Color.yellow()
+                        description="**[No output]**", color=disnake.Color.yellow()
                     )
                 )
             else:
                 await before.reply(
-                    embed=disnake.Embed(
-                        description=output, color=disnake.Color.green()
-                    )
+                    embed=disnake.Embed(description=output, color=disnake.Color.green())
                 )
         except Exception as e:
             print(e)
