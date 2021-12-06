@@ -21,8 +21,7 @@ class Bonbons(commands.Bot):
             **kwargs,
         )
         self.uptime = datetime.utcnow().timestamp()
-        self._BotBase__cogs = commands.core._CaseInsensitiveDict()
-        self.used_commands = 0
+        self.used_commands = 0 # Commands counter
 
     async def on_ready(self):
         print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")

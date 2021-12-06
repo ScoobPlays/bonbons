@@ -8,15 +8,11 @@ class Events(Cog, description="A cog for events/logs."):
         self.bot = bot
 
     async def send_log(self, embed: disnake.Embed):
-        name = "Bonbons Logs"
         channel = self.bot.get_channel(
             907820956733558784
         ) or await self.bot.fetch_channel(907820956733558784)
 
-        webhooks = await channel.webhooks()
-        webhook = disnake.utils.find(lambda w: w.name == name, webhooks)
-
-        await webhook.send(embed=embed)
+        await channel.send(embed=embed)
 
     @Cog.listener()
     async def on_member_update(self, before: disnake.Member, after: disnake.Member):
