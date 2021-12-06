@@ -24,7 +24,6 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                 f"I have set the reactions needed for the starboard to `{count}`."
             )
 
-
         except Exception as e:
             print(e)
 
@@ -38,33 +37,42 @@ class Starboard(commands.Cog, description="Starboard related commands."):
             )
 
             data = await starboard.find_one({"_id": reaction.message.id})
-            starboard_channel = self.bot.get_channel(910404322947387422) or await self.bot.fetch_channel(910404322947387422)
+            starboard_channel = self.bot.get_channel(
+                910404322947387422
+            ) or await self.bot.fetch_channel(910404322947387422)
 
             if data:
-                data_channel = data['channel']
+                data_channel = data["channel"]
 
-                msg = self.bot.get_message(data['starboard_message']) or await self.bot.user.fetch_message(data['starboard_message'])
-                await msg.edit(content=f"⭐ **{reaction.count}** <#{data_channel}> ID: {data['_id']}")
+                msg = self.bot.get_message(
+                    data["starboard_message"]
+                ) or await self.bot.user.fetch_message(data["starboard_message"])
+                await msg.edit(
+                    content=f"⭐ **{reaction.count}** <#{data_channel}> ID: {data['_id']}"
+                )
 
             if reaction.message.embeds:
                 return
 
             if not data:
-                if reaction.emoji == "⭐" and reaction.count > reactions['reactions']:
-                    
-                    em=Embed(
+                if reaction.emoji == "⭐" and reaction.count > reactions["reactions"]:
+
+                    em = Embed(
                         description=reaction.message.content,
                         color=Color.greyple(),
                         timestamp=datetime.utcnow(),
-                        )
+                    )
                     em.set_author(
                         name=reaction.message.author,
                         icon_url=reaction.message.author.display_avatar,
-                        )
+                    )
 
                     if reaction.message.attachments:
                         em.set_image(url=reaction.message.attachments[0].url)
-                    bot_msg = await starboard_channel.send(content=f"⭐ **{reaction.count}** <#{reaction.message.channel.id}> ID: {reaction.message.id}", embed=em)
+                    bot_msg = await starboard_channel.send(
+                        content=f"⭐ **{reaction.count}** <#{reaction.message.channel.id}> ID: {reaction.message.id}",
+                        embed=em,
+                    )
                     await starboard.insert_one(
                         {
                             "_id": reaction.message.id,
@@ -72,7 +80,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                             "author": reaction.message.author.id,
                             "content": reaction.message.content,
                             "starboard_message": bot_msg.id,
-                            "embed": em
+                            "embed": em,
                         }
                     )
 
@@ -98,6 +106,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
     async def show(self, ctx, message: int):
         """Shows a message that's been starboard'd"""
         ...
+
 
 def setup(bot):
     bot.add_cog(Starboard(bot))
