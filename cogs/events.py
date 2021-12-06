@@ -28,11 +28,11 @@ class Events(Cog, description="A cog for events/logs."):
             )
             embed.add_field(
                 name=f"Old Roles",
-                value=" ".join([role.mention for role in before.roles[1:]]),
+                value=" ".join([role.mention for role in before.roles]),
             )
             embed.add_field(
                 name=f"New Roles",
-                value=" ".join([role.mention for role in after.roles[1:]]),
+                value=" ".join([role.mention for role in after.roles]),
             )
             await self.send_log(embed=embed)
 
@@ -66,9 +66,9 @@ class Events(Cog, description="A cog for events/logs."):
             880030618275155998
         )
 
-        member = guild.get_role(880030723908722729)
+        role = guild.get_role(880030723908722729)
 
-        await member.add_roles(member)
+        await member.add_roles(role)
         await general.send(
             embed=disnake.Embed(
                 title="Welcome!",
