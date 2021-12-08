@@ -54,7 +54,6 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                     content=f"⭐ **{reaction.count}** <#{data_channel}> ID: {data['_id']}"
                 )
 
-
             if not data:
                 if reaction.emoji == "⭐" and reaction.count > reactions["reactions"]:
 
