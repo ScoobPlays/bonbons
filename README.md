@@ -4,4 +4,4 @@
 
 ## Credits
 
-Carrot, Geno
+- Carrot, Geno
