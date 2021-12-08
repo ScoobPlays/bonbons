@@ -32,6 +32,9 @@ class Starboard(commands.Cog, description="Starboard related commands."):
         """Adds something to the starboard"""
 
         try:
+            if reaction.message.embeds:
+                return
+
             reactions = await config.find_one(
                 {"reaction_count": "The reaction count for the starboard."}
             )
@@ -51,8 +54,6 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                     content=f"⭐ **{reaction.count}** <#{data_channel}> ID: {data['_id']}"
                 )
 
-            if reaction.message.embeds:
-                return
 
             if not data:
                 if reaction.emoji == "⭐" and reaction.count > reactions["reactions"]:
@@ -80,7 +81,6 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                             "author": reaction.message.author.id,
                             "content": reaction.message.content,
                             "starboard_message": bot_msg.id,
-                            "embed": em,
                         }
                     )
 

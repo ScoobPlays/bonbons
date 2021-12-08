@@ -38,7 +38,6 @@ class Bonbons(commands.Bot):
         if not hasattr(self, "session"):
             self.session = aiohttp.ClientSession(loop=self.loop)
 
-    def load(self):
         for filename in os.listdir("cogs"):
             if filename.endswith(".py"):
                 self.load_extension(f"cogs.{filename[:-3]}")
