@@ -1,10 +1,15 @@
-import disnake, json, base64, random, aiohttp
 from utils.env import headers, cluster
 from utils.paginator import EmbedPaginator
 from utils.classes import EditSnipeView, Google
 from disnake.ext import commands
 from datetime import datetime
 from typing import Optional
+
+import disnake
+import json
+import base64
+import random
+import aiohttp
 
 
 class Fun(commands.Cog, description="Random commands."):
@@ -69,6 +74,8 @@ class Fun(commands.Cog, description="Random commands."):
             for member in message.mentions:
                 mention_data = await afk_db.find_one({"_id": member.id})
                 if mention_data:
+                    if mention_data["message"] == message.id:
+                        return
                     if member.id == mention_data["_id"]:
                         timestamp = mention_data["timestamp"]
                         reason = mention_data.get("reason")
@@ -126,86 +133,37 @@ class Fun(commands.Cog, description="Random commands."):
                         icon_url=self.after.author.display_avatar,
                     )
 
-                    await ctx.send(
-                        embed=before, view=EditSnipeView(ctx, self.before, self.after)
-                    )
+                    view = EditSnipeView(ctx, self.before, self.after)
+
+                    await ctx.send(embed=before, view=view)
 
         except Exception:
             await ctx.send(
-                embed=disnake.Embed(
-                    description="There currently are no recently edited messages.",
-                    color=disnake.Color.red(),
-                )
+                "There currently are no recently edited messages.",
             )
 
     @commands.command()
     async def snipe(self, ctx: commands.Context):
-        message = ctx.message
-        msg = self.last_msg
         """Snipes most recently deleted message."""
 
         try:
             if self.last_msg.guild.id == ctx.guild.id:
                 if self.last_msg.channel.id == ctx.channel.id:
 
-                    before = disnake.Embed(
+                    embed = disnake.Embed(
                         description=f"{self.last_msg.content}",
                         timestamp=datetime.utcnow(),
                     )
-                    before.set_footer(text=f"Message from {self.last_msg.author}")
-                    before.set_author(
+                    embed.set_footer(text=f"Message from {self.last_msg.author}")
+                    embed.set_author(
                         name=f"{self.last_msg.author}",
                         icon_url=self.last_msg.author.display_avatar,
                     )
-
-                    class Edit(disnake.ui.View):
-                        def __init__(self):
-                            super().__init__()
-
-                        async def interaction_check(
-                            self, interaction: disnake.Interaction
-                        ) -> bool:
-                            if (
-                                interaction.user
-                                and interaction.user.id == ctx.author.id
-                            ):
-                                return True
-                            await interaction.response.send_message(
-                                "You are not the owner of this message.", ephemeral=True
-                            )
-                            return False
-
-                        @disnake.ui.button(
-                            label="Author", style=disnake.ButtonStyle.grey
-                        )
-                        async def before(self, button, inter):
-                            await inter.response.send_message(
-                                f"The author of this message is {msg.author.mention}.",
-                                ephemeral=True,
-                            )
-
-                        @disnake.ui.button(
-                            label="Channel", style=disnake.ButtonStyle.grey
-                        )
-                        async def after(self, button, inter):
-                            await inter.response.send_message(
-                                f"This message was deleted in {msg.channel.mention}.",
-                                ephemeral=True,
-                            )
-
-                        @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.red)
-                        async def quit(self, button, inter):
-                            await message.delete()
-                            await inter.message.delete()
-
-                    await ctx.send(embed=before, view=Edit())
+                    await ctx.send(embed=embed)
 
         except Exception:
             await ctx.send(
-                embed=disnake.Embed(
-                    description="There currently are no recently deleted messages.",
-                    color=disnake.Color.red(),
-                )
+                "There currently are no recently deleted messages.",
             )
 
     @commands.command(help="Gives a joke.")
@@ -220,7 +178,9 @@ class Fun(commands.Cog, description="Random commands."):
 
         """Returns a google link for a query."""
 
-        await ctx.send(f"Google Result for: `{query}`", view=Google(query))
+        view = Google(query)
+
+        await ctx.send(f"Google Result for: `{query}`", view=view)
 
     @commands.slash_command(name="google")
     async def google_slash(
@@ -228,8 +188,10 @@ class Fun(commands.Cog, description="Random commands."):
     ):
         """Returns a google link for a query"""
 
+        view = Google(query)
+
         await inter.response.send_message(
-            f"Google Result for: `{query}`", view=Google(query), ephemeral=False
+            f"Google Result for: `{query}`", view=view, ephemeral=False
         )
 
     @commands.slash_command()
@@ -667,7 +629,9 @@ class Fun(commands.Cog, description="Random commands."):
                         )
                         embeds.append(emb)
 
-                    await ctx.send(embed=embeds[0], view=EmbedPaginator(ctx, embeds))
+                    view = EmbedPaginator(ctx, embeds)
+
+                    await ctx.send(embed=embeds[0], view=view)
                 except IndexError:
                     return await ctx.send(
                         embed=disnake.Embed(
@@ -699,6 +663,7 @@ class Fun(commands.Cog, description="Random commands."):
                         "_id": ctx.author.id,
                         "reason": reason,
                         "timestamp": int(datetime.utcnow().timestamp()),
+                        "message": ctx.message.id,
                     }
                 )
                 await ctx.send(

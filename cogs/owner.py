@@ -1,8 +1,13 @@
-import io, os, sys, textwrap, traceback, contextlib
 from disnake.ext import commands
-from together import EmbeddedActivity, Together
+from utils.together import EmbeddedActivity, Together
 from typing import Optional, Union
 import disnake
+import io
+import os
+import sys
+import textwrap
+import traceback
+import contextlib
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
