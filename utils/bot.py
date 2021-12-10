@@ -14,8 +14,8 @@ class Bonbons(commands.Bot):
             command_prefix=".",
             case_insensitive=True,
             test_guilds=[
-                880030618275155998, # Kayle's hub
-                581139467381768192, # Cosmo's Lounge
+                880030618275155998,  # Kayle's hub
+                581139467381768192,  # Cosmo's Lounge
             ],
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
@@ -48,6 +48,14 @@ class Bonbons(commands.Bot):
         for filename in os.listdir("cogs/groups"):
             if filename.endswith(".py"):
                 self.load_extension(f"cogs.groups.{filename[:-3]}")
+
+    async def find(self, db, key, value):
+        data = await db.find_one({key: value})
+
+        if not data:
+            return None
+
+        return data
 
     async def on_command_error(self, ctx: commands.Context, error: str):
 

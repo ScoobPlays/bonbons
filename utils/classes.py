@@ -123,7 +123,7 @@ class Calculator(disnake.ui.View):
     async def plus(self, button, inter):
         await inter.response.defer()
         data = (inter.message.content).replace("0", "")
-        new_plus = data.count('+')
+        new_plus = data.count("+")
         if new_plus >= 1:
             return
         new = data + str("+")
