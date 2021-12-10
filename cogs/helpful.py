@@ -199,7 +199,7 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
             )
 
     @commands.command(name="say", help="Says whatever you want for you.")
-    async def say(self, ctx: commands.Context, argument: str):
+    async def say(self, ctx: commands.Context, *, argument: str):
         await ctx.send(argument)
 
     @commands.command()
@@ -221,7 +221,7 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
 
     @commands.command()
     async def pypi(self, ctx: commands.Context, name: str):
-        """Finds a package on the Python Package Index."""
+        """Finds a package on PyPI."""
         async with ctx.typing():
             async with self.bot.session.get(
                 f"https://pypi.org/pypi/{name}/json"

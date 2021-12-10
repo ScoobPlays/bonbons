@@ -13,7 +13,10 @@ class Bonbons(commands.Bot):
         super().__init__(
             command_prefix=".",
             case_insensitive=True,
-            test_guilds=[880030618275155998],  # Kayle's hub
+            test_guilds=[
+                880030618275155998, # Kayle's hub
+                581139467381768192, # Cosmo's Lounge
+            ],
             intents=disnake.Intents.all(),
             allowed_mentions=disnake.AllowedMentions(everyone=False, roles=False),
             help_command=HelpCommand(),

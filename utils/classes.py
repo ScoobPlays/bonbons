@@ -73,17 +73,17 @@ class EditSnipeView(disnake.ui.View):
 
 class Calculator(disnake.ui.View):
     def __init__(self):
-        super().__init__(timeout=None)
+        super().__init__()
 
     @disnake.ui.button(label="1", custom_id="calc:one")
-    async def one(self, button, inter):
+    async def calc_one(self, button, inter):
         await inter.response.defer()
         data = (inter.message.content).replace("0", "")
         new = data + str(1)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="2", custom_id="calc:two")
-    async def two(self, button, inter):
+    async def calc_two(self, button, inter):
         await inter.response.defer()
         data = (inter.message.content).replace("0", "")
         new = data + str(2)
@@ -96,17 +96,41 @@ class Calculator(disnake.ui.View):
         new = data + str(2)
         await inter.edit_original_message(content=new)
 
+    @disnake.ui.button(label="4", row=1, custom_id="calc:four")
+    async def calc_four(self, button, inter):
+        await inter.response.defer()
+        data = (inter.message.content).replace("0", "")
+        new = data + str(4)
+        await inter.edit_original_message(content=new)
+
+    @disnake.ui.button(label="5", row=1, custom_id="calc:five")
+    async def calc_five(self, button, inter):
+        await inter.response.defer()
+        data = (inter.message.content).replace("0", "")
+        new = data + str(5)
+        await inter.edit_original_message(content=new)
+
+    @disnake.ui.button(label="6", row=1, custom_id="calc:six")
+    async def calc_six(self, button, inter):
+        await inter.response.defer()
+        data = (inter.message.content).replace("0", "")
+        new = data + str(6)
+        await inter.edit_original_message(content=new)
+
     @disnake.ui.button(
-        label="+", style=disnake.ButtonStyle.blurple, row=1, custom_id="calc:plus"
+        label="+", style=disnake.ButtonStyle.blurple, row=2, custom_id="calc:plus"
     )
     async def plus(self, button, inter):
         await inter.response.defer()
         data = (inter.message.content).replace("0", "")
+        new_plus = data.count('+')
+        if new_plus >= 1:
+            return
         new = data + str("+")
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(
-        label="=", style=disnake.ButtonStyle.blurple, row=1, custom_id="calc:equals"
+        label="=", style=disnake.ButtonStyle.blurple, row=2, custom_id="calc:equals"
     )
     async def equals(self, button, inter):
         await inter.response.defer()
@@ -114,7 +138,7 @@ class Calculator(disnake.ui.View):
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(
-        label="Clear", style=disnake.ButtonStyle.red, row=1, custom_id="calc:clear"
+        label="Clear", style=disnake.ButtonStyle.red, row=2, custom_id="calc:clear"
     )
     async def clear(self, button, inter):
         await inter.response.defer()
