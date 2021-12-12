@@ -4,7 +4,7 @@ from typing import Union
 from .enums import applications
 
 
-class Together(object):
+class Together:
     def __init__(self, bot: Bot):
         self.bot = bot
 
@@ -20,7 +20,7 @@ class Together(object):
                 "Content-Type": "application/json",
             }
 
-            async with ClientSession() as session:
+            async with ClientSession(headers=headers) as session:
 
                 if str(activity) in applications.keys():
                     activity = applications[activity]
@@ -36,11 +36,11 @@ class Together(object):
                 }
 
                 async with session.post(
-                    f"https://discord.com/api/v8/channels/{voice_channel}/invites",
+                    f"https://discord.com/api/v9/channels/{voice_channel}/invites",
                     json=data,
-                    headers=headers,
                 ) as raw:
                     data = await raw.json()
+                    print(data)
                     return f'https://discord.gg/{data["code"]}'
 
         except Exception as e:

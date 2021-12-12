@@ -1,7 +1,6 @@
 from disnake.ext import commands
-from utils.together import EmbeddedActivity, Together
-from utils.env import cluster, starboard, config, thank, nft, db
-from typing import Optional, Union
+import utils
+from typing import Optional
 import disnake
 import io
 import os
@@ -14,7 +13,6 @@ import contextlib
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
-        self.client = Together(self.bot)
 
     def paginate(self, text: str) -> str:
         last = 0
@@ -132,15 +130,19 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
         await self.eval_code(ctx, code)
 
-    @commands.command()
-    @commands.is_owner()
+    @commands.slash_command()
     async def activity(
-        self, ctx, vc: Optional[Union[int, disnake.VoiceChannel]], activity
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        vc: Optional[disnake.VoiceChannel],
+        activity: str,
     ):
-        data = getattr(EmbeddedActivity, activity)
-        vc = vc or ctx.author.voice.channel.id
+        data = getattr(utils.EmbeddedActivity, activity)
+        vc = vc.id or inter.author.voice.channel.id
 
-        await ctx.send(await self.client.create_activity(vc, data))
+        await inter.response.send_message(
+            await self.bot.client.create_activity(vc, data), ephemeral=False
+        )
 
 
 def setup(bot):
