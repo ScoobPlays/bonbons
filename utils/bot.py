@@ -74,6 +74,3 @@ class Bonbons(commands.Bot):
         else:
             await ctx.reply(error)
             raise error
-
-
-bot = Bonbons()
