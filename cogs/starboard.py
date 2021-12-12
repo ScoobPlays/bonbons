@@ -2,6 +2,7 @@ from disnake.ext import commands
 import disnake
 from utils.env import starboard, config
 from datetime import datetime
+from contextlib import suppress
 
 
 class Starboard(commands.Cog, description="Starboard related commands."):
@@ -35,6 +36,9 @@ class Starboard(commands.Cog, description="Starboard related commands."):
     async def add_to_starboard(self, reaction, user):
 
         """Adds something to the starboard"""
+
+        with suppress(TypeError):
+            return
 
         if reaction.message.embeds:
             return
