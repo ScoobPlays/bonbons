@@ -1,5 +1,4 @@
 utils/env.py
-utils/paginator.py
 keep_alive.py
 *.pyc
 .replit
