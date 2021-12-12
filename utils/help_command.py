@@ -43,7 +43,7 @@ class HelpCommand(commands.HelpCommand):
 
                 embed.add_field(name=f"{name} [{amount_commands}]", value=description)
 
-        embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands and **{usable}** of them are usable. There are also **{len(self.context.bot.slash_commands)}** slash commands. I am also on [Github](https://github.com/kaylebetter/bonbons)!"
+        embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands. There are also **{len(self.context.bot.slash_commands)}** slash commands. [My Github](https://github.com/kaylebetter/bonbons)!"
 
         await self.send(embed=embed)
 
@@ -65,13 +65,6 @@ class HelpCommand(commands.HelpCommand):
 
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
-
-        if command._buckets and (cooldown := command._buckets._cooldown):
-            embed.add_field(
-                name="Cooldown",
-                value=f"{cooldown.rate} per {cooldown.per:.0f} seconds",
-            )
-
         await self.send(embed=embed)
 
     async def send_help_embed(self, title, description, commands):
