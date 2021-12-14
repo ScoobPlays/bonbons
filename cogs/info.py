@@ -35,13 +35,13 @@ class Information(commands.Cog, description="Information related commands."):
         await self.context_send_emojis(ctx)
 
     @commands.command()
-    async def snowflake(self, ctx: commands.Context, argument: int) -> None:
+    async def snowflake(self, ctx: commands.Context, id: int) -> None:
 
         """Displays a snowflake's creation date."""
 
         try:
             embed = disnake.Embed(
-                description=f"Snowflake was created at {self.created_at(argument)}",
+                description=f"Snowflake was created at {self.created_at(id)}",
                 color=disnake.Color.greyple(),
             )
             await ctx.send(embed=embed)
@@ -173,7 +173,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=["userinfo"])
+    @commands.command()
     @commands.guild_only()
     async def whois(self, ctx: commands.Context, member: disnake.Member = None) -> None:
 
