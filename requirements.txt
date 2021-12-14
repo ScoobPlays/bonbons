@@ -3,3 +3,4 @@ disnake
 motor
 flask
 aiopyston
+dnspython
