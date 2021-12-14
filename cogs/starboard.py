@@ -37,9 +37,6 @@ class Starboard(commands.Cog, description="Starboard related commands."):
 
         """Adds something to the starboard"""
 
-        with suppress(TypeError):
-            return
-
         if reaction.message.embeds:
             return
 

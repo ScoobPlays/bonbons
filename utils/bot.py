@@ -4,6 +4,7 @@ from datetime import datetime
 from disnake.ext import commands
 import disnake
 import aiohttp
+import utils
 import os
 
 
@@ -25,6 +26,7 @@ class Bonbons(commands.Bot):
         )
         self.uptime = datetime.utcnow().timestamp()
         self.used_commands = 0
+        self.client = utils.Together(self)
 
     async def on_ready(self):
         print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")

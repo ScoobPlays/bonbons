@@ -1,6 +1,31 @@
 import disnake
 from urllib.parse import quote_plus
 from datetime import datetime
+from disnake.ext import commands
+import re
+
+"""
+TimeConvert was stolen from the dpy server, https://discord.com/channels/267624335836053506/343944376055103488/919815774573584414
+"""
+
+time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
+time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
+
+
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        matches = time_regex.findall(argument.lower())
+        time = 0
+        for v, k in matches:
+            try:
+                time += time_dict[k] * float(v)
+            except KeyError:
+                raise commands.BadArgument(
+                    "{} is an invalid time-key! h/m/s/d are valid!".format(k)
+                )
+            except ValueError:
+                raise commands.BadArgument("{} is not a number!".format(v))
+        return time
 
 
 class Google(disnake.ui.View):

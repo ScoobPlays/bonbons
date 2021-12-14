@@ -375,7 +375,9 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
         )
 
         data = await self.bot_db.find_one({"_id": self.bot.user.id})
-        embed.add_field(name="Commands", value=f"**{data['uses']}** have been invoked.")
+        embed.add_field(
+            name="Commands", value=f"**{data['uses']}** commands have been invoked."
+        )
         embed.add_field(
             name="Uptime",
             value=f"I have been online since <t:{int(self.bot.uptime)}:R>",

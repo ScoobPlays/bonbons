@@ -43,7 +43,7 @@ class HelpCommand(commands.HelpCommand):
 
                 embed.add_field(name=f"{name} [{amount_commands}]", value=description)
 
-        embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands. There are also **{len(self.context.bot.slash_commands)}** slash commands. [My Github](https://github.com/kaylebetter/bonbons)!"
+        embed.description = f"**About:** bonbons is a bot with no so-many commands.\n**Commands:** There are **{len(self.context.bot.commands)}** commands. There are also **{len(self.context.bot.slash_commands)}** slash commands."
 
         await self.send(embed=embed)
 
