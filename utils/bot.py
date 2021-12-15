@@ -84,7 +84,7 @@ class Bonbons(commands.Bot):
         elif isinstance(error, commands.MissingRequiredArgument):
             _missing_args = list(ctx.command.clean_params)
             missing_args = [f'`{arg}`' for arg in _missing_args[_missing_args.index(error.param.name):]]
-            return await ctx.send(f'You are missing the following required arguments: {human_join(missing_args)}')
+            return await ctx.send(f'You are missing the following required arguments: {human_join(missing_args, final="and")}')
 
         elif isinstance(error, disnake.Forbidden):
             await ctx.send(error)
