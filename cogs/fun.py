@@ -629,7 +629,9 @@ class Fun(commands.Cog, description="Random commands."):
                         )
                         embeds.append(emb)
 
-                    await ctx.send(embed=embeds[0], view=Paginator(ctx, embeds, embed=True))
+                    await ctx.send(
+                        embed=embeds[0], view=Paginator(ctx, embeds, embed=True)
+                    )
                 except IndexError:
                     return await ctx.send(
                         embed=disnake.Embed(
