@@ -295,6 +295,15 @@ class Events(commands.Cog, description="A cog for events/logs."):
         )
         await self.send_log(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+        data = self.bot.db[str(message.author.id)]
+        if data is None:
+            self.bot.db[str(message.author.id)] = 1
+        else:
+            self.bot.db[str(message.author.id)] += 1
 
 def setup(bot):
     bot.add_cog(Events(bot))

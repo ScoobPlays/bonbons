@@ -120,7 +120,6 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
                     )
                 )
             output = await self.pysclient.execute(str(lang), [File(code)])
-            print(output.raw_json)
 
             if (
                 output.raw_json["run"]["stdout"] == ""
