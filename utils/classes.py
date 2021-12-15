@@ -168,3 +168,12 @@ class Calculator(disnake.ui.View):
     async def clear(self, button, inter):
         await inter.response.defer()
         await inter.edit_original_message(content="0")
+
+def is_kayles_hub():
+    def predicate(ctx):
+        if ctx.guild.id == 880030618275155998:
+            return True
+        else:
+            return False
+
+    return commands.check(predicate)

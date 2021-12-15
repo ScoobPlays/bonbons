@@ -1,11 +1,13 @@
 import disnake
 from disnake.ext import commands
 from datetime import datetime
+import utils
 
 
 class Events(commands.Cog, description="A cog for events/logs."):
     def __init__(self, bot):
         self.bot = bot
+
 
     async def send_log(self, embed: disnake.Embed):
         channel = self.bot.get_channel(
@@ -15,6 +17,7 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
+    @utils.is_kayles_hub()
     async def on_member_update(self, before: disnake.Member, after: disnake.Member):
         if before.roles != after.roles:
             embed = disnake.Embed(
