@@ -1,5 +1,5 @@
 from utils.env import headers, cluster
-from utils.paginator import EmbedPaginator
+from utils.paginator import Paginator
 from utils.classes import EditSnipeView, Google
 from disnake.ext import commands
 from datetime import datetime
@@ -629,9 +629,7 @@ class Fun(commands.Cog, description="Random commands."):
                         )
                         embeds.append(emb)
 
-                    view = EmbedPaginator(ctx, embeds)
-
-                    await ctx.send(embed=embeds[0], view=view)
+                    await ctx.send(embed=embeds[0], view=Paginator(ctx, embeds, embed=True))
                 except IndexError:
                     return await ctx.send(
                         embed=disnake.Embed(

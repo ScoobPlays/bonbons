@@ -302,10 +302,10 @@ class Events(commands.Cog, description="A cog for events/logs."):
         if message.author.bot:
             return
 
-        if not self.bot.db[str(message.author.id)]:
-            self.bot.db[str(message.author.id)] = 1
-        else:
+        try:
             self.bot.db[str(message.author.id)] += 1
+        except KeyError:
+            self.bot.db[str(message.author.id)] = 1
 
 
 def setup(bot):

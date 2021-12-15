@@ -1,6 +1,6 @@
 from disnake.ext import commands
 from utils.env import db
-from utils.paginator import EmbedPaginator
+from utils.paginator import Paginator
 import disnake
 from typing import Union
 
@@ -73,7 +73,7 @@ class Image(commands.Cog, description="Image related commands."):
                 description=f"Images: {image_ids}",
                 color=disnake.Color.blurple(),
             ),
-            view=EmbedPaginator(ctx, embeds),
+            view=Paginator(ctx, embeds, embed=True),
         )
 
     @image.command()
@@ -115,7 +115,7 @@ class Image(commands.Cog, description="Image related commands."):
                 ).set_image(url=link)
             )
 
-        await ctx.send(embed=embeds[0], view=EmbedPaginator(ctx, embeds))
+        await ctx.send(embed=embeds[0], view=Paginator(ctx, embeds, embed=True))
 
     @image.command()
     async def buy(self, ctx: commands.Context, name: Union[int, str]):
