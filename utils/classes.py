@@ -142,8 +142,29 @@ class Calculator(disnake.ui.View):
         new = data + str(6)
         await inter.edit_original_message(content=new)
 
+    @disnake.ui.button(label="7", row=2, custom_id="calc:seven")
+    async def calc_seven(self, button, inter):
+        await inter.response.defer()
+        data = (inter.message.content).replace("0", "")
+        new = data + str(7)
+        await inter.edit_original_message(content=new)
+
+    @disnake.ui.button(label="8", row=2, custom_id="calc:eight")
+    async def calc_eight(self, button, inter):
+        await inter.response.defer()
+        data = (inter.message.content).replace("0", "")
+        new = data + str(8)
+        await inter.edit_original_message(content=new)
+
+    @disnake.ui.button(label="9", row=2, custom_id="calc:nine")
+    async def calc_nine(self, button, inter):
+        await inter.response.defer()
+        data = (inter.message.content).replace("0", "")
+        new = data + str(9)
+        await inter.edit_original_message(content=new)
+
     @disnake.ui.button(
-        label="+", style=disnake.ButtonStyle.blurple, row=2, custom_id="calc:plus"
+        label="+", style=disnake.ButtonStyle.blurple, row=3, custom_id="calc:plus"
     )
     async def plus(self, button, inter):
         await inter.response.defer()
@@ -155,7 +176,7 @@ class Calculator(disnake.ui.View):
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(
-        label="=", style=disnake.ButtonStyle.blurple, row=2, custom_id="calc:equals"
+        label="=", style=disnake.ButtonStyle.blurple, row=3, custom_id="calc:equals"
     )
     async def equals(self, button, inter):
         await inter.response.defer()
@@ -163,17 +184,8 @@ class Calculator(disnake.ui.View):
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(
-        label="Clear", style=disnake.ButtonStyle.red, row=2, custom_id="calc:clear"
+        label="Clear", style=disnake.ButtonStyle.red, row=3, custom_id="calc:clear"
     )
     async def clear(self, button, inter):
         await inter.response.defer()
         await inter.edit_original_message(content="0")
-
-def is_kayles_hub():
-    def predicate(ctx):
-        if ctx.guild.id == 880030618275155998:
-            return True
-        else:
-            return False
-
-    return commands.check(predicate)

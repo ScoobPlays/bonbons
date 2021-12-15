@@ -8,7 +8,6 @@ class Events(commands.Cog, description="A cog for events/logs."):
     def __init__(self, bot):
         self.bot = bot
 
-
     async def send_log(self, embed: disnake.Embed):
         channel = self.bot.get_channel(
             907820956733558784
@@ -17,7 +16,6 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await channel.send(embed=embed)
 
     @commands.Cog.listener()
-    @utils.is_kayles_hub()
     async def on_member_update(self, before: disnake.Member, after: disnake.Member):
         if before.roles != after.roles:
             embed = disnake.Embed(
@@ -299,14 +297,16 @@ class Events(commands.Cog, description="A cog for events/logs."):
         await self.send_log(embed=embed)
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: disnake.Message):
+
         if message.author.bot:
             return
-        data = self.bot.db[str(message.author.id)]
-        if data is None:
+
+        if not self.bot.db[str(message.author.id)]:
             self.bot.db[str(message.author.id)] = 1
         else:
             self.bot.db[str(message.author.id)] += 1
+
 
 def setup(bot):
     bot.add_cog(Events(bot))

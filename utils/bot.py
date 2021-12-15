@@ -60,4 +60,3 @@ class Bonbons(commands.Bot):
             return None
 
         return data
-
