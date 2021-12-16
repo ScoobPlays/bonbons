@@ -1,4 +1,5 @@
 import disnake
+from disnake.ext import commands
 
 
 class Paginator(disnake.ui.View):

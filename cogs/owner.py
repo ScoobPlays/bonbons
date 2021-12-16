@@ -14,6 +14,9 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        return ctx.author.id == 656073353215344650
+
     def paginate(self, text: str) -> str:
         last = 0
         pages = []
@@ -52,15 +55,9 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         env = {
             "ctx": ctx,
             "bot": self.bot,
-            "channel": ctx.channel,
             "_channel": ctx.channel,
-            "author": ctx.author,
-            "guild": ctx.guild,
             "_guild": ctx.guild,
-            "message": ctx.message,
             "_message": ctx.message,
-            "msg": ctx.message,
-            "_msg": ctx.message,
             "_find": disnake.utils.find,
             "_get": disnake.utils.get,
         }
@@ -118,12 +115,10 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             await ctx.message.add_reaction("\u2705")
 
     @commands.command(aliases=("rs",))
-    @commands.is_owner()
     async def restart(self, ctx: commands.Context) -> None:
         await self.restart_bot(ctx)
 
     @commands.command(name="eval", aliases=["e"])
-    @commands.is_owner()
     async def _eval(self, ctx: commands.Context, *, code: str) -> str:
 
         """Evaluates python code."""

@@ -7,6 +7,7 @@ from disnake.ext import commands
 from utils.rtfm import fuzzy
 from random import choice
 import disnake
+import time
 
 
 class SphinxObjectFileReader:
@@ -381,6 +382,31 @@ class Helpful(commands.Cog, description="Helpful utilities for the bot."):
             name="Uptime",
             value=f"I have been online since <t:{int(self.bot.uptime)}:R>",
         )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def mlb(self, ctx):
+        """A message leaderboard"""
+
+        user_dict = {}
+        index = 0
+
+        embed = disnake.Embed(description="", color=disnake.Color.greyple())
+        embed.title = "Message Leaderboard"
+        for x in self.bot.db:
+            user = self.bot.get_user(x) or await self.bot.fetch_user(x)
+            user_dict[user.name] = self.bot.db[x]
+
+        data = sorted(user_dict, key=lambda k: user_dict[k])
+        results = []
+        for x in data:
+            results.append(x)
+
+        results.reverse()
+
+        for result in results:
+            index += 1
+            embed.description += f"\n{index}. **{result}:** {user_dict[result]}"
         await ctx.send(embed=embed)
 
 
