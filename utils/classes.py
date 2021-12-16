@@ -189,3 +189,18 @@ class Calculator(disnake.ui.View):
     async def clear(self, button, inter):
         await inter.response.defer()
         await inter.edit_original_message(content="0")
+
+
+class Advertising(disnake.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(
+            disnake.ui.Button(
+                label="Support Server",
+                url="https://discord.gg/cJsuVmk8Xq")
+                )
+        self.add_item(
+            disnake.ui.Button(
+            label="Invite Me",
+            url="https://discordapp.com/oauth2/authorize?client_id=888309915620372491&scope=bot+applications.commands&permissions=0")
+            )

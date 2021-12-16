@@ -56,9 +56,6 @@ class HelpCommand(commands.HelpCommand):
             icon_url=self.context.author.display_avatar,
         )
 
-        if command.aliases == []:
-            command.aliases.append("This command has no aliases.")
-
         embed.add_field(name="Syntax", value=self.get_command_signature(command))
         if cog := command.cog:
             embed.add_field(name="Category", value=cog.qualified_name)

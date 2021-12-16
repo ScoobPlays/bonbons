@@ -1,11 +1,11 @@
 from .groups.utilsforanything import facepalms
 import re, random, asyncio, io, os, zlib
 from typing import Union, Optional, Dict
-from utils.env import db
 from pyston import PystonClient, File
 from disnake.ext import commands
 from utils.rtfm import fuzzy
 from random import choice
+import utils
 import disnake
 import time
 
@@ -48,19 +48,19 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
         self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
         self.bot = bot
         self.last = None
-        self.bot_db = db["bot"]
+        self.db = utils.db['bot']
         self.facepalms = random.choice(facepalms)
 
     @commands.Cog.listener()
     async def on_command(self, ctx):
-        tag = await self.bot_db.find_one({"_id": self.bot.user.id})
+        tag = await self.db.find_one({"_id": self.bot.user.id})
 
         if not tag:
-            await self.bot_db.insert_one({"_id": self.bot.user.id, "uses": 0})
+            await self.db.insert_one({"_id": self.bot.user.id, "uses": 0})
 
         uses = tag["uses"] + 1
 
-        await self.bot_db.update_one(tag, {"$set": {"uses": int(uses)}})
+        await self.db.update_one(tag, {"$set": {"uses": int(uses)}})
         self.bot.used_commands = uses
 
     def created_at(self, value) -> int:
@@ -364,25 +364,6 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
     async def rtfm_disnake_cmd(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve's documentation about the Disnake library."""
         await self.do_rtfm(ctx, "disnake", obj)
-
-    @commands.command(aliases=("uptime", "commands", "botinfo", "bot"))
-    async def info(self, ctx):
-        """Returns the bots info."""
-        embed = disnake.Embed(
-            title="My Information",
-            color=disnake.Color.greyple(),
-            description=f"I have access to {len(self.bot.guilds)} guilds and can see {len(self.bot.users)} users. ",
-        )
-
-        data = await self.bot_db.find_one({"_id": self.bot.user.id})
-        embed.add_field(
-            name="Commands", value=f"**{data['uses']}** commands have been invoked."
-        )
-        embed.add_field(
-            name="Uptime",
-            value=f"I have been online since <t:{int(self.bot.uptime)}:R>",
-        )
-        await ctx.send(embed=embed)
 
     @commands.command()
     async def mlb(self, ctx):
