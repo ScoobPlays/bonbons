@@ -48,7 +48,7 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
         self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
         self.bot = bot
         self.last = None
-        self.db = utils.db['bot']
+        self.db = utils.db["bot"]
         self.facepalms = random.choice(facepalms)
 
     @commands.Cog.listener()

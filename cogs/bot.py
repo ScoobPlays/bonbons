@@ -2,13 +2,18 @@ import disnake
 import utils
 from disnake.ext import commands
 
+
 class Bot(commands.Cog, description="Commands for the bot."):
     def __init__(self, bot):
         self.bot = bot
         self.db = utils.db["bot"]
 
-
-    @commands.command(aliases=("uptime", "botinfo",))
+    @commands.command(
+        aliases=(
+            "uptime",
+            "botinfo",
+        )
+    )
     async def info(self, ctx):
         """Returns the bots info."""
         embed = disnake.Embed(
@@ -24,9 +29,10 @@ class Bot(commands.Cog, description="Commands for the bot."):
         embed.add_field(
             name="Uptime",
             value=f"I have been online since <t:{int(self.bot.uptime)}:R>",
-            inline=False
+            inline=False,
         )
         await ctx.send(embed=embed, view=utils.Advertising())
+
 
 def setup(bot):
     bot.add_cog(Bot(bot))

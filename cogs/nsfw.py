@@ -1,12 +1,15 @@
 import disnake
 from disnake.ext import commands
 
+
 class NSFW(commands.Cog, description="NSFW commands."):
     def __init__(self, bot):
         self.bot = bot
 
     async def get_img(self, imgtype: str):
-        async with self.bot.session.get(f"https://nekobot.xyz/api/image?type={imgtype}") as res:
+        async with self.bot.session.get(
+            f"https://nekobot.xyz/api/image?type={imgtype}"
+        ) as res:
             res = await res.json()
         return res.get("message")
 
@@ -25,7 +28,7 @@ class NSFW(commands.Cog, description="NSFW commands."):
 
         await ctx.send(embed=em)
 
-    @commands.command(name='4k')
+    @commands.command(name="4k")
     @commands.guild_only()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def _4k(self, ctx):
@@ -91,6 +94,7 @@ class NSFW(commands.Cog, description="NSFW commands."):
         em.set_image(url=image)
 
         await ctx.send(embed=em)
+
 
 def setup(bot):
     bot.add_cog(NSFW(bot))

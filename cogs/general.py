@@ -712,5 +712,6 @@ class General(commands.Cog, description="General commands."):
 
         await inter.response.send_message(embed=embed, ephemeral=True)
 
+
 def setup(bot):
     bot.add_cog(General(bot))
