@@ -42,7 +42,7 @@ class SphinxObjectFileReader:
                 pos = buf.find(b"\n")
 
 
-class Helpful(commands.Cog, description="Helpful utilities for the bot."):
+class Helpful(commands.Cog, description="Commands that may be helpful."):
     def __init__(self, bot):
         self.pysclient = PystonClient()
         self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")

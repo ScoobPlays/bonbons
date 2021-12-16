@@ -485,34 +485,6 @@ class Information(commands.Cog, description="Information related commands."):
         )
         await inter.response.send_message(embed=embed)
 
-    @commands.command(name="ping")
-    async def ping(self, ctx: commands.Context) -> None:
-
-        """
-        Returns the bots latency.
-        """
-
-        embed = disnake.Embed(
-            description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
-            color=disnake.Color.greyple(),
-        )
-
-        await ctx.reply(embed=embed, mention_author=False)
-
-    @commands.slash_command(name="ping")
-    async def ping_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
-
-        """
-        Returns the bots latency
-        """
-
-        embed = disnake.Embed(
-            description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
-            color=disnake.Color.greyple(),
-        )
-
-        await inter.response.send_message(embed=embed, ephemral=True)
-
 
 def setup(bot):
     bot.add_cog(Information(bot))
