@@ -20,6 +20,7 @@ class HelpCommand(commands.HelpCommand):
             }
         )
 
+
     async def send(self, **kwargs):
         await self.get_destination().send(**kwargs)
 
@@ -79,12 +80,15 @@ class HelpCommand(commands.HelpCommand):
 
         await self.send(embed=embed)
 
+
     async def send_group_help(self, group):
         title = self.get_command_signature(group).replace(".", "").strip()
         await self.send_help_embed(title, group.help, group.commands)
 
     async def send_cog_help(self, cog):
         title = cog.qualified_name or "No"
+
         await self.send_help_embed(
-            f"{title} Category", cog.description, cog.get_commands()
-        )
+                f"{title} Category", cog.description, cog.get_commands()
+            )
+

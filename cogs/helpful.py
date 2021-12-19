@@ -388,6 +388,8 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
         for result in results:
             index += 1
             embed.description += f"\n{index}. **{result}:** {user_dict[result]}"
+            if index == 10:
+                break
         await ctx.send(embed=embed)
 
 
