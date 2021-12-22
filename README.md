@@ -1,7 +1,9 @@
 ## Bonbons
+- A simple bot made in disnake.
 
-- Is bot.
-
+## TODO:
+- A select menu on the help command. (60% done)
+  
 ## Credits
 
 - Carrot

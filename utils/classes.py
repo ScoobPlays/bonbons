@@ -3,10 +3,7 @@ from urllib.parse import quote_plus
 from datetime import datetime
 from disnake.ext import commands
 import re
-
-"""
-TimeConvert was stolen from the dpy server, https://discord.com/channels/267624335836053506/343944376055103488/919815774573584414
-"""
+import utils
 
 time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
 time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
