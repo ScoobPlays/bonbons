@@ -1,2 +1,2 @@
 ## Bonbons
-- A simple bot made in disnake.
+- A simple bot I made. Made lots of memories with this.
