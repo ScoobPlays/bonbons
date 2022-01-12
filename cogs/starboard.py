@@ -1,6 +1,5 @@
 from disnake.ext import commands
 import disnake
-from utils.env import starboard, config
 from datetime import datetime
 from contextlib import suppress
 
@@ -8,6 +7,12 @@ from contextlib import suppress
 class Starboard(commands.Cog, description="Starboard related commands."):
     def __init__(self, bot):
         self.bot = bot
+        self.config = self.bot.mongo["discord"]["config"]
+        self.sb = self.bot.mongo["discord"]["starboard"]
+
+    @property
+    def emoji(self):
+        return "⭐"
 
     async def set_starboard_count(self, ctx, count):
 
@@ -15,7 +20,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
 
         try:
 
-            data = await config.find_one({"_id": ctx.guild.id})
+            data = await self.config.find_one({"_id": ctx.guild.id})
 
             if not data:
                 return await ctx.send(
@@ -23,7 +28,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                 )
 
             if data:
-                await config.update_one(
+                await self.config.update_one(
                     {"_id": ctx.guild.id}, {"$set": {"reactions": count}}
                 )
                 return await ctx.send(
@@ -43,19 +48,19 @@ class Starboard(commands.Cog, description="Starboard related commands."):
         if reaction.message.embeds:
             return
 
-        reactions = await config.find_one({"_id": reaction.message.guild.id})
+        reactions = await self.config.find_one({"_id": reaction.message.guild.id})
         starboard_channel_id = reactions["channel"]
         starboard_channel = self.bot.get_channel(
             starboard_channel_id
-        ) or await self.bot.fetch_channel(starboard.channel_id)
+        ) or await self.bot.fetch_channel(starboard_channel_id)
 
-        data = await starboard.find_one({"_id": reaction.message.id})
+        data = await self.sb.find_one({"_id": reaction.message.id})
         if data:
             data_channel = data["channel"]
 
             msg = self.bot.get_message(
                 data["starboard_message"]
-            ) or await self.bot.user.fetch_message(data["starboard_message"])
+            ) or await self.bot.fetch_message(data["starboard_message"])
             await msg.edit(
                 content=f"⭐ **{reaction.count}** <#{data_channel}> ID: {data['_id']}"
             )
@@ -79,7 +84,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                     content=f"⭐ **{reaction.count}** <#{reaction.message.channel.id}> ID: {reaction.message.id}",
                     embed=em,
                 )
-                await starboard.insert_one(
+                await self.sb.insert_one(
                     {
                         "_id": reaction.message.id,
                         "channel": reaction.message.channel.id,
@@ -118,7 +123,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
     @starboard.command()
     async def info(self, ctx):
         """Display's the server's starboard information."""
-        data = await config.find_one({"_id": ctx.guild.id})
+        data = await self.config.find_one({"_id": ctx.guild.id})
         if data:
             embed = disnake.Embed(
                 title="Starboard Information",
@@ -135,7 +140,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
     @commands.has_permissions(manage_channels=True)
     async def set(self, ctx, channel: disnake.TextChannel):
         """Sets a channel to be the starboard."""
-        data = await config.find_one(
+        data = await self.config.find_one(
             {
                 "_id": ctx.guild.id,
             }
@@ -147,7 +152,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
             )
 
         if data:
-            await config.update_one(
+            await self.config.update_one(
                 {"_id": ctx.guild.id}, {"$set": {"channel": channel.id}}
             )
             return await ctx.send(
@@ -155,7 +160,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
             )
 
         if not data:
-            await config.insert_one(
+            await self.config.insert_one(
                 {
                     "_id": ctx.guild.id,
                     "channel": channel.id,

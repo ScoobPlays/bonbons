@@ -1,10 +1,8 @@
-from utils.env import headers, cluster
-from utils.paginator import Paginator
-from utils.classes import EditSnipeView, Google
+import utils
 from disnake.ext import commands
 from datetime import datetime
 from typing import Optional
-
+import os
 import disnake
 import json
 import base64
@@ -15,10 +13,13 @@ import aiohttp
 class General(commands.Cog, description="General commands."):
     def __init__(self, bot):
         self.bot = bot
-        self.last_msg = None
+        self.snipe_cache = None
         self.before = None
-        self.after = None
-        self.afk = cluster["afk"]
+        self.afk = self.bot.mongo["discord"]["afk"]
+
+    @property
+    def emoji(self):
+        return "👷"
 
     def b64_encode(self, text: str):
         message_bytes = text.encode("ascii")
@@ -38,7 +39,7 @@ class General(commands.Cog, description="General commands."):
         if message.author.bot:
             return
 
-        self.last_msg = message
+        self.snipe_cache = message
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
@@ -47,7 +48,6 @@ class General(commands.Cog, description="General commands."):
             return
 
         self.before = before
-        self.after = after
 
     @commands.Cog.listener()
     async def on_message(self, message: disnake.Message):
@@ -117,25 +117,14 @@ class General(commands.Cog, description="General commands."):
                     before = disnake.Embed(
                         description=f"{self.before.content}",
                         timestamp=datetime.utcnow(),
+                        color=disnake.Color.blurple(),
                     )
                     before.set_footer(text=f"Message from {self.before.author}")
                     before.set_author(
                         name=f"{self.before.author}",
                         icon_url=self.before.author.display_avatar,
                     )
-
-                    after = disnake.Embed(
-                        description=f"{self.after.content}", timestamp=datetime.utcnow()
-                    )
-                    after.set_footer(text=f"Message from {self.after.author}")
-                    after.set_author(
-                        name=f"{self.after.author}",
-                        icon_url=self.after.author.display_avatar,
-                    )
-
-                    view = EditSnipeView(ctx, self.before, self.after)
-
-                    await ctx.send(embed=before, view=view)
+                    await ctx.send(embed=before)
 
         except Exception:
             await ctx.send(
@@ -147,24 +136,26 @@ class General(commands.Cog, description="General commands."):
         """Snipes most recently deleted message."""
 
         try:
-            if self.last_msg.guild.id == ctx.guild.id:
-                if self.last_msg.channel.id == ctx.channel.id:
+            if self.snipe_cache.guild.id == ctx.guild.id:
+                if self.snipe_cache.channel.id == ctx.channel.id:
 
                     embed = disnake.Embed(
-                        description=f"{self.last_msg.content}",
+                        description=f"{self.snipe_cache.content}",
                         timestamp=datetime.utcnow(),
+                        color=disnake.Color.blurple(),
                     )
-                    embed.set_footer(text=f"Message from {self.last_msg.author}")
+                    embed.set_footer(text=f"Message from {self.snipe_cache.author}")
                     embed.set_author(
-                        name=f"{self.last_msg.author}",
-                        icon_url=self.last_msg.author.display_avatar,
+                        name=f"{self.snipe_cache.author}",
+                        icon_url=self.snipe_cache.author.display_avatar,
                     )
                     await ctx.send(embed=embed)
 
-        except Exception:
+        except Exception as e:
             await ctx.send(
-                "There currently are no recently deleted messages.",
+                "No message was deleted, or the message was not in my cache.",
             )
+            print(e)
 
     @commands.command(help="Gives a joke.")
     async def joke(self, ctx: commands.Context):
@@ -172,27 +163,6 @@ class General(commands.Cog, description="General commands."):
             async with cs.get("https://some-random-api.ml/joke") as r:
                 data = await r.json(content_type=None)
                 await ctx.send(data["joke"])
-
-    @commands.command(name="google")
-    async def google(self, ctx: commands.Context, *, query: str):
-
-        """Returns a google link for a query."""
-
-        view = Google(query)
-
-        await ctx.send(f"Google Result for: `{query}`", view=view)
-
-    @commands.slash_command(name="google")
-    async def google_slash(
-        self, inter: disnake.ApplicationCommandInteraction, query: str
-    ):
-        """Returns a google link for a query"""
-
-        view = Google(query)
-
-        await inter.response.send_message(
-            f"Google Result for: `{query}`", view=view, ephemeral=False
-        )
 
     @commands.slash_command()
     async def base64(self, inter: disnake.ApplicationCommandInteraction):
@@ -338,8 +308,11 @@ class General(commands.Cog, description="General commands."):
                 await inter.response.send_message(embed=embed, ephemeral=False)
 
     @commands.command(name="minecraft")
-    async def minecraft(self, ctx: commands.Context, username="Notch"):
-        """Fetches information about a minecraft user."""
+    async def minecraft(self, ctx: commands.Context, username=None):
+        """Gets information about a minecraft user!"""
+
+        if username is None:
+            return await ctx.send()
 
         async with self.bot.session.get(
             f"https://api.mojang.com/users/profiles/minecraft/{username}"
@@ -363,63 +336,24 @@ class General(commands.Cog, description="General commands."):
 
             names = await r.json()
 
-        history = ""
+        history = []
+
         for name in reversed(names):
-            history += name["name"] + "\n"
+            history.append(name["name"])
 
         embed = disnake.Embed(
-            title=f"User Information For {username}", timestamp=datetime.utcnow()
+            title=f"{username}",
+            color=disnake.Color.blurple(),
+            timestamp=datetime.utcnow(),
         )
         embed.add_field(name="Username", value=username)
         embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
-        embed.add_field(name="History", value=history)
+        embed.add_field(name="Name History", value=", ".join(history))
         embed.set_thumbnail(url=url)
         embed.set_footer(icon_url=ctx.author.display_avatar)
         await ctx.send(embed=embed)
 
-    @commands.slash_command(name="minecraft")
-    async def minecraft_slash(
-        self, inter: disnake.ApplicationCommandInteraction, username="Notch"
-    ):
-        """Fetches information about a minecraft user."""
-
-        async with self.bot.session.get(
-            f"https://api.mojang.com/users/profiles/minecraft/{username}"
-        ) as r:
-
-            uuid = (await r.json())["id"]
-
-        async with self.bot.session.get(
-            f"https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"
-        ) as r:
-
-            value = (await r.json())["properties"][0]["value"]
-
-        url = json.loads(base64.b64decode(value).decode("utf-8"))["textures"]["SKIN"][
-            "url"
-        ]
-
-        async with self.bot.session.get(
-            f"https://api.mojang.com/user/profiles/{uuid}/names"
-        ) as r:
-
-            names = await r.json()
-
-        history = ""
-        for name in reversed(names):
-            history += name["name"] + "\n"
-
-        embed = disnake.Embed(
-            title=f"User Information For {username}", timestamp=datetime.utcnow()
-        )
-        embed.add_field(name="Username", value=username)
-        embed.set_author(name=inter.author, icon_url=inter.author.display_avatar)
-        embed.add_field(name="History", value=history)
-        embed.set_thumbnail(url=url)
-        embed.set_footer(icon_url=inter.author.display_avatar)
-        await inter.response.send_message(embed=embed, ephemeral=False)
-
-    @commands.command(name="kiss", help="Kisses a user.")
+    @commands.command(name="kiss", help="Kiss a user!")
     @commands.guild_only()
     async def kiss_cmd(self, ctx: commands.Context, member: disnake.Member):
         await ctx.send(
@@ -431,15 +365,16 @@ class General(commands.Cog, description="General commands."):
     async def kiss_slash(
         self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
     ):
-        """Kisses a user"""
+        """Kiss a user!"""
         await inter.response.send_message(
             f"{inter.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627",
             ephemeral=False,
         )
 
-    @commands.command(name="bonk", help="Bonks a user.")
+    @commands.command(name="bonk")
     @commands.guild_only()
     async def bonk_cmd(self, ctx: commands.Context, member: disnake.Member):
+        """Bonk a user!"""
         bonkis = [
             "https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380",
             "https://tenor.com/view/lol-gif-21667170",
@@ -448,12 +383,12 @@ class General(commands.Cog, description="General commands."):
         bonkiuwu = random.choice(bonkis)
         await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
 
-    @commands.slash_command(name="bonk", help="Bonks a user")
+    @commands.slash_command(name="bonk")
     @commands.guild_only()
     async def bonk_slash(
         self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
     ):
-        """Bonks a user"""
+        """Bonk a user!"""
         bonkis = [
             "https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380",
             "https://tenor.com/view/lol-gif-21667170",
@@ -465,27 +400,29 @@ class General(commands.Cog, description="General commands."):
             ephemeral=False,
         )
 
-    @commands.command(name="spank", help="Spanks a user.")
+    @commands.command(name="spank")
     @commands.guild_only()
     async def spank_cmd(self, ctx: commands.Context, member: disnake.Member):
+        """Spank a user!"""
         await ctx.send(
             f"{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590"
         )
 
-    @commands.slash_command(name="spank", help="Spanks a user")
+    @commands.slash_command(name="spank")
     @commands.guild_only()
     async def spank_slash(
         self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
     ):
-        """Spanks a user"""
+        """Spank a user!"""
         await inter.response.send_message(
             f"{inter.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590",
             ephemeral=False,
         )
 
-    @commands.command(name="slap", help="Slaps a user.")
+    @commands.command(name="slap")
     @commands.guild_only()
     async def slap_cmd(self, ctx: commands.Context, member: disnake.Member):
+        """Slap a user!"""
         await ctx.send(
             f"{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299"
         )
@@ -495,15 +432,16 @@ class General(commands.Cog, description="General commands."):
     async def slap_slash(
         self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
     ):
-        """Slaps a user"""
+        """Slap a user!"""
         await inter.response.send_message(
             f"{inter.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299",
             ephemeral=False,
         )
 
-    @commands.command(name="pat", help="Pats a user.")
+    @commands.command(name="pat")
     @commands.guild_only()
     async def pat(self, ctx: commands.Context, member: disnake.Member):
+        """Pat a user!"""
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/pat") as r:
                 data = await r.json(content_type=None)
@@ -517,7 +455,7 @@ class General(commands.Cog, description="General commands."):
     async def pat_slash(
         self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
     ):
-        """Pats a user"""
+        """Pat a user!"""
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/pat") as r:
                 data = await r.json()
@@ -529,7 +467,7 @@ class General(commands.Cog, description="General commands."):
 
     @commands.command(name="cat")
     async def cat(self, ctx: commands.Context) -> None:
-        """Sends a random cat image"""
+        """Sends a random cat image."""
         async with ctx.typing():
             async with self.bot.session.get("http://aws.random.cat/meow") as r:
                 if r.status == 200:
@@ -555,7 +493,7 @@ class General(commands.Cog, description="General commands."):
 
     @commands.command(name="dog")
     async def dog(self, ctx: commands.Context):
-        """Sends a random dog image"""
+        """Sends a random dog image."""
         async with ctx.typing():
             async with self.bot.session.get(
                 "https://dog.ceo/api/breeds/image/random"
@@ -582,9 +520,10 @@ class General(commands.Cog, description="General commands."):
                     ephemeral=False,
                 )
 
-    @commands.command(name="hug", help="Hugs a user.")
+    @commands.command(name="hug")
     @commands.guild_only()
     async def hug_cmd(self, ctx: commands.Context, member: disnake.Member):
+        """Hug a user!"""
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/hug") as r:
                 data = await r.json()
@@ -598,7 +537,7 @@ class General(commands.Cog, description="General commands."):
     async def hug_slash(
         self, inter: disnake.ApplicationCommandInteraction, member: disnake.Member
     ):
-        """Hugs a user"""
+        """Hug a user!"""
         async with aiohttp.ClientSession() as cs:
             async with cs.get("https://some-random-api.ml/animu/hug") as r:
                 data = await r.json()
@@ -608,6 +547,12 @@ class General(commands.Cog, description="General commands."):
                 )
 
     async def get_urban_response(self, ctx: commands.Context, term: str):
+
+        headers = {
+            "x-rapidapi-host": os.environ.get("x_host"),
+            "x-rapidapi-key": os.environ.get("x_key"),
+        }
+
         async with aiohttp.ClientSession(headers=headers) as session:
             async with session.get(
                 url="https://mashape-community-urban-dictionary.p.rapidapi.com/define",
@@ -620,7 +565,7 @@ class General(commands.Cog, description="General commands."):
 
                     for item in data["list"]:
                         definition.append(
-                            f'{item["word"]}\n\n**Definition:** {item["definition"]}\n\n**Example:** {item["example"]}\n\n**Author:**\n{item["author"]}'
+                            f'{item["word"]}\n\n**Definition:** {item["definition"]}\n\n**Author:**\n{item["author"]}'
                         )
 
                     for name in definition:
@@ -630,7 +575,8 @@ class General(commands.Cog, description="General commands."):
                         embeds.append(emb)
 
                     await ctx.send(
-                        embed=embeds[0], view=Paginator(ctx, embeds, embed=True)
+                        embed=embeds[0],
+                        view=utils.Paginator(ctx, embeds, embed=True),
                     )
                 except IndexError:
                     return await ctx.send(
@@ -640,12 +586,9 @@ class General(commands.Cog, description="General commands."):
                         )
                     )
 
-    @commands.command(aliases=["urban", "meaning"])
-    async def define(self, ctx, term):
-        """
-        Display's a meaning of a word.
-
-        """
+    @commands.command()
+    async def define(self, ctx: commands.Context, term: str):
+        """Show's a meaning of a word."""
         await self.get_urban_response(ctx, term)
 
     @commands.command()
@@ -687,13 +630,11 @@ class General(commands.Cog, description="General commands."):
     @commands.command(name="ping")
     async def ping(self, ctx: commands.Context) -> None:
 
-        """
-        Returns the bots latency (ping)
-        """
+        """Returns the bots latency."""
 
         embed = disnake.Embed(
             description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
         )
 
         await ctx.reply(embed=embed, mention_author=False)
@@ -701,16 +642,26 @@ class General(commands.Cog, description="General commands."):
     @commands.slash_command(name="ping")
     async def ping_slash(self, inter: disnake.ApplicationCommandInteraction) -> None:
 
-        """
-        Returns the bots latency
-        """
+        """Returns the bots latency"""
 
         embed = disnake.Embed(
             description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
         )
 
         await inter.response.send_message(embed=embed, ephemeral=True)
+
+    @commands.command()
+    async def choose(self, ctx: commands.Context, *args):
+
+        """Chooses between multiple choices."""
+
+        await ctx.send(random.choice(args))
+
+    @commands.command(name="calculator", aliases=["calc"])
+    async def calculator(self, ctx: commands.Context):
+        view = utils.Calculator()
+        await ctx.send("Click a button!", view=view)
 
 
 def setup(bot):

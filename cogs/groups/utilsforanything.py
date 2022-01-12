@@ -1,16 +1,19 @@
 from typing import Union, Optional
 from disnake.ext import commands
 import disnake
-from utils.env import thank
 import random
 
 facepalms = ("🤦‍♂️", "🤦‍♀️", "🤦")
 
 
-class Utilities(commands.Cog, description="Utilities for anything."):
+class Utilities(commands.Cog, description="Thread and emoji utilities!"):
     def __init__(self, bot):
         self.bot = bot
-        self.thank = thank
+        self.thank = self.bot.mongo["discord"]["thank"]
+
+    @property
+    def emoji(self):
+        return "⚙️"
 
     async def send_thank(
         self, ctx: commands.Context, member: disnake.Member, reason: str
@@ -95,7 +98,7 @@ class Utilities(commands.Cog, description="Utilities for anything."):
                 return
 
     @thank.command(name="stats")
-    async def thank_stats(self, ctx, member: disnake.Member = None):
+    async def thank_stats(self, ctx: commands.Context, member: disnake.Member = None):
         """
         Display a member's stats.
         """
@@ -129,21 +132,18 @@ class Utilities(commands.Cog, description="Utilities for anything."):
             await ctx.send(", ".join(threads))
         except Exception:
             await ctx.send(
-                embed=disnake.Embed(
-                    description=f"No threads were found.",
-                    color=disnake.Color.red(),
-                )
+                "No threads were found.",
             )
 
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     async def thread(self, ctx: commands.Context):
-        """Base command for thread."""
+        """The base command for thread."""
         await ctx.send_help("thread")
 
     @thread.command()
     async def find(self, ctx: commands.Context, *, name: str):
 
-        """Searches the guild for a thread."""
+        """Searches the current server for a thread."""
 
         await self.find_thread(ctx, name)
 
@@ -154,20 +154,19 @@ class Utilities(commands.Cog, description="Utilities for anything."):
         for channel in ctx.guild.text_channels:
             for thread in channel.threads:
                 await thread.delete()
-                await ctx.message.add_reaction("✅")
+        await ctx.message.add_reaction("✅")
 
-    @commands.group(invoke_without_command=True)
-    async def emoji(self, ctx):
+    @commands.group(name="emoji", invoke_without_command=True)
+    async def _emoji(self, ctx: commands.Context):
         """The base command for emoji."""
         await ctx.send_help("emoji")
 
-    @emoji.command()
+    @_emoji.command()
     @commands.has_permissions(manage_emojis=True)
-    async def copy(self, ctx, argument: int, name: Optional[str]):
+    async def copy(self, ctx: commands.Context, argument: int, name: Optional[str]):
 
         """
-        Copies an emoji using ID.
-        A command for people who don't have nitro.
+        Copies an emoji via ID.
         """
 
         name = name or "emoji"
@@ -176,12 +175,13 @@ class Utilities(commands.Cog, description="Utilities for anything."):
                 f"https://cdn.discordapp.com/emojis/{argument}.png?size=80"
             ) as data:
                 emoji = await data.read()
+                print(emoji[:10])
                 emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
                 await ctx.send(emote)
 
-    @emoji.command()
+    @_emoji.command()
     @commands.has_permissions(manage_emojis=True)
-    async def create(self, ctx, url: str, name: str):
+    async def create(self, ctx: commands.Context, url: str, name: str):
 
         """
         Creates an emoji by link.
@@ -195,9 +195,9 @@ class Utilities(commands.Cog, description="Utilities for anything."):
                 emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
                 await ctx.send(emote)
 
-    @emoji.command()
+    @_emoji.command()
     @commands.has_permissions(manage_emojis=True)
-    async def delete(self, ctx, name: Union[disnake.Emoji, int]):
+    async def delete(self, ctx: commands.Context, name: Union[disnake.Emoji, int]):
 
         """
         Deletes an emoji by ID or emote.

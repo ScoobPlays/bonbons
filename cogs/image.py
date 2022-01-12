@@ -1,5 +1,4 @@
 from disnake.ext import commands
-from utils.env import db
 from utils.paginator import Paginator
 import disnake
 from typing import Union
@@ -8,7 +7,11 @@ from typing import Union
 class Image(commands.Cog, description="Image related commands."):
     def __init__(self, bot):
         self.bot = bot
-        self.images = db["nft"]
+        self.images = self.bot.mongo["discord"]["nft"]
+
+    @property
+    def emoji(self):
+        return "🖼️"
 
     @commands.group(invoke_without_command=True)
     async def image(self, ctx):

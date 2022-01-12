@@ -1,7 +1,7 @@
 from disnake.ext.commands import Bot
 from aiohttp import ClientSession
 from typing import Union
-from .enums import applications
+from .constants import applications
 
 
 class Together:

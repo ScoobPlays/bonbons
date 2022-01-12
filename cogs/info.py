@@ -7,6 +7,10 @@ class Information(commands.Cog, description="Information related commands."):
     def __init__(self, bot):
         self.bot = bot
 
+    @property
+    def emoji(self):
+        return "ℹ️"
+
     def created_at(self, value) -> int:
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
@@ -20,7 +24,7 @@ class Information(commands.Cog, description="Information related commands."):
         embed = disnake.Embed(
             title=f"Total Emoji's [{len(ctx.guild.emojis)}]",
             description="".join(all_emojis),
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
             timestamp=datetime.utcnow(),
         )
 
@@ -42,7 +46,7 @@ class Information(commands.Cog, description="Information related commands."):
         try:
             embed = disnake.Embed(
                 description=f"Snowflake was created at {self.created_at(id)}",
-                color=disnake.Color.greyple(),
+                color=disnake.Color.blurple(),
             )
             await ctx.send(embed=embed)
         except ValueError:
@@ -69,7 +73,7 @@ class Information(commands.Cog, description="Information related commands."):
         if member is None:
             member = ctx.author
 
-        embed = disnake.Embed(color=disnake.Color.greyple())
+        embed = disnake.Embed(color=disnake.Color.blurple())
         embed.set_image(url=member.display_avatar)
         embed.timestamp = datetime.utcnow()
         await ctx.send(embed=embed)
@@ -83,14 +87,14 @@ class Information(commands.Cog, description="Information related commands."):
     ):
 
         """
-        Display's a member's avatar.
+        Show's a member's avatar
         """
 
         if member is None:
             member = inter.author
 
         embed = disnake.Embed(
-            color=disnake.Color.greyple(), timestamp=datetime.utcnow()
+            color=disnake.Color.blurple(), timestamp=datetime.utcnow()
         ).set_image(url=member.display_avatar)
 
         await inter.response.send_message(embed=embed, ephemeral=False)
@@ -100,13 +104,13 @@ class Information(commands.Cog, description="Information related commands."):
     async def serverinfo(self, ctx: commands.Context) -> None:
 
         """
-        Returns information about a guild.
+        Returns information about the current server.
         """
 
         embed = disnake.Embed(
             title=ctx.guild.name,
             description=f"**ID:** {ctx.guild.id}\n**Owner:** {ctx.guild.owner}",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
         )
         embed.add_field(
             name="Server Created At",
@@ -119,7 +123,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name=f"Server Roles [{len(ctx.guild.roles)}]",
-            value=" ".join(r.mention for r in ctx.guild.roles[1:]),
+            value=" ".join(r.mention for r in ctx.guild.roles[::-1]),
             inline=False,
         )
         embed.timestamp = datetime.utcnow()
@@ -133,13 +137,14 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        Returns information about a guild.
+        Returns information about the current server
+
         """
 
         embed = disnake.Embed(
             title=inter.guild.name,
             description=f"**ID:** {inter.guild.id}\n**Owner:** {inter.guild.owner}",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
         )
         embed.add_field(
             name="Server Created At",
@@ -152,7 +157,7 @@ class Information(commands.Cog, description="Information related commands."):
         )
         embed.add_field(
             name=f"Server Roles [{len(inter.guild.roles)}]",
-            value=" ".join(r.mention for r in inter.guild.roles[1:]),
+            value=" ".join(r.mention for r in inter.guild.roles[::-1]),
             inline=False,
         )
         embed.timestamp = datetime.utcnow()
@@ -169,7 +174,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"There are {ctx.guild.member_count} members in **{ctx.guild.name}**.",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
         )
         await ctx.send(embed=embed)
 
@@ -189,7 +194,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Member:** {member.mention}\n**ID:** {member.id}",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
             timestamp=datetime.utcnow(),
         )
         embed.set_thumbnail(url=member.display_avatar)
@@ -234,7 +239,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Member:** {member.mention}\n**ID:** {member.id}",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
             timestamp=datetime.utcnow(),
         )
         embed.set_thumbnail(url=member.display_avatar)
@@ -440,7 +445,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Channel:** {channel.mention}\n**ID:** {channel.id}",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
             timestamp=datetime.utcnow(),
         )
         embed.set_author(name=f"{ctx.author}", icon_url=f"{ctx.author.display_avatar}")
@@ -467,7 +472,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         embed = disnake.Embed(
             description=f"**Channel:** {channel.mention}\n**ID:** {channel.id}",
-            color=disnake.Color.greyple(),
+            color=disnake.Color.blurple(),
             timestamp=datetime.utcnow(),
         )
         embed.set_author(

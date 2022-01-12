@@ -1,9 +1,6 @@
 import disnake
-from urllib.parse import quote_plus
-from datetime import datetime
 from disnake.ext import commands
 import re
-import utils
 
 time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
 time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
@@ -25,155 +22,121 @@ class TimeConverter(commands.Converter):
         return time
 
 
-class Google(disnake.ui.View):
-    def __init__(self, query: str) -> str:
-        super().__init__()
-        query = quote_plus(query)
-        url = f"https://www.google.com/search?q={query}"
-        self.add_item(disnake.ui.Button(label="Click Here", url=url))
-
-
-class EditSnipeView(disnake.ui.View):
-    def __init__(self, ctx, before, after):
-        super().__init__()
-        self.ctx = ctx
-        self.before = before
-        self.after = after
-
-    async def interaction_check(self, interaction: disnake.Interaction) -> bool:
-        if interaction.user and interaction.user.id == self.ctx.author.id:
-            return True
-        await interaction.response.send_message(
-            "You are not the owner of this message.", ephemeral=True
-        )
-        return False
-
-    @disnake.ui.button(label="Before", style=disnake.ButtonStyle.grey)
-    async def before(self, button, inter):
-
-        await inter.response.defer()
-
-        before_embed = (
-            disnake.Embed(
-                description=f"{self.before.content}",
-                timestamp=datetime.utcnow(),
-            )
-            .set_footer(text=f"Message from {self.before.author}")
-            .set_author(
-                name=f"{self.before.author}",
-                icon_url=self.before.author.display_avatar,
-            )
-        )
-
-        await inter.edit_original_message(embed=before_embed)
-
-    @disnake.ui.button(label="After", style=disnake.ButtonStyle.grey)
-    async def after(self, button, inter):
-
-        await inter.response.defer()
-
-        after_embed = (
-            disnake.Embed(
-                description=f"{self.after.content}",
-                timestamp=datetime.utcnow(),
-            )
-            .set_footer(text=f"Message from {self.after.author}")
-            .set_author(
-                name=f"{self.after.author}",
-                icon_url=self.after.author.display_avatar,
-            )
-        )
-
-        await inter.edit_original_message(embed=after_embed)
-
-    @disnake.ui.button(label="Quit", style=disnake.ButtonStyle.red)
-    async def quit(self, button, inter):
-        await inter.response.defer()
-        await inter.delete_original_message()
-        await self.ctx.message.delete()
-
-
 class Calculator(disnake.ui.View):
     def __init__(self):
         super().__init__()
+        self.string = "Click a button!"
 
     @disnake.ui.button(label="1", custom_id="calc:one")
     async def calc_one(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(1)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="2", custom_id="calc:two")
     async def calc_two(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(2)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="3", custom_id="calc:three")
     async def calc_three(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
-        new = data + str(2)
+        data = (inter.message.content).replace(self.string, "")
+        new = data + str(3)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="4", row=1, custom_id="calc:four")
     async def calc_four(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(4)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="5", row=1, custom_id="calc:five")
     async def calc_five(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(5)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="6", row=1, custom_id="calc:six")
     async def calc_six(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(6)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="7", row=2, custom_id="calc:seven")
     async def calc_seven(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(7)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="8", row=2, custom_id="calc:eight")
     async def calc_eight(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(8)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(label="9", row=2, custom_id="calc:nine")
     async def calc_nine(self, button, inter):
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+        data = (inter.message.content).replace(self.string, "")
         new = data + str(9)
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(
-        label="+", style=disnake.ButtonStyle.blurple, row=3, custom_id="calc:plus"
+        label="+", style=disnake.ButtonStyle.blurple, row=0, custom_id="calc:plus"
     )
     async def plus(self, button, inter):
+
+        if inter.message.content == self.string:
+            return await inter.response.send_message(
+                "What are you trying to do?", ephemeral=True
+            )
+
         await inter.response.defer()
-        data = (inter.message.content).replace("0", "")
+
+        data = (inter.message.content).replace(self.string, "")
+
         new_plus = data.count("+")
         if new_plus >= 1:
-            return
+            return await inter.response.send_message(
+                "You cannot have more than one operator in a message."
+            )
+
         new = data + str("+")
         await inter.edit_original_message(content=new)
 
     @disnake.ui.button(
-        label="=", style=disnake.ButtonStyle.blurple, row=3, custom_id="calc:equals"
+        label="*", style=disnake.ButtonStyle.blurple, row=1, custom_id="calc:multiply"
+    )
+    async def multiply(self, button, inter):
+        if inter.message.content == self.string:
+            return await inter.response.send_message(
+                "What are you trying to do?", ephemeral=True
+            )
+
+        await inter.response.defer()
+
+        data = (inter.message.content).replace(self.string, "")
+        new_plus = data.count("*")
+
+        if new_plus >= 1:
+            return await inter.response.send_message(
+                "You cannot have more than one operator in a message."
+            )
+
+        new = data + str("*")
+        await inter.edit_original_message(content=new)
+
+    @disnake.ui.button(
+        label="=", style=disnake.ButtonStyle.blurple, row=2, custom_id="calc:equals"
     )
     async def equals(self, button, inter):
         await inter.response.defer()
@@ -185,7 +148,18 @@ class Calculator(disnake.ui.View):
     )
     async def clear(self, button, inter):
         await inter.response.defer()
-        await inter.edit_original_message(content="0")
+        await inter.edit_original_message(content="...")
+
+    @disnake.ui.button(
+        label="Stop", style=disnake.ButtonStyle.red, row=3, custom_id="calc:stop"
+    )
+    async def stop(self, button, inter):
+        await inter.response.defer()
+
+        for children in self.children:
+            children.disabled = True
+
+        await inter.edit_original_message(view=self)
 
 
 class Advertising(disnake.ui.View):

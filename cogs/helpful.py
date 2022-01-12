@@ -1,13 +1,15 @@
-from .groups.utilsforanything import facepalms
-import re, random, asyncio, io, os, zlib
 from typing import Union, Optional, Dict
 from pyston import PystonClient, File
 from disnake.ext import commands
 from utils.rtfm import fuzzy
 from random import choice
-import utils
 import disnake
-import time
+import utils
+import re
+import asyncio
+import io
+import os
+import zlib
 
 
 class SphinxObjectFileReader:
@@ -45,14 +47,18 @@ class SphinxObjectFileReader:
 class Helpful(commands.Cog, description="Commands that may be helpful."):
     def __init__(self, bot):
         self.pysclient = PystonClient()
-        self.regex = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
+        self.CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
         self.bot = bot
-        self.last = None
-        self.db = utils.db["bot"]
-        self.facepalms = random.choice(facepalms)
+        self.db = self.bot.mongo["discord"]["bot"]
+        self.RUN_CACHE = {}
+        self.msg = self.bot.mongo["discord"]["messages"]
+
+    @property
+    def emoji(self):
+        return "🫂"
 
     @commands.Cog.listener()
-    async def on_command(self, ctx):
+    async def on_command(self, ctx: commands.Context):
         tag = await self.db.find_one({"_id": self.bot.user.id})
 
         if not tag:
@@ -61,98 +67,52 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
         uses = tag["uses"] + 1
 
         await self.db.update_one(tag, {"$set": {"uses": int(uses)}})
-        self.bot.used_commands = uses
+        self.bot.invoked_commands = uses
 
-    def created_at(self, value) -> int:
+    def created_at(self, value):
         return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
 
-    async def run_code(self, ctx: commands.Context, code: str):
-        matches = self.regex.findall(code)
+    async def run_code(self, ctx: commands.Context, lang, code: str):
+        matches = self.CODE_REGEX.findall(code)
         code = matches[0][2]
-        lang = matches[0][0] or matches[0][1]
-
-        if not lang:
-            return await ctx.reply("No language was hinted in the codeblock.")
         output = await self.pysclient.execute(str(lang), [File(code)])
 
         if output.raw_json["run"]["stdout"] == "" and output.raw_json["run"]["stderr"]:
-            new = await ctx.reply(
-                embed=disnake.Embed(description=output, color=disnake.Color.red())
+            self.RUN_CACHE[ctx.author.id] = await ctx.reply(
+                content=f"{ctx.author.mention} :warning: Your run job has completed with return code 1.\n\n```\n{output}\n```"
             )
-            self.last = new
             return
 
         if output.raw_json["run"]["stdout"] == "":
-            old = await ctx.reply(
-                embed=disnake.Embed(
-                    description="**[No output]**", color=disnake.Color.yellow()
-                )
+            self.RUN_CACHE[ctx.author.id] = await ctx.send(
+                content=f"{ctx.author.mention} :warning: Your run job has completed with return code 0.\n\n```\n[No output]\n```"
             )
-            self.last = old
             return
 
         else:
-            msg = await ctx.reply(
-                embed=disnake.Embed(description=output, color=disnake.Color.green())
+            self.RUN_CACHE[ctx.author.id] = await ctx.send(
+                content=f"{ctx.author.mention} :white_check_mark: Your run job has completed with return code 0.\n\n```\n{output}\n```"
             )
-            self.last = msg
             return
 
-    async def on_run_code(
-        self,
-        before: disnake.Message,
-        after: disnake.Message,
-    ):
-        try:
-            await after.clear_reactions()
-            await self.last.delete()
-
-            if after.content.startswith(".run"):
-                after = after.content.split(".run")
-
-            matches = self.regex.findall("".join(after[1]))
-            code = matches[0][2]
-            lang = matches[0][0] or matches[0][1]
-
-            if not lang:
-                return await before.reply(
-                    embed=disnake.Embed(
-                        description="No language was hinted.", color=disnake.Color.red()
-                    )
-                )
-            output = await self.pysclient.execute(str(lang), [File(code)])
-
-            if (
-                output.raw_json["run"]["stdout"] == ""
-                and output.raw_json["run"]["stderr"]
-            ):
-                return await before.reply(
-                    embed=disnake.Embed(description=output, color=disnake.Color.red())
-                )
-
-            if output.raw_json["run"]["stdout"] == "":
-                return await before.reply(
-                    embed=disnake.Embed(
-                        description="**[No output]**", color=disnake.Color.yellow()
-                    )
-                )
-            else:
-                await before.reply(
-                    embed=disnake.Embed(description=output, color=disnake.Color.green())
-                )
-        except Exception as e:
-            print(e)
-
-    @commands.command()
-    async def run(self, ctx: commands.Context, *, code: str):
-        """Runs code, must be typehinted with a language and in a codeblock."""
+    @commands.command(name="run", aliases=["runl"])
+    async def run(self, ctx: commands.Context, lang, *, code: str):
+        """Runs code."""
         async with ctx.typing():
-            await self.run_code(ctx, code)
+
+            if lang.lower().startswith("```"):
+                return await ctx.send(
+                    f"```\n{ctx.command.name} {ctx.command.signature}\n```\nNot enough arguments passed."
+                )
+
+            await self.run_code(ctx, lang, code)
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
+        prefix = await self.bot.command_prefix(self.bot, after)
+        cmd = self.bot.get_command(after.content.lower().replace(prefix, ""))
         try:
-            if before.content.startswith(".run") and after.content.startswith(".run"):
+            if after.content.lower().startswith(f"{prefix}run"):
                 await after.add_reaction("🔁")
 
             def check(reaction, user):
@@ -163,9 +123,17 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
                     "reaction_add", timeout=30, check=check
                 )
             except asyncio.TimeoutError:
-                await after.clear_reactions()
+                await after.clear_reaction("🔁")
             else:
-                await self.on_run_code(before, after)
+                msg: disnake.Message = self.RUN_CACHE[after.author.id]
+
+                if msg:
+                    await msg.delete()
+
+                ctx = await self.bot.get_context(after)
+                await cmd.invoke(ctx)
+                await after.clear_reaction("🔁")
+
         except Exception:
             return
 
@@ -179,10 +147,7 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
         message: Union[str, int],
     ):
         """
-        Echo's a message.
-
-        .echo <user> <message>
-
+        Echo's a message using a webhook.
         """
 
         channel = channel or ctx.channel
@@ -199,25 +164,8 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
             )
 
     @commands.command(name="say", help="Says whatever you want for you.")
-    async def say(self, ctx: commands.Context, *, argument: str):
-        await ctx.send(argument)
-
-    @commands.command()
-    async def stfu(self, ctx: commands.Context):
-        """
-        Shut the fuck up (STFU) a message.
-
-        .stfu `<reply to the message>`
-        """
-        try:
-            await ctx.message.delete()
-            if not ctx.message.reference:
-                return await ctx.reply(f"Reply to a message first duh {self.facepalms}")
-            msg = await ctx.fetch_message(ctx.message.reference.message_id)
-            await msg.delete()
-            await ctx.message.add_reaction("✅")
-        except Exception:
-            return
+    async def say(self, ctx: commands.Context, *, text: str):
+        await ctx.send(text)
 
     @commands.command()
     async def pypi(self, ctx: commands.Context, name: str):
@@ -241,6 +189,28 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
 
                 else:
                     await ctx.send("A package with that name does not exist.")
+
+    @commands.slash_command(name="pypi")
+    async def pypi_slash(self, inter, name: str):
+        """Finds a package on PyPI."""
+        async with self.bot.session.get(f"https://pypi.org/pypi/{name}/json") as data:
+            if data.status == 200:
+                raw = await data.json()
+
+                embed = disnake.Embed(
+                    title=name,
+                    description=raw["info"]["summary"],
+                    url=raw["info"]["project_url"],
+                    color=disnake.Color.greyple(),
+                ).set_thumbnail(
+                    url="https://cdn.discordapp.com/emojis/766274397257334814.png"
+                )
+                await inter.response.send_message(embed=embed)
+
+            else:
+                await inter.response.send_message(
+                    "A package with that name does not exist.", ephemeral=True
+                )
 
     def parse_object_inv(self, stream: SphinxObjectFileReader, url: str) -> Dict:
         result = {}
@@ -349,10 +319,8 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
 
     @commands.group(name="rtfm", aliases=["rtfd"], invoke_without_command=True)
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
-        """
-        Retrieve documentation on Python libraries.
+        """Retrieve documentation on Python libraries."""
 
-        If no argument's were passed then `disnake` will be the documentation to lookup."""
         await self.do_rtfm(ctx, "disnake", obj)
 
     @rtfm_group.command(name="python", aliases=["py"])
@@ -366,31 +334,15 @@ class Helpful(commands.Cog, description="Commands that may be helpful."):
         await self.do_rtfm(ctx, "disnake", obj)
 
     @commands.command()
+    @commands.cooldown(1, 10, commands.BucketType.user)
     async def mlb(self, ctx):
-        """A message leaderboard"""
+        """Global message leaderboard."""
+        # implement name changing for `name` using on_member_update
 
-        user_dict = {}
-        index = 0
+        db = await self.msg.find().sort("messages", -1).to_list(100000)
 
-        embed = disnake.Embed(description="", color=disnake.Color.greyple())
-        embed.title = "Message Leaderboard"
-        for x in self.bot.db:
-            user = self.bot.get_user(x) or await self.bot.fetch_user(x)
-            user_dict[user.name] = self.bot.db[x]
-
-        data = sorted(user_dict, key=lambda k: user_dict[k])
-        results = []
-        for x in data:
-            results.append(x)
-
-        results.reverse()
-
-        for result in results:
-            index += 1
-            embed.description += f"\n{index}. **{result}:** {user_dict[result]}"
-            if index == 10:
-                break
-        await ctx.send(embed=embed)
+        view = utils.MyPages(db)
+        await view.start(ctx, per_page=10)
 
 
 def setup(bot):

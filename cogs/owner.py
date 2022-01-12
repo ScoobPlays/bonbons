@@ -1,6 +1,5 @@
 from disnake.ext import commands
 import utils
-from typing import Optional
 import disnake
 import io
 import os
@@ -11,10 +10,10 @@ import contextlib
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
+    async def cog_check(self, ctx: commands.Context) -> int:
         return ctx.author.id == 656073353215344650
 
     def paginate(self, text: str) -> str:
@@ -38,53 +37,48 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
     async def restart_bot(self, ctx: commands.Context) -> None:
         try:
-            await ctx.send(
-                embed=disnake.Embed(
-                    description="Restarting the bot.", color=disnake.Color.greyple()
-                )
-            )
+            await ctx.message.add_reaction("✅")
+
             os.execv(sys.executable, ["python"] + sys.argv)
         except Exception:
-            await ctx.send(
+            await ctx.author.send(
                 embed=disnake.Embed(
                     description="Bot failed to restart.", color=disnake.Color.red()
                 )
             )
+            await ctx.message.add_reaction(":x:")
 
-    async def eval_code(self, ctx: commands.Context, code: str) -> str:
-        env = {
+    async def run(self, ctx: commands.Context, code: str):
+        vars: dict = {
             "ctx": ctx,
             "bot": self.bot,
             "_channel": ctx.channel,
+            "_author": ctx.author,
             "_guild": ctx.guild,
             "_message": ctx.message,
-            "_find": disnake.utils.find,
-            "_get": disnake.utils.get,
+            **globals(),
         }
 
-        env.update(globals())
-
-        code = self.cleanup_code(code)
-        stdout = io.StringIO()
         err = out = None
-        to_compile = f'async def func():\n{textwrap.indent(code, "  ")}'
 
         try:
-            exec(to_compile, env)
+            exec(
+                f'async def evaluate():\n{textwrap.indent(self.cleanup_code(code), "  ")}',
+                vars,
+            )
         except Exception as e:
             err = await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
             return await ctx.message.add_reaction("\u2049")
 
-        func = env["func"]
         try:
-            with contextlib.redirect_stdout(stdout):
-                ret = await func()
+            with contextlib.redirect_stdout(io.StringIO()):
+                var = await vars["evaluate"]()
         except Exception:
-            value = stdout.getvalue()
+            value = io.StringIO().getvalue()
             err = await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
         else:
-            value = stdout.getvalue()
-            if ret is None:
+            value = io.StringIO().getvalue()
+            if var is None:
                 if value:
                     try:
 
@@ -98,9 +92,9 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                             await ctx.send(f"```py\n{page}\n```")
             else:
                 try:
-                    out = await ctx.send(f"```py\n{value}{ret}\n```")
+                    out = await ctx.send(f"```py\n{value}{var}\n```")
                 except Exception:
-                    paginated_text = self.paginate(f"{value}{ret}")
+                    paginated_text = self.paginate(f"{value}{var}")
                     for page in paginated_text:
                         if page == paginated_text[-1]:
                             out = await ctx.send(f"```py\n{page}\n```")
@@ -118,26 +112,25 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     async def restart(self, ctx: commands.Context) -> None:
         await self.restart_bot(ctx)
 
-    @commands.command(name="eval", aliases=["e"])
+    @commands.command(name="eval", aliases=("e",))
     async def _eval(self, ctx: commands.Context, *, code: str) -> str:
 
         """Evaluates python code."""
 
-        await self.eval_code(ctx, code)
+        await self.run(ctx, code)
 
-    @commands.slash_command()
-    async def activity(
-        self,
-        inter: disnake.ApplicationCommandInteraction,
-        vc: Optional[disnake.VoiceChannel],
-        activity: str,
-    ):
-        data = getattr(utils.EmbeddedActivity, activity)
-        vc = vc.id or inter.author.voice.channel.id
+    @commands.command()
+    @commands.is_owner()
+    async def toggle(self, ctx: commands.Context, command: str):
+        await ctx.message.add_reaction("✅")
 
-        await inter.response.send_message(
-            await self.bot.client.create_activity(vc, data), ephemeral=False
-        )
+        cmd = self.bot.get_command(command.lower())
+
+        if cmd.enabled:
+            cmd.enabled = False
+            return
+
+        cmd.enabled = True
 
 
 def setup(bot):

@@ -4,9 +4,13 @@ from datetime import datetime
 from typing import Union
 
 
-class Moderation(commands.Cog, description="Moderation related commands."):
+class Mod(commands.Cog, description="Moderation related commands."):
     def __init__(self, bot):
         self.bot = bot
+
+    @property
+    def emoji(self):
+        return "<:mod:926401703975198720>"
 
     async def check_ctx(self, ctx, member: disnake.Member):
 
@@ -189,4 +193,4 @@ class Moderation(commands.Cog, description="Moderation related commands."):
 
 
 def setup(bot):
-    bot.add_cog(Moderation(bot))
+    bot.add_cog(Mod(bot))
