@@ -3,6 +3,6 @@
 *.breakpoints
 *.lock
 *.toml
-database/
+db/
 utils/paginators.py
 cogs/logging.py
