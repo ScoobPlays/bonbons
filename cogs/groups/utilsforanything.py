@@ -12,7 +12,6 @@ class Utilities(commands.Cog, description="Thread and emoji utilities."):
         self.emoji = "⚙️"
         self.thank = self.bot.mongo["discord"]["thank"]
 
-
     async def send_thank(
         self, ctx: commands.Context, member: disnake.Member, reason: str
     ):

@@ -5,3 +5,4 @@
 *.toml
 database/
 utils/paginators.py
+cogs/logging.py

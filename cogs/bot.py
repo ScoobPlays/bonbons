@@ -5,6 +5,7 @@ import utils
 
 class Bot(commands.Cog):
     """Commands relating to me."""
+
     def __init__(self, bot):
         self.bot = bot
         self.db = self.bot.mongo["discord"]["bot"]

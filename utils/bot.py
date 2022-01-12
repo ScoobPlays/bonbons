@@ -53,7 +53,6 @@ class Bonbons(Bot):
                 self.load_extension(f"cogs.groups.{filename[:-3]}")
 
     async def on_ready(self):
-        print(f"Logged in as {self.user} Ping: {round(self.latency * 1000)}")
 
         survive()
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
@@ -65,6 +64,7 @@ class Bonbons(Bot):
         self.load_extension("jishaku")
 
         self.session = ClientSession(loop=self.loop)
+        print('Logged in.')
 
     async def get_prefix_from_db(self, bot: Bot, message: Message):
         db = self.mongo["discord"]["prefix"]

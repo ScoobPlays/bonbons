@@ -9,6 +9,7 @@ import os
 import disnake
 from datetime import datetime
 
+
 class SphinxObjectFileReader:
     BUFSIZE = 16 * 1024
 
@@ -40,12 +41,14 @@ class SphinxObjectFileReader:
                 buf = buf[pos + 1 :]
                 pos = buf.find(b"\n")
 
+
 class Python(commands.Cog):
     """Commands relating to the python langage."""
+
     def __init__(self, bot):
         self.bot = bot
-        self.emoji = '<:python:930713365758771242>'
-        self.pypi_db = self.bot.mongo['discord']['pypi']
+        self.emoji = "<:python:930713365758771242>"
+        self.pypi_db = self.bot.mongo["discord"]["pypi"]
 
     def parse_object_inv(self, stream: SphinxObjectFileReader, url: str) -> Dict:
         result = {}
@@ -169,12 +172,12 @@ class Python(commands.Cog):
         await self.do_rtfm(ctx, "disnake", obj)
 
     async def insert_into_db(self, obj):
-        data = await self.pypi_db.find_one({'name': obj})
+        data = await self.pypi_db.find_one({"name": obj})
 
         if data is None:
             await self.pypi_db.insert_one(
-                {'name': obj, 'inserted_at': int(datetime.now().timestamp())}
-                )
+                {"name": obj, "inserted_at": int(datetime.now().timestamp())}
+            )
 
         if data is not None:
             pass
@@ -204,9 +207,13 @@ class Python(commands.Cog):
                     await ctx.send("A package with that name does not exist.")
 
     @commands.slash_command(name="pypi")
-    async def pypi_slash(self, inter: disnake.ApplicationCommandInteraction, package: str):
+    async def pypi_slash(
+        self, inter: disnake.ApplicationCommandInteraction, package: str
+    ):
         """Finds a package on PyPI."""
-        async with self.bot.session.get(f"https://pypi.org/pypi/{package}/json") as data:
+        async with self.bot.session.get(
+            f"https://pypi.org/pypi/{package}/json"
+        ) as data:
             if data.status == 200:
                 raw = await data.json()
 
@@ -236,6 +243,7 @@ class Python(commands.Cog):
             packages.append(pkg["name"])
 
         return [pkg for pkg in packages if package.lower() in pkg.lower()]
+
 
 def setup(bot):
     bot.add_cog(Python(bot))

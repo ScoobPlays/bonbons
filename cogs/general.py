@@ -15,7 +15,7 @@ class General(commands.Cog, description="General commands."):
         self.bot = bot
         self.snipe_cache = None
         self.before = None
-        self.emoji = '🙌'
+        self.emoji = "🙌"
         self.afk = self.bot.mongo["discord"]["afk"]
 
     def b64_encode(self, text: str):

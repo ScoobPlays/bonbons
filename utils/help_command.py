@@ -22,7 +22,7 @@ class HelpCommandSelectOptions(disnake.ui.Select):
                 "Owner",
                 "MessageCommands",
                 "Tasks",
-                "Bees",
+                "Logging",
             ]:
                 continue
 

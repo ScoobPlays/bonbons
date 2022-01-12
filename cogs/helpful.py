@@ -9,6 +9,7 @@ import asyncio
 
 class Helpful(commands.Cog):
     """Commands that may be helpful?"""
+
     def __init__(self, bot):
         self.pysclient = PystonClient()
         self.CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
@@ -17,7 +18,6 @@ class Helpful(commands.Cog):
         self.db = self.bot.mongo["discord"]["bot"]
         self.RUN_CACHE = {}
         self.msg = self.bot.mongo["discord"]["messages"]
-
 
     @commands.Cog.listener()
     async def on_command(self, ctx: commands.Context):
