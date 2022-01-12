@@ -6,14 +6,12 @@ import random
 facepalms = ("🤦‍♂️", "🤦‍♀️", "🤦")
 
 
-class Utilities(commands.Cog, description="Thread and emoji utilities!"):
+class Utilities(commands.Cog, description="Thread and emoji utilities."):
     def __init__(self, bot):
         self.bot = bot
+        self.emoji = "⚙️"
         self.thank = self.bot.mongo["discord"]["thank"]
 
-    @property
-    def emoji(self):
-        return "⚙️"
 
     async def send_thank(
         self, ctx: commands.Context, member: disnake.Member, reason: str
@@ -175,7 +173,7 @@ class Utilities(commands.Cog, description="Thread and emoji utilities!"):
                 f"https://cdn.discordapp.com/emojis/{argument}.png?size=80"
             ) as data:
                 emoji = await data.read()
-                print(emoji[:10])
+
                 emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
                 await ctx.send(emote)
 

@@ -136,7 +136,7 @@ class HelpCommand(commands.HelpCommand):
 
         await self.send(
             embed=embed,
-            view=HelpCommandSelectOptions(self.context, self.context.bot, embed),
+            view=HelpCommandSelectOption(self.context, self.context.bot, embed),
         )
 
     async def send_command_help(self, command: commands.Command):
