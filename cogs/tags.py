@@ -1,26 +1,24 @@
-from disnake.ext import commands
+from disnake.ext.commands import (
+    Cog,
+    Context,
+    group,
+    guild_only
+    )
 from utils.paginators import TagPages
 import copy
 
+# TODO: implement difflib in `delete`/`get` 
 
-class Tags(commands.Cog):
+class Tags(Cog):
     """Tag-related commands."""
 
     def __init__(self, bot):
         self.bot = bot
         self.emoji = "📰"
         self.base = self.bot.mongo["tags"]
-        self.cache = []
+        self._tags_cache = []
 
-    @commands.group(name="tag", invoke_without_command=True)
-    async def tag(self, ctx: commands.Context, tag: str = None):
-        """Sends the help embed for the tag command group.\nIf an argument was passed then it'll send the tag content."""
-        if tag is None:
-            await ctx.send_help("tag")
-        if tag is not None:
-            await self.get_tag(ctx, tag)
-
-    async def get_tag(self, ctx: commands.Context, name: str):
+    async def get_tag(self, ctx: Context, name: str):
         db = self.base[str(ctx.guild.id)]
 
         tag = await db.find_one({"name": name})
@@ -29,9 +27,24 @@ class Tags(commands.Cog):
             return await ctx.send(tag["content"])
 
         if tag is None:
-            return await ctx.send("A tag with this name does not exist in my database.")
+            return await ctx.send("Tag not found.")
 
-    async def edit_tag(self, ctx: commands.Context, name: str, content: str):
+    async def try_to_delete_tag(self, ctx: Context, name: str):
+        db = self.base[str(ctx.guild.id)]
+
+        tag_name = await db.find_one({"name": name})
+
+        if tag_name is not None:
+            if ctx.author.guild_permissions.manage_channels or tag_name["owner"] == ctx.author.id:
+                return await db.delete_one({"name": name})
+            
+            return await ctx.send("You do not own this tag.")
+
+        if tag_name is None:
+            return await ctx.send("A tag with this name does not exist.")
+
+
+    async def edit_tag(self, ctx: Context, name: str, content: str):
 
         db = self.base[str(ctx.guild.id)]
         tag_name = await db.find_one({"name": name})
@@ -46,10 +59,10 @@ class Tags(commands.Cog):
         await self.db.update_one({"name": name}, {"$set": {"content": content}})
 
         await ctx.send(
-            f"Tag successfully edited! Do `{prefix}tag {name}` to view the tag!"
+            f"Tag successfully edited! Do {prefix}tag {name} to view the tag."
         )
 
-    async def create_tag(self, ctx: commands.Context, name: str, content: str):
+    async def create_tag(self, ctx: Context, name: str, content: str):
 
         db = self.base[str(ctx.guild.id)]
         prefix = await self.bot.command_prefix(self.bot, ctx.message)
@@ -68,30 +81,44 @@ class Tags(commands.Cog):
 
         await db.insert_one(tag_data)
         return await ctx.send(
-            f"Tag successfully created. Do `{prefix}tag {name}` to view the tag!"
+            f"Tag successfully created. Do {prefix}tag {name} to view the tag."
         )
 
+    @group(name="tag", invoke_without_command=True)
+    @guild_only()
+    async def tag(self, ctx: Context, tag: str = None):
+        """Sends the help embed for the tag command group.\nIf an argument was passed then it'll send the tag content."""
+        if tag is None:
+            await ctx.send_help("tag")
+        if tag is not None:
+            await self.get_tag(ctx, tag)
+
     @tag.command(aliases=["build"])
-    async def create(self, ctx: commands.Context, name: str, *, content: str):
+    async def create(self, ctx: Context, name: str, *, content: str):
         """
         Creates a tag.
         """
         await self.create_tag(ctx, name, content)
 
     @tag.command(aliases=["modify"])
-    async def edit(self, ctx: commands.Context, name: str, *, content: str):
+    async def edit(self, ctx: Context, name: str, *, content: str):
         """Edits a tag. Only the owners of the tag can edit their tags."""
         await self.edit_tag(ctx, name, content)
 
     @tag.command(aliases=["list"])
-    async def all(self, ctx: commands.Context):
+    async def all(self, ctx: Context):
         """Sends all the tags in the current guild."""
         db = self.base[str(ctx.guild.id)]
 
         view = TagPages(await db.find().to_list(10000))
+
         await view.start(ctx, per_page=20)
 
-    @commands.Cog.listener("on_message")
+    @tag.command(aliases=["remove"])
+    async def delete(self, ctx: Context, *, name: str):
+        await self.try_to_delete_tag(ctx, name)
+
+    @Cog.listener("on_message")
     async def send_tags(self, message):
 
         ctx = await self.bot.get_context(message)
