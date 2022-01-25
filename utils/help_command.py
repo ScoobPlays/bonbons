@@ -119,7 +119,7 @@ class HelpCommandSelectOptions(disnake.ui.Select):
             title,
             cog.description,
             await self.get_embed(title, cog.description, cog.get_commands()),
-            10,
+            7,
             interaction,
         )
         self.commands = []
@@ -249,7 +249,7 @@ class HelpCommand(commands.HelpCommand):
                     }
                 )
 
-        await self.do_paginate(title, description or "...", self.commands, 10)
+        await self.do_paginate(title, description or "...", self.commands, 7)
 
     async def send_group_help(self, group: commands.Group):
         await self.send_help_embed(group.name, group.description, group.commands)
