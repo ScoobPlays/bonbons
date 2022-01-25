@@ -102,10 +102,10 @@ class Helpful(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
-        prefix = await self.bot.command_prefix(self.bot, after)
-        cmd = self.bot.get_command(after.content.lower().replace(prefix, ""))
+        ctx = await self.bot.get_context(after)
+        cmd = self.bot.get_command(after.content.lower().replace(str(ctx.prefix), ""))
         try:
-            if after.content.lower().startswith(f"{prefix}run"):
+            if after.content.lower().startswith(f"{ctx.prefix}run"):
                 await after.add_reaction("🔁")
 
             def check(reaction, user):
@@ -123,7 +123,6 @@ class Helpful(commands.Cog):
                 if msg:
                     await msg.delete()
 
-                ctx = await self.bot.get_context(after)
                 await cmd.invoke(ctx)
                 await after.clear_reaction("🔁")
 

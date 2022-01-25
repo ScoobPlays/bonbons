@@ -64,17 +64,17 @@ class Paginator(View):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @button(label="<", style=ButtonStyle.blurple)
+    @button(label="Back", style=ButtonStyle.blurple)
     async def back_one(self, button: Button, inter: Interaction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @button(emoji="🗑️", style=ButtonStyle.grey)
-    async def quit(self, button: Button, inter: Interaction):
-        await inter.response.defer()
-        await inter.delete_original_message()
+  #  @button(emoji="🗑️", style=ButtonStyle.grey)
+   # async def quit(self, button: Button, inter: Interaction):
+    #    await inter.response.defer()
+     #   await inter.delete_original_message()
 
-    @button(label=">", style=ButtonStyle.blurple)
+    @button(label="Next", style=ButtonStyle.blurple)
     async def next_one(self, button: Button, inter: Interaction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
@@ -128,7 +128,7 @@ class TagPages:
             embed = Embed(
                 description="",
                 colour=Color.blurple(),
-            ).set_author(name=str(ctx.author), url=ctx.author.display_avatar)
+            ).set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
             for result in self.data[i : i + per_page]:
                 index += 1
                 embed.description += (
