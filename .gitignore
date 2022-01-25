@@ -3,5 +3,4 @@
 *.breakpoints
 *.lock
 *.toml
-utils/paginators.py
-utils/deprecated/
+cogs/nsfw.py
