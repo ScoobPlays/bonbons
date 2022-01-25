@@ -16,7 +16,9 @@ class Paginator(View):
 
     msg: Message
 
-    def __init__(self, ctx: Context, messages: List, *, embed: bool = False, timeout: int=30):
+    def __init__(
+        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 30
+    ):
         super().__init__(timeout=timeout)
         self.messages = messages
         self.embed = embed
@@ -57,7 +59,6 @@ class Paginator(View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-        
     @button(label="<<", style=ButtonStyle.grey)
     async def back_two(self, button: Button, inter: Interaction):
         await inter.response.defer()
@@ -84,9 +85,7 @@ class Paginator(View):
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
 
-
 class MyPages:
-
     def __init__(self, data):
         self.data = data
 
@@ -111,10 +110,11 @@ class MyPages:
         for index, embed in enumerate(embeds):
             index += 1
             embed.set_footer(text=f"Page {index}/{len(embeds)}")
-        
+
         view = Paginator(ctx, embeds, embed=True)
 
         view.message = await ctx.send(embed=embeds[0], view=view)
+
 
 class TagPages:
     def __init__(self, data):
@@ -139,8 +139,10 @@ class TagPages:
 
         for index, embed in enumerate(embeds):
             index += 1
-            embed.set_footer(text=f"Page {index}/{len(embeds)} ({len(self.data)} results)")
-        
+            embed.set_footer(
+                text=f"Page {index}/{len(embeds)} ({len(self.data)} results)"
+            )
+
         view = Paginator(ctx, embeds, embed=True)
         view._update_labels()
 
