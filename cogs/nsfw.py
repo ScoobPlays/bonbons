@@ -1,4 +1,4 @@
-from disnake.ext.commands import Cog, Context, Bot, group
+from disnake.ext.commands import Cog, Context, Bot, group, is_nsfw
 import disnake
 
 BASE_URL = "https://api.waifu.im"
@@ -29,6 +29,7 @@ class NotSafeForWork(Cog, description="NSFW related commands."):
             )
 
     @group(name="nsfw", invoke_without_command=True)
+    @is_nsfw()
     async def nsfw(self, ctx: Context):
         """The base command for all the NSFW commands."""
         await ctx.send_help("nsfw")
