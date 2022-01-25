@@ -9,6 +9,7 @@ from disnake.ext.commands import (
     DisabledCommand,
     CheckFailure,
     CommandOnCooldown,
+    when_mentioned_or
 )
 from disnake import Intents, AllowedMentions, Forbidden, Message, Activity, ActivityType
 from motor import motor_asyncio
@@ -75,9 +76,9 @@ class Bonbons(Bot):
         prefix = await db.find_one({"_id": message.guild.id})
 
         try:
-            return prefix["prefix"]
+            return when_mentioned_or(str(prefix["prefix"]))(bot, message)
         except:
-            return "."
+            return when_mentioned_or(".")(bot, message)
 
     async def on_command_error(self, ctx: Context, error: Exception):
 

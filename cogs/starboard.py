@@ -41,7 +41,9 @@ class Starboard(commands.Cog, description="Starboard related commands."):
             return
 
         reactions = await self.config.find_one({"_id": reaction.message.guild.id})
-        starboard_channel_id = reactions["channel"]
+
+        if reactions:
+            starboard_channel_id = reactions["channel"]
         starboard_channel = self.bot.get_channel(
             starboard_channel_id
         ) or await self.bot.fetch_channel(starboard_channel_id)
