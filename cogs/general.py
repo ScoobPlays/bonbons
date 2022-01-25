@@ -55,8 +55,6 @@ class General(Cog, description="General commands."):
         if after.author.bot:
             return
 
-
-
         self.before = before
 
     @Cog.listener()

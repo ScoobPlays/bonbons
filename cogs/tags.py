@@ -1,13 +1,9 @@
-from disnake.ext.commands import (
-    Cog,
-    Context,
-    group,
-    guild_only
-    )
+from disnake.ext.commands import Cog, Context, group, guild_only
 from utils.paginators import TagPages
 import copy
 
-# TODO: implement difflib in `delete`/`get` 
+# TODO: implement difflib in `delete`/`get`
+
 
 class Tags(Cog):
     """Tag-related commands."""
@@ -35,14 +31,16 @@ class Tags(Cog):
         tag_name = await db.find_one({"name": name})
 
         if tag_name is not None:
-            if ctx.author.guild_permissions.manage_channels or tag_name["owner"] == ctx.author.id:
+            if (
+                ctx.author.guild_permissions.manage_channels
+                or tag_name["owner"] == ctx.author.id
+            ):
                 return await db.delete_one({"name": name})
-            
+
             return await ctx.send("You do not own this tag.")
 
         if tag_name is None:
             return await ctx.send("A tag with this name does not exist.")
-
 
     async def edit_tag(self, ctx: Context, name: str, content: str):
 

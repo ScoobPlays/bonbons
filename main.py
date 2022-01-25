@@ -11,17 +11,20 @@ async def add_reminder(ctx, time, reason):
     db = bot.mongo["reminders"][str(ctx.guild.id)]
 
     await db.insert_one(
-        {"author": ctx.author.id, "time": time, "channel": ctx.channel.id, "reason": reason}
-        )
+        {
+            "author": ctx.author.id,
+            "time": time,
+            "channel": ctx.channel.id,
+            "reason": reason,
+        }
+    )
 
 
 @bot.command()
 async def remindme(ctx, time: TimeConverter, reminder: str = None):
     await ctx.send(f"I will remind you in {time} seconds.")
 
-    new_time = (
-        disnake.utils.utcnow() + timedelta(seconds=1)
-        ).timestamp()
+    new_time = (disnake.utils.utcnow() + timedelta(seconds=1)).timestamp()
     await add_reminder(ctx, int(new_time), reminder)
 
 
@@ -44,6 +47,7 @@ async def check_db():
                 await channel.send(f"Hey {member.mention}, {result['reason']}")
 
                 await collection.delete_one({"author": result["author"]})
+
 
 check_db.start()
 

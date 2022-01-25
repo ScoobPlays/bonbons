@@ -16,24 +16,22 @@ class Starboard(commands.Cog, description="Starboard related commands."):
 
     async def set_starboard_count(self, ctx, count):
 
-            """Sets the reactions needed to be on the starboard"""
+        """Sets the reactions needed to be on the starboard"""
 
+        data = await self.config.find_one({"_id": ctx.guild.id})
 
-            data = await self.config.find_one({"_id": ctx.guild.id})
+        if not data:
+            return await ctx.send(
+                "This server has no starboard channel yet. Do `.starboard set #channel`"
+            )
 
-            if not data:
-                return await ctx.send(
-                    "This server has no starboard channel yet. Do `.starboard set #channel`"
-                )
-
-            if data:
-                await self.config.update_one(
-                    {"_id": ctx.guild.id}, {"$set": {"reactions": count}}
-                )
-                return await ctx.send(
-                    f"I have set the reactions needed for the starboard to `{count}`."
-                )
-
+        if data:
+            await self.config.update_one(
+                {"_id": ctx.guild.id}, {"$set": {"reactions": count}}
+            )
+            return await ctx.send(
+                f"I have set the reactions needed for the starboard to `{count}`."
+            )
 
     async def add_to_starboard(self, reaction, user):
 
