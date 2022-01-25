@@ -9,7 +9,7 @@ from disnake.ext.commands import (
     DisabledCommand,
     CheckFailure,
     CommandOnCooldown,
-    when_mentioned_or
+    when_mentioned_or,
 )
 from disnake import Intents, AllowedMentions, Forbidden, Message, Activity, ActivityType
 from motor import motor_asyncio

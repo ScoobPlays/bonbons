@@ -120,5 +120,6 @@ class NotSafeForWork(Cog, description="NSFW related commands."):
         img = await self._get_sfw_image(ctx, "waifu")
         await ctx.send(embed=img)
 
+
 def setup(bot: Bot):
     bot.add_cog(NotSafeForWork(bot))

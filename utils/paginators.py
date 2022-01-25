@@ -69,10 +69,10 @@ class Paginator(View):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-  #  @button(emoji="🗑️", style=ButtonStyle.grey)
-   # async def quit(self, button: Button, inter: Interaction):
+    #  @button(emoji="🗑️", style=ButtonStyle.grey)
+    # async def quit(self, button: Button, inter: Interaction):
     #    await inter.response.defer()
-     #   await inter.delete_original_message()
+    #   await inter.delete_original_message()
 
     @button(label="Next", style=ButtonStyle.blurple)
     async def next_one(self, button: Button, inter: Interaction):
@@ -113,7 +113,7 @@ class MyPages:
 
         view = Paginator(ctx, embeds, embed=True)
 
-        view.message = await ctx.send(embed=embeds[0], view=view)
+        view.msg = await ctx.send(embed=embeds[0], view=view)
 
 
 class TagPages:
