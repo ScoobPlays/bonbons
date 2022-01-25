@@ -1,12 +1,13 @@
-from typing import Union, Optional
+from typing import Optional
 from disnake.ext import commands
 import disnake
 import random
+from utils.replies import REPLIES
 
 facepalms = ("🤦‍♂️", "🤦‍♀️", "🤦")
 
 
-class Utilities(commands.Cog, description="Thread and emoji utilities."):
+class Utilities(commands.Cog, description="Thread and complimenting utilities!"):
     def __init__(self, bot):
         self.bot = bot
         self.emoji = "⚙️"
@@ -18,7 +19,8 @@ class Utilities(commands.Cog, description="Thread and emoji utilities."):
         if member == ctx.author:
             return await ctx.send(
                 embed=disnake.Embed(
-                    description=f"Why do you wanna thank yourself {random.choice(facepalms)}",
+                    title=random.choice(REPLIES),
+                    description=f"You cannot thank yourself.",
                     color=disnake.Color.red(),
                 )
             )
@@ -43,7 +45,7 @@ class Utilities(commands.Cog, description="Thread and emoji utilities."):
         Thank a member for something.
         """
 
-        if not member:
+        if member is None:
             await ctx.send_help("thank")
 
         else:
@@ -152,65 +154,6 @@ class Utilities(commands.Cog, description="Thread and emoji utilities."):
             for thread in channel.threads:
                 await thread.delete()
         await ctx.message.add_reaction("✅")
-
-    @commands.group(name="emoji", invoke_without_command=True)
-    async def _emoji(self, ctx: commands.Context):
-        """The base command for emoji."""
-        await ctx.send_help("emoji")
-
-    @_emoji.command()
-    @commands.has_permissions(manage_emojis=True)
-    async def copy(self, ctx: commands.Context, argument: int, name: Optional[str]):
-
-        """
-        Copies an emoji via ID.
-        """
-
-        name = name or "emoji"
-        async with ctx.typing():
-            async with self.bot.session.get(
-                f"https://cdn.discordapp.com/emojis/{argument}.png?size=80"
-            ) as data:
-                emoji = await data.read()
-
-                emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
-                await ctx.send(emote)
-
-    @_emoji.command()
-    @commands.has_permissions(manage_emojis=True)
-    async def create(self, ctx: commands.Context, url: str, name: str):
-
-        """
-        Creates an emoji by link.
-        """
-
-        name = name or "emoji"
-
-        async with ctx.typing():
-            async with self.bot.session.get(url) as data:
-                emoji = await data.read()
-                emote = await ctx.guild.create_custom_emoji(name=name, image=emoji)
-                await ctx.send(emote)
-
-    @_emoji.command()
-    @commands.has_permissions(manage_emojis=True)
-    async def delete(self, ctx: commands.Context, name: Union[disnake.Emoji, int]):
-
-        """
-        Deletes an emoji by ID or emote.
-        """
-
-        if name == int:
-            emoji = await self.bot.get_emoji(name)
-            await emoji.delete()
-            await ctx.message.add_reaction("✅")
-
-        if name == disnake.Emoji:
-            await name.delete()
-            await ctx.message.add_reaction("✅")
-
-        else:
-            await ctx.send("An error occurred while deleting the emoji.")
 
 
 def setup(bot):

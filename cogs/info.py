@@ -30,6 +30,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         if len(embed) > 2000:
             return await ctx.send("There were too many emoji's. Embed failed to send.")
+
         await ctx.send(embed=embed)
 
     @commands.command()
@@ -111,6 +112,7 @@ class Information(commands.Cog, description="Information related commands."):
             title=ctx.guild.name,
             description=f"**ID:** {ctx.guild.id}\n**Owner:** {ctx.guild.owner}",
             color=disnake.Color.blurple(),
+            timestamp=datetime.utcnow(),
         )
         embed.add_field(
             name="Server Created At",
@@ -121,12 +123,19 @@ class Information(commands.Cog, description="Information related commands."):
             name="Information",
             value=f"• Members: {str(ctx.guild.member_count)}\n• Channels: {len(ctx.guild.channels)}\n• Emojis: {len(ctx.guild.emojis)}",
         )
-        embed.add_field(
-            name=f"Server Roles [{len(ctx.guild.roles)}]",
-            value=" ".join(r.mention for r in ctx.guild.roles[::-1]),
-            inline=False,
-        )
-        embed.timestamp = datetime.utcnow()
+
+        if len(str(ctx.guild.roles)) >= 1000:
+            embed.add_field(
+                name=f"Server Roles [{len(ctx.guild.roles)}]",
+                value="There are too many roles to display.",
+                inline=False,
+            )
+        else:
+            embed.add_field(
+                name=f"Server Roles [{len(ctx.guild.roles)}]",
+                value=" ".join(r.mention for r in ctx.guild.roles[::-1]),
+                inline=False,
+            )
         embed.set_thumbnail(url=ctx.guild.icon.url)
         await ctx.send(embed=embed)
 
@@ -145,6 +154,7 @@ class Information(commands.Cog, description="Information related commands."):
             title=inter.guild.name,
             description=f"**ID:** {inter.guild.id}\n**Owner:** {inter.guild.owner}",
             color=disnake.Color.blurple(),
+            timestamp=datetime.utcnow(),
         )
         embed.add_field(
             name="Server Created At",
@@ -155,12 +165,18 @@ class Information(commands.Cog, description="Information related commands."):
             name="Information",
             value=f"• Members: {str(inter.guild.member_count)}\n• Channels: {len(inter.guild.channels)}\n• Emojis: {len(inter.guild.emojis)}",
         )
-        embed.add_field(
-            name=f"Server Roles [{len(inter.guild.roles)}]",
-            value=" ".join(r.mention for r in inter.guild.roles[::-1]),
-            inline=False,
-        )
-        embed.timestamp = datetime.utcnow()
+        if len(str(inter.guild.roles)) >= 1000:
+            embed.add_field(
+                name=f"Server Roles [{len(inter.guild.roles)}]",
+                value="There are too many roles to display.",
+                inline=False,
+            )
+        else:
+            embed.add_field(
+                name=f"Server Roles [{len(inter.guild.roles)}]",
+                value=" ".join(r.mention for r in inter.guild.roles[::-1]),
+                inline=False,
+            )
         embed.set_thumbnail(url=inter.guild.icon.url)
         await inter.response.send_message(embed=embed, ephemeral=False)
 
@@ -274,8 +290,7 @@ class Information(commands.Cog, description="Information related commands."):
         Display a member's spotify activity.
         """
 
-        if member == None:
-            member = ctx.author
+        member = member or ctx.author
 
         for activity in member.activities:
             if isinstance(activity, disnake.Spotify):
@@ -283,13 +298,15 @@ class Information(commands.Cog, description="Information related commands."):
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
                     color=0x1DB954,
+                    timestamp=datetime.utcnow(),
                 )
                 embed.set_thumbnail(url=activity.album_cover_url)
                 embed.add_field(name="Song", value=activity.title)
                 embed.add_field(name="Artist", value=activity.artist)
                 embed.add_field(name="Album", value=activity.album, inline=False)
-                embed.timestamp = datetime.utcnow()
-                embed.set_footer(text=ctx.author, icon_url=ctx.author.display_avatar)
+                embed.set_footer(
+                    text=ctx.author, icon_url=ctx.author.display_avatar.url
+                )
                 await ctx.send(embed=embed)
 
         if not member.activity:
@@ -307,8 +324,7 @@ class Information(commands.Cog, description="Information related commands."):
         Display a member's spotify activity.
         """
 
-        if member == None:
-            member = inter.author
+        member = member or inter.author
 
         for activity in member.activities:
             if isinstance(activity, disnake.Spotify):
@@ -316,18 +332,18 @@ class Information(commands.Cog, description="Information related commands."):
                     title=f"{member.name}'s Spotify",
                     description=f"**Track ID:** {activity.track_id}",
                     color=0x1DB954,
+                    timestamp=datetime.utcnow(),
                 )
                 embed.set_thumbnail(url=activity.album_cover_url)
                 embed.add_field(name="Song", value=activity.title)
                 embed.add_field(name="Artist", value=activity.artist)
                 embed.add_field(name="Album", value=activity.album, inline=False)
-                embed.timestamp = datetime.utcnow()
                 embed.set_footer(
-                    text=inter.author, icon_url=inter.author.display_avatar
+                    text=inter.author, icon_url=inter.author.display_avatar.url
                 )
                 await inter.response.send_message(embed=embed, ephemeral=False)
 
-        if not member.activity:
+        if member.activity is None:
             await inter.response.send_message(
                 embed=disnake.Embed(
                     description="Member does not have a spotify activity.",
@@ -341,14 +357,13 @@ class Information(commands.Cog, description="Information related commands."):
     async def roleinfo(self, ctx: commands.Context, role: disnake.Role = None) -> None:
 
         """
-        Returns information about a role.
+        Shows information about a role, will use your top role if no argument was passed.
         """
 
         role_mentionable = None
         role_hoisted = None
 
-        if role == None:
-            role = ctx.author.top_role
+        role = role or ctx.author.top_role
 
         x_emoji = "❌"
         check = "✅"
@@ -390,14 +405,13 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        Returns information about a role.
+        Shows information about a role
         """
 
         role_mentionable = None
         role_hoisted = None
 
-        if role == None:
-            role = inter.author.top_role
+        role = role is inter.author.top_role
 
         x_emoji = "❌"
         check = "✅"
@@ -438,7 +452,7 @@ class Information(commands.Cog, description="Information related commands."):
     @commands.guild_only()
     async def channelinfo(self, ctx, channel: disnake.abc.GuildChannel = None):
         """
-        Returns information about a channel.
+        Returns information about a discord channel.
         """
         if not channel:
             channel = ctx.channel
@@ -463,9 +477,13 @@ class Information(commands.Cog, description="Information related commands."):
 
     @commands.slash_command(name="channelinfo")
     @commands.guild_only()
-    async def channelinfo_slash(self, inter, channel: disnake.abc.GuildChannel = None):
+    async def channelinfo_slash(
+        self,
+        inter: disnake.ApplicationCommandInteraction,
+        channel: disnake.abc.GuildChannel = None,
+    ):
         """
-        Returns information about a channel.
+        Returns information about a discord channel.
         """
         if not channel:
             channel = inter.channel

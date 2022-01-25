@@ -50,7 +50,7 @@ class Mod(commands.Cog, description="Moderation related commands."):
             await ctx.guild.ban(user)
             embed = disnake.Embed(
                 description=f"{user.mention} was banned.",
-                color=disnake.Color.greyple(),
+                color=disnake.Color.blurple(),
             )
             await ctx.send(embed=embed)
 
@@ -179,7 +179,7 @@ class Mod(commands.Cog, description="Moderation related commands."):
             return await ctx.send(
                 embed=disnake.Embed(
                     description="That user is not banned or does not exist.",
-                    color=disnake.Color.greyple(),
+                    color=disnake.Color.blurple(),
                 )
             )
 
@@ -187,7 +187,7 @@ class Mod(commands.Cog, description="Moderation related commands."):
         await ctx.send(
             embed=disnake.Embed(
                 description=f"{user.mention} was unbanned.",
-                color=disnake.Color.greyple(),
+                color=disnake.Color.blurple(),
             )
         )
 

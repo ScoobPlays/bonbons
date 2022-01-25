@@ -3,6 +3,5 @@
 *.breakpoints
 *.lock
 *.toml
-db/
 utils/paginators.py
-cogs/logging.py
+utils/deprecated/

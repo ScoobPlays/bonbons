@@ -13,11 +13,10 @@ class Tasks(commands.Cog):
 
     @tasks.loop(hours=2)
     async def update_github_leaderboard(self):
+        
         await self.bot.wait_until_ready()
-        guild = self.bot.get_guild(926115595307614249) or await self.bot.fetch_guild(
-            926115595307614249
-        )
-        channel = guild.get_channel(927523239259942972) or await guild.fetch_channel(
+
+        channel = self.bot.get_channel(927523239259942972) or await self.bot.fetch_channel(
             927523239259942972
         )
         msg = await channel.fetch_message(927523690168610836)

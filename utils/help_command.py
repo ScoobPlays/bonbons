@@ -1,6 +1,7 @@
 import contextlib
 import disnake
 from disnake.ext import commands
+from .paginators import Paginator
 
 
 class HelpCommandSelectOptions(disnake.ui.Select):
@@ -18,11 +19,10 @@ class HelpCommandSelectOptions(disnake.ui.Select):
             cog = self.bot.get_cog(cog)
             if cog.qualified_name in [
                 "Jishaku",
-                "OnMessage",
                 "Owner",
+                "Emojis",
                 "MessageCommands",
                 "Tasks",
-                "Logging",
             ]:
                 continue
 
@@ -45,24 +45,65 @@ class HelpCommandSelectOptions(disnake.ui.Select):
             max_values=1,
             options=options,
         )
+        self.commands = []
+        self.embeds = []
 
     async def get_embed(self, title, description, cmds):
-        embed = HelpEmbed(title=title, description=description or "...")
         for command in cmds:
             if isinstance(command, commands.Group):
                 for cmd in command.commands:
-                    embed.add_field(
-                        name=f"{command.name} {cmd.name}", value=cmd.help or "..."
+                    self.commands.append(
+                        {
+                            "name": f"{command.name} {cmd.name}",
+                            "brief": cmd.help or "...",
+                        }
                     )
-                embed.add_field(name=command.name, value=command.help)
+                self.commands.append(
+                    {
+                        "name": command.name,
+                        "brief": command.description or command.help or "...",
+                    }
+                )
+                break
 
             if isinstance(command, commands.Command):
-                embed.add_field(
-                    name=command.name,
-                    value=command.help or "...",
+                self.commands.append(
+                    {"name": command.name, "brief": command.description or command.help}
                 )
 
-        return embed
+        return self.commands
+
+    async def do_paginate(self, title, desc, data, per_page, inter):
+
+        embeds = []
+
+        for i in range(0, len(data), per_page):
+            embed = disnake.Embed(
+                title=title,
+                description=desc,
+                colour=disnake.Color.blurple(),
+            )
+            for res in data[i : i + per_page]:
+                embed.add_field(
+                    name=res["name"],
+                    value=res["brief"],
+                    inline=False,
+                )
+
+            embeds.append(embed)
+
+        for index, embed in enumerate(embeds):
+            embed.set_footer(text=f"Page {index+1}/{len(embeds)}")
+
+        self.embeds = embeds
+
+        view = Paginator(self.ctx, self.embeds, timeout=40, embed=True)
+        view.add_item(self)
+
+        view.msg = await inter.edit_original_message(
+            content=None, embed=self.embeds[0], view=view
+        )
+        self.embeds = None
 
     async def callback(self, interaction: disnake.MessageInteraction):
         await interaction.response.defer()
@@ -74,23 +115,27 @@ class HelpCommandSelectOptions(disnake.ui.Select):
         cog = self.bot.get_cog(self.values[0])
         title = cog.qualified_name or "No"
 
-        await interaction.edit_original_message(
-            content=None,
-            embed=await self.get_embed(
-                f"{title} Category", cog.description, cog.get_commands()
-            ),
+        await self.do_paginate(
+            title,
+            cog.description,
+            await self.get_embed(title, cog.description, cog.get_commands()),
+            10,
+            interaction,
         )
+        self.commands = []
 
 
 class HelpCommandSelectOption(disnake.ui.View):
+    msg: disnake.Message
+
     def __init__(self, ctx: commands.Context, bot: commands.Bot, embed):
-        super().__init__()
+        super().__init__(timeout=30)
         self.ctx = ctx
         self.bot = bot
         self.embed = embed
         self.add_item(HelpCommandSelectOptions(self.ctx, self.bot, self.embed))
 
-    async def interaction_check(self, interaction) -> bool:
+    async def interaction_check(self, interaction: disnake.Interaction) -> bool:
         if interaction.author != self.ctx.author:
             await interaction.response.send_message(
                 f"You are not the owner of this message.",
@@ -100,11 +145,14 @@ class HelpCommandSelectOption(disnake.ui.View):
 
         return True
 
+    async def on_timeout(self):
+        await self.msg.edit(view=None)
+
 
 class HelpEmbed(disnake.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.color = disnake.Color.greyple()
+        self.color = disnake.Color.blurple()
 
 
 class HelpCommand(commands.HelpCommand):
@@ -112,20 +160,17 @@ class HelpCommand(commands.HelpCommand):
         super().__init__(
             command_attrs={
                 "hidden": True,
-                "help": "Shows help about a category, group or a command",
+                "help": "Shows help about a category, or a command.",
             }
         )
+        self.commands = []
 
     async def send(self, **kwargs):
-        await self.get_destination().send(**kwargs)
+        return await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping):
-        prefix = "."
-
         how2gethelp = f"""
-        Use "{prefix}help command" for more info on a command.
-        Use "{prefix}help category" for more info on a category.
-        Use the dropdown menu below to select a category.
+        Theres a select menu. Wanna click it?\nAnd if you still want more help, do `help [command]`.\nReplace `[command]` with whatever the command/category/group name is.
         """
 
         embed = HelpEmbed(
@@ -134,14 +179,15 @@ class HelpCommand(commands.HelpCommand):
         )
         embed.add_field(name="How do I get help?", value=how2gethelp)
 
-        await self.send(
+        view = HelpCommandSelectOption(self.context, self.context.bot, embed)
+
+        view.msg = await self.send(
             embed=embed,
-            view=HelpCommandSelectOption(self.context, self.context.bot, embed),
+            view=view,
         )
 
     async def send_command_help(self, command: commands.Command):
-        signature = self.get_command_signature(command).replace(".", "").strip()
-        embed = HelpEmbed(title=f"{signature}", description=command.help or "...")
+        embed = HelpEmbed(title=command.name, description=command.description or "...")
 
         embed.add_field(name="Syntax", value=self.get_command_signature(command))
         if cog := command.cog:
@@ -149,29 +195,68 @@ class HelpCommand(commands.HelpCommand):
 
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
+
         await self.send(embed=embed)
 
+    async def do_paginate(self, title, desc, data, per_page):
+        embeds = []
+
+        for i in range(0, len(data), per_page):
+            embed = disnake.Embed(
+                title=title,
+                description=desc,
+                colour=disnake.Color.blurple(),
+            )
+            for res in data[i : i + per_page]:
+                embed.add_field(
+                    name=res["name"],
+                    value=res["brief"],
+                    inline=False,
+                )
+
+            embeds.append(embed)
+
+        for index, embed in enumerate(embeds):
+            embed.set_footer(text=f"Page {index+1}/{len(embeds)}")
+
+        view = Paginator(self.context, embeds, embed=True)
+
+        view.msg = await self.send(embed=embeds[0], view=view)
+
     async def send_help_embed(self, title: str, description: str, cmds):
-        embed = HelpEmbed(title=title, description=description or "...")
         for command in cmds:
             if isinstance(command, commands.Group):
                 for cmd in command.commands:
-                    embed.add_field(
-                        name=f"{command.name} {cmd.name}", value=cmd.help or "..."
+                    self.commands.append(
+                        {
+                            "name": f"{command.name} {cmd.name}",
+                            "brief": cmd.description or cmd.help or "...",
+                        }
                     )
-                embed.add_field(name=command.name, value=command.help)
+                self.commands.append(
+                    {
+                        "name": command.name,
+                        "brief": command.description or command.help or "...",
+                    }
+                )
+                break
 
             if isinstance(command, commands.Command):
-                embed.add_field(
-                    name=command.name,
-                    value=command.help or "...",
+                self.commands.append(
+                    {
+                        "name": command.name,
+                        "brief": command.description or command.help or "...",
+                    }
                 )
 
-        await self.send(embed=embed)
+        await self.do_paginate(title, description or "...", self.commands, 10)
+
+    async def send_group_help(self, group: commands.Group):
+        await self.send_help_embed(group.name, group.description, group.commands)
 
     async def send_cog_help(self, cog):
 
-        title = cog.qualified_name or "No"
+        title = cog.qualified_name or "No "
 
         await self.send_help_embed(
             f"{title} Category", cog.description, cog.get_commands()

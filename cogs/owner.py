@@ -9,14 +9,22 @@ import traceback
 import contextlib
 
 
+class str(str):
+    def append(self, obj):
+        self += str(obj)
+        return self
+
+
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.no = "<:no:914859683842523207>"
+        self.yes = "<:yes:932551215764607007>"
 
     async def cog_check(self, ctx: commands.Context) -> int:
         return ctx.author.id == 656073353215344650
 
-    def paginate(self, text: str) -> str:
+    def paginate(self, text: str) -> None:
         last = 0
         pages = []
 
@@ -48,7 +56,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             )
             await ctx.message.add_reaction(":x:")
 
-    async def run(self, ctx: commands.Context, code: str):
+    async def _execute_children(self, ctx: commands.Context, code: str):
         vars: dict = {
             "ctx": ctx,
             "bot": self.bot,
@@ -63,16 +71,16 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
         try:
             exec(
-                f'async def evaluate():\n{textwrap.indent(self.cleanup_code(code), "  ")}',
+                f'async def _execute_human():\n{textwrap.indent(self.cleanup_code(code), "  ")}',
                 vars,
             )
         except Exception as e:
             err = await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
-            return await ctx.message.add_reaction("\u2049")
+            return await ctx.message.add_reaction(self.no)
 
         try:
             with contextlib.redirect_stdout(io.StringIO()):
-                var = await vars["evaluate"]()
+                var = await vars["_execute_human"]()
         except Exception:
             value = io.StringIO().getvalue()
             err = await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
@@ -90,6 +98,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                                 out = await ctx.send(f"```py\n{page}\n```")
                                 break
                             await ctx.send(f"```py\n{page}\n```")
+
             else:
                 try:
                     out = await ctx.send(f"```py\n{value}{var}\n```")
@@ -102,22 +111,22 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                         await ctx.send(f"```py\n{page}\n```")
 
         if out:
-            await ctx.message.add_reaction("\u2705")
+            await ctx.message.add_reaction(self.yes)
         elif err:
-            await ctx.message.add_reaction("\u2049")
+            await ctx.message.add_reaction(self.no)
         else:
-            await ctx.message.add_reaction("\u2705")
+            await ctx.message.add_reaction(self.yes)
 
-    @commands.command(aliases=("rs",))
+    @commands.command(aliases=["rs"])
     async def restart(self, ctx: commands.Context) -> None:
         await self.restart_bot(ctx)
 
-    @commands.command(name="eval", aliases=("e",))
-    async def _eval(self, ctx: commands.Context, *, code: str) -> str:
+    @commands.command(name="eval", aliases=["e"])
+    async def _eval(self, ctx: commands.Context, *, code: str):
 
         """Evaluates python code."""
 
-        await self.run(ctx, code)
+        await self._execute_children(ctx, code)
 
     @commands.command()
     @commands.is_owner()

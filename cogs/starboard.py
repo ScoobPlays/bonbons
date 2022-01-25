@@ -16,9 +16,8 @@ class Starboard(commands.Cog, description="Starboard related commands."):
 
     async def set_starboard_count(self, ctx, count):
 
-        """Sets the reactions needed to be on the starboard"""
+            """Sets the reactions needed to be on the starboard"""
 
-        try:
 
             data = await self.config.find_one({"_id": ctx.guild.id})
 
@@ -35,15 +34,10 @@ class Starboard(commands.Cog, description="Starboard related commands."):
                     f"I have set the reactions needed for the starboard to `{count}`."
                 )
 
-        except Exception as e:
-            print(e)
 
     async def add_to_starboard(self, reaction, user):
 
         """Adds something to the starboard"""
-
-        with suppress(TypeError):
-            return
 
         if reaction.message.embeds:
             return
@@ -70,7 +64,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
 
                 em = disnake.Embed(
                     description=reaction.message.content,
-                    color=disnake.Color.greyple(),
+                    color=disnake.Color.blurple(),
                     timestamp=datetime.utcnow(),
                 )
                 em.set_author(
@@ -128,7 +122,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
             embed = disnake.Embed(
                 title="Starboard Information",
                 description=f"• **Channel:** <#{data['channel']}>\n• **Reactions Needed:** {data['reactions']}",
-                color=disnake.Color.greyple(),
+                color=disnake.Color.blurple(),
                 timestamp=disnake.utils.utcnow(),
             )
 

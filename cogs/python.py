@@ -1,45 +1,14 @@
 from disnake.ext import commands
 from utils.rtfm import fuzzy
-from random import choice
 from typing import Dict
-import io
-import zlib
 import re
 import os
 import disnake
 from datetime import datetime
-
-
-class SphinxObjectFileReader:
-    BUFSIZE = 16 * 1024
-
-    def __init__(self, buffer):
-        self.stream = io.BytesIO(buffer)
-
-    def readline(self):
-        return self.stream.readline().decode("utf-8")
-
-    def skipline(self):
-        self.stream.readline()
-
-    def read_compressed_chunks(self):
-        decompressor = zlib.decompressobj()
-        while True:
-            chunk = self.stream.read(self.BUFSIZE)
-            if len(chunk) == 0:
-                break
-            yield decompressor.decompress(chunk)
-        yield decompressor.flush()
-
-    def read_compressed_lines(self):
-        buf = b""
-        for chunk in self.read_compressed_chunks():
-            buf += chunk
-            pos = buf.find(b"\n")
-            while pos != -1:
-                yield buf[:pos].decode("utf-8")
-                buf = buf[pos + 1 :]
-                pos = buf.find(b"\n")
+import random
+from utils.replies import REPLIES
+from utils.classes import DeleteView, SphinxObjectFileReader
+from io import StringIO
 
 
 class Python(commands.Cog):
@@ -49,6 +18,16 @@ class Python(commands.Cog):
         self.bot = bot
         self.emoji = "<:python:930713365758771242>"
         self.pypi_db = self.bot.mongo["discord"]["pypi"]
+        self.docs_cache = []
+        self.cache_items_for_docs()
+
+    async def send_error_message(self, ctx, msg):
+        embed = disnake.Embed(
+            title=random.choice(REPLIES),
+            description=msg,
+            color=disnake.Color.red(),
+        )
+        await ctx.send(embed=embed)
 
     def parse_object_inv(self, stream: SphinxObjectFileReader, url: str) -> Dict:
         result = {}
@@ -110,6 +89,10 @@ class Python(commands.Cog):
         self._rtfm_cache = cache
 
     async def do_rtfm(self, ctx, key, obj):
+        import time
+
+        now = time.perf_counter()
+
         page_types = {
             "python": "https://docs.python.org/3",
             "disnake": "https://disnake.readthedocs.io/en/latest",
@@ -141,21 +124,26 @@ class Python(commands.Cog):
         e = disnake.Embed(colour=disnake.Colour.blurple())
         if len(matches) == 0:
             responses = (
-                "I looked far and wide but nothing was found",
+                "I looked far and wide but nothing was found.",
                 "I could not find anything related to your query.",
                 "Could not find anything. Sorry.",
                 "I didn't find anything related to your query.",
             )
-            return await ctx.send(choice(responses))
+            return await self.send_error_message(ctx, random.choice(responses))
 
         e.description = "\n".join(f"[`{key}`]({url})" for key, url in matches)
         ref = ctx.message.reference
         refer = None
         if ref and isinstance(ref.resolved, disnake.Message):
             refer = ref.resolved.to_reference()
-        await ctx.send(embed=e, reference=refer)
+        done = time.perf_counter()
+        view = DeleteView(refer=refer, embed=e, ctx=ctx, now=done, when=now)
+        view._update_labels()
+        await view.start(ctx)
 
-    @commands.group(name="rtfm", aliases=["rtfd"], invoke_without_command=True)
+    @commands.group(
+        name="docs", aliases=["rtfd", "rtfm", "d", "doc"], invoke_without_command=True
+    )
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve documentation on Python libraries."""
 
@@ -243,6 +231,34 @@ class Python(commands.Cog):
             packages.append(pkg["name"])
 
         return [pkg for pkg in packages if package.lower() in pkg.lower()]
+
+    @commands.slash_command()
+    async def docs(self, inter, object: str):
+
+        data = getattr(disnake, object.replace("disnake.", ""))
+        file = StringIO()
+        file.write(data.__doc__)
+        file.seek(0)
+        await inter.response.send_message(file=disnake.File(file, filename="file.txt"))
+
+    @docs.autocomplete(option_name="object")
+    async def docs_autocomplete(
+        self, inter: disnake.ApplicationCommandInteraction, object: str
+    ) -> str:
+
+        return [obj for obj in self.docs_cache if obj.lower() in object.lower()]
+
+    def cache_items(self, *inventories):
+
+        for inventory in inventories:
+            for obj in dir(inventory):
+                if obj not in self.docs_cache:
+                    self.docs_cache.append(f"disnake.{obj}")
+
+    def cache_items_for_docs(self):
+        self.cache_items(
+            disnake,
+        )
 
 
 def setup(bot):
