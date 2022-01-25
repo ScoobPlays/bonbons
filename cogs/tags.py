@@ -85,7 +85,7 @@ class Tags(Cog):
     @group(name="tag", invoke_without_command=True)
     @guild_only()
     async def tag(self, ctx: Context, tag: str = None):
-        """Sends the help embed for the tag command group.\nIf an argument was passed then it'll send the tag content."""
+        """Sends the help embed for the tag command group. If an argument was passed then it'll send the tag content."""
         if tag is None:
             await ctx.send_help("tag")
         if tag is not None:
@@ -100,7 +100,7 @@ class Tags(Cog):
 
     @tag.command(aliases=["modify"])
     async def edit(self, ctx: Context, name: str, *, content: str):
-        """Edits a tag. Only the owners of the tag can edit their tags."""
+        """Edits a tag you own."""
         await self.edit_tag(ctx, name, content)
 
     @tag.command(aliases=["list"])
@@ -114,6 +114,7 @@ class Tags(Cog):
 
     @tag.command(aliases=["remove"])
     async def delete(self, ctx: Context, *, name: str):
+        """Deletes a tag you own."""
         await self.try_to_delete_tag(ctx, name)
 
     @Cog.listener("on_message")
