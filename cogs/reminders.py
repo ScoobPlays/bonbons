@@ -32,7 +32,7 @@ class Reminders(
         await ctx.send(f"I will remind you in {time} seconds.")
         self._cached_channels[ctx.channel.id] = ctx.channel
 
-        new_time = (disnake.utils.utcnow() + timedelta(seconds=1)).timestamp()
+        new_time = (disnake.utils.utcnow() + timedelta(seconds=time)).timestamp()
         await self.add_reminder(ctx, int(new_time), reminder)
 
     @tasks.loop(seconds=10)
