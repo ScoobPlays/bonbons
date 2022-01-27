@@ -1,7 +1,6 @@
 from disnake.ext import commands
 import disnake
 from datetime import datetime
-from contextlib import suppress
 
 
 class Starboard(commands.Cog, description="Starboard related commands."):
@@ -16,7 +15,7 @@ class Starboard(commands.Cog, description="Starboard related commands."):
 
     async def set_starboard_count(self, ctx, count):
 
-        """Sets the reactions needed to be on the starboard"""
+        """Sets the reactions needed to be on the starboard."""
 
         data = await self.config.find_one({"_id": ctx.guild.id})
 
@@ -35,15 +34,17 @@ class Starboard(commands.Cog, description="Starboard related commands."):
 
     async def add_to_starboard(self, reaction, user):
 
-        """Adds something to the starboard"""
+        """Adds something to the starboard."""
 
         if reaction.message.embeds:
             return
 
         reactions = await self.config.find_one({"_id": reaction.message.guild.id})
 
-        if reactions:
-            starboard_channel_id = reactions["channel"]
+        if reactions is None:
+            return
+
+        starboard_channel_id = reactions["channel"]
         starboard_channel = self.bot.get_channel(
             starboard_channel_id
         ) or await self.bot.fetch_channel(starboard_channel_id)

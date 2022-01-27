@@ -22,7 +22,7 @@ class NotSafeForWork(Cog, description="NSFW related commands."):
                 disnake.Embed(color=disnake.Color.blurple())
                 .set_author(
                     name=str(ctx.author),
-                    icon_url=ctx.author.display_avatar,
+                    icon_url=ctx.author.display_avatar.url,
                     url=base["source"],
                 )
                 .set_image(url=base["url"])
@@ -37,7 +37,7 @@ class NotSafeForWork(Cog, description="NSFW related commands."):
                 disnake.Embed(color=disnake.Color.blurple())
                 .set_author(
                     name=str(ctx.author),
-                    icon_url=ctx.author.display_avatar,
+                    icon_url=ctx.author.display_avatar.url,
                     url=base["source"],
                 )
                 .set_image(url=base["url"])

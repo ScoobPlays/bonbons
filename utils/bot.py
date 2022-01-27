@@ -11,7 +11,15 @@ from disnake.ext.commands import (
     CommandOnCooldown,
     when_mentioned_or,
 )
-from disnake import Intents, AllowedMentions, Forbidden, Message, Activity, ActivityType
+from disnake import (
+    Intents,
+    AllowedMentions,
+    Forbidden,
+    Message,
+    Activity,
+    ActivityType,
+    DMChannel,
+)
 from motor import motor_asyncio
 from aiohttp import ClientSession
 import os
@@ -71,14 +79,15 @@ class Bonbons(Bot):
         print("Logged in.")
 
     async def get_prefix_from_db(self, bot: Bot, message: Message):
+
+        if isinstance(message.channel, DMChannel):
+            return when_mentioned_or(".")(bot, message)
+
         db = self.mongo["discord"]["prefixes"]
 
         prefix = await db.find_one({"_id": message.guild.id})
 
-        try:
-            return when_mentioned_or(str(prefix["prefix"]))(bot, message)
-        except:
-            return when_mentioned_or(".")(bot, message)
+        return when_mentioned_or(str(prefix["prefix"]))(bot, message)
 
     async def on_command_error(self, ctx: Context, error: Exception):
 

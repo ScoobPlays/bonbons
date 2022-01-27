@@ -1,6 +1,7 @@
-from disnake.ext.commands import Cog, Context, group, guild_only
+from disnake.ext.commands import Cog, Context, group, guild_only, Bot
 from utils.paginators import TagPages
 import copy
+from disnake import Message, DMChannel
 
 # TODO: implement difflib in `delete`/`get`
 
@@ -8,7 +9,7 @@ import copy
 class Tags(Cog):
     """Tag-related commands."""
 
-    def __init__(self, bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self.emoji = "📰"
         self.base = self.bot.mongo["tags"]
@@ -105,7 +106,8 @@ class Tags(Cog):
 
     @tag.command(aliases=["list"])
     async def all(self, ctx: Context):
-        """Sends all the tags in the current guild."""
+        """Sends all the tags in the current server."""
+
         db = self.base[str(ctx.guild.id)]
 
         view = TagPages(await db.find().to_list(10000))
@@ -118,7 +120,10 @@ class Tags(Cog):
         await self.try_to_delete_tag(ctx, name)
 
     @Cog.listener("on_message")
-    async def send_tags(self, message):
+    async def send_tags(self, message: Message):
+
+        if isinstance(message.channel, DMChannel):
+            return await self.bot.process_commands(message)
 
         ctx = await self.bot.get_context(message)
 
