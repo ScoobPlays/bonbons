@@ -368,7 +368,7 @@ class Information(commands.Cog, description="Information related commands."):
         x_emoji = "❌"
         check = "✅"
 
-        if role.mentionable is True:
+        if role.mentionable:
             role_mentionable = check
 
         if role.hoist is True:
@@ -411,12 +411,14 @@ class Information(commands.Cog, description="Information related commands."):
         role_mentionable = None
         role_hoisted = None
 
-        role = role is inter.author.top_role
+        role = role or inter.author.top_role
 
         x_emoji = "❌"
         check = "✅"
 
-        if role.mentionable is True:
+        print(type(role))
+
+        if role.mentionable:
             role_mentionable = check
 
         if role.hoist is True:

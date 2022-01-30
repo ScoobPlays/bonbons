@@ -1,5 +1,4 @@
 from disnake.ext import commands
-import utils
 import disnake
 import io
 import os
@@ -7,12 +6,7 @@ import sys
 import textwrap
 import traceback
 import contextlib
-
-
-class str(str):
-    def append(self, obj):
-        self += str(obj)
-        return self
+from utils.objects import cleanup_code, paginate
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
@@ -23,25 +17,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
     async def cog_check(self, ctx: commands.Context) -> int:
         return ctx.author.id == 656073353215344650
-
-    def paginate(self, text: str) -> None:
-        last = 0
-        pages = []
-
-        for curr in range(0, len(text)):
-            if curr % 1980 == 0:
-                pages.append(text[last:curr])
-                last = curr
-                appd_index = curr
-
-            if appd_index != len(text) - 1:
-                pages.append(text[last:curr])
-            return list(filter(lambda a: a != "", pages))
-
-    def cleanup_code(self, content: str) -> str:
-        if content.startswith("```") and content.endswith("```"):
-            return "\n".join(content.split("\n")[1:-1])
-        return content.strip("` \n")
 
     async def restart_bot(self, ctx: commands.Context) -> None:
         try:
@@ -71,7 +46,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
         try:
             exec(
-                f'async def _execute_human():\n{textwrap.indent(self.cleanup_code(code), "  ")}',
+                f'async def _execute_human():\n{textwrap.indent(cleanup_code(code), "  ")}',
                 vars,
             )
         except Exception as e:
@@ -92,7 +67,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
                         out = await ctx.send(f"```py\n{value}\n```")
                     except Exception:
-                        paginated_text = self.paginate(value)
+                        paginated_text = paginate(value)
                         for page in paginated_text:
                             if page == paginated_text[-1]:
                                 out = await ctx.send(f"```py\n{page}\n```")
@@ -103,7 +78,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                 try:
                     out = await ctx.send(f"```py\n{value}{var}\n```")
                 except Exception:
-                    paginated_text = self.paginate(f"{value}{var}")
+                    paginated_text = paginate(f"{value}{var}")
                     for page in paginated_text:
                         if page == paginated_text[-1]:
                             out = await ctx.send(f"```py\n{page}\n```")

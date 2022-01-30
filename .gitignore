@@ -3,3 +3,4 @@
 *.breakpoints
 *.lock
 *.toml
+*.log

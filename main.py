@@ -1,22 +1,26 @@
 from utils.bot import Bonbons
 
 bot = Bonbons()
+bot.blacklist = {}
 
-import random
+
+@bot.event
+async def on_message_edit(b, a):
+
+    if b.content.startswith((".e", ".eval")):
+        await bot.process_commands(a)
 
 
-@bot.listen()
-async def on_message(msg):
+@bot.check
+async def blacklist_check(ctx):
+    return ctx.author.id not in bot.blacklist.keys()
 
-    if msg.content.startswith("!!"):
-        new_msg = msg.content.replace("!!", "").split()
 
-        if new_msg[0].lower() not in ["sus", "pedo", "gay", "lesbian"]:
-            return
+@bot.command()
+async def blacklist(ctx, id: int, reason: str = None):
 
-        await msg.channel.send(
-            f"{new_msg[1]} is {random.randint(1, 100)}% {new_msg[0]}"
-        )
+    if id not in bot.blacklist.keys():
+        bot.blacklist[id] = reason if reason else "..."
 
 
 bot.run()

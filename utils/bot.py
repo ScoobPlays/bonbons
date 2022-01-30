@@ -23,13 +23,14 @@ from disnake import (
 from motor import motor_asyncio
 from aiohttp import ClientSession
 import os
+import logging
 
 
 class Bonbons(Bot):
     def __init__(self, **kwargs):
 
         super().__init__(
-            command_prefix=self.get_prefix_from_db,
+            command_prefix=self.get_prefix_from_database,
             case_insensitive=True,
             test_guilds=[
                 880030618275155998,
@@ -78,7 +79,7 @@ class Bonbons(Bot):
 
         print("Logged in.")
 
-    async def get_prefix_from_db(self, bot: Bot, message: Message):
+    async def get_prefix_from_database(self, bot: Bot, message: Message):
 
         if isinstance(message.channel, DMChannel):
             return when_mentioned_or(".")(bot, message)
