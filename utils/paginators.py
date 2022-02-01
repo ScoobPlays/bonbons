@@ -2,7 +2,6 @@ from disnake import (
     ApplicationCommandInteraction,
     Interaction,
     ButtonStyle,
-    Message,
     Color,
     Embed,
 )
@@ -12,12 +11,8 @@ from disnake.ui import Button, View, button
 
 
 class Paginator(View):
-    """A class designed to paginate over big chunks of data."""
-
-    msg: Message
-
     def __init__(
-        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 30
+        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 60
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
@@ -36,15 +31,6 @@ class Paginator(View):
             )
             return False
         return True
-
-    def _update_labels(self):
-        if self.current_page == 0:
-            self.back_two.disabled = True
-            self.back_one.disabled = True
-
-        if self.current_page >= len(self.messages):
-            self.next_one.disabled = True
-            self.next_two.disabled = True
 
     async def show_page(self, inter: Interaction, page: int):
         if page >= len(self.messages):
@@ -68,11 +54,6 @@ class Paginator(View):
     async def back_one(self, button: Button, inter: Interaction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
-
-    #  @button(emoji="🗑️", style=ButtonStyle.grey)
-    # async def quit(self, button: Button, inter: Interaction):
-    #    await inter.response.defer()
-    #   await inter.delete_original_message()
 
     @button(label="Next", style=ButtonStyle.blurple)
     async def next_one(self, button: Button, inter: Interaction):
@@ -144,6 +125,24 @@ class TagPages:
             )
 
         view = Paginator(ctx, embeds, embed=True)
-        view._update_labels()
 
         view.msg = await ctx.send(embed=embeds[0], view=view)
+
+
+class TextPaginator:
+    def __init__(self, ctx: Context, data):
+        self.data = data
+        self.ctx = ctx
+
+    async def start(self, *, per_page: int = 4000):
+        embeds = []
+
+        for index, result in enumerate(self.data):
+            embed = Embed(
+                description=f"```py\n{result}\n```", color=Color.blurple()
+            ).set_footer(text=f"Page {index+1}/{len(self.data)}")
+            embeds.append(embed)
+
+        view = Paginator(self.ctx, embeds, embed=True)
+
+        view.msg = await self.ctx.reply(embed=embeds[0], view=view)

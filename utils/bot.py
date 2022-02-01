@@ -23,7 +23,7 @@ from disnake import (
 from motor import motor_asyncio
 from aiohttp import ClientSession
 import os
-import logging
+from .music.music_client import Music
 
 
 class Bonbons(Bot):
@@ -48,6 +48,7 @@ class Bonbons(Bot):
         self.invoked_commands = 0
         self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
         self.LAST_COMMANDS_USAGE = []
+        self.player = Music()
 
     def run(self):
         self.setup()
@@ -71,11 +72,6 @@ class Bonbons(Bot):
 
         if not hasattr(self, "session"):
             self.session = ClientSession(loop=self.loop)
-
-        if not hasattr(self, "error_channel"):
-            self.error_channel = self.get_channel(
-                932603426771202139
-            ) or await self.fetch_chanel(932603426771202139)
 
         print("Logged in.")
 
@@ -119,5 +115,4 @@ class Bonbons(Bot):
             return await ctx.reply("I cannot run this command.", mention_author=False)
 
         else:
-            await ctx.reply("Uh oh! An unknown error has occured.")
-            await self.error_channel.send(f"```{error}```")
+            await ctx.reply(error)

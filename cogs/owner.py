@@ -1,12 +1,13 @@
 from disnake.ext import commands
-import disnake
 import io
 import os
 import sys
 import textwrap
 import traceback
 import contextlib
-from utils.objects import cleanup_code, paginate
+from utils.objects import cleanup_code
+import disnake
+from utils.paginators import TextPaginator
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
@@ -14,6 +15,14 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         self.bot = bot
         self.no = "<:no:914859683842523207>"
         self.yes = "<:yes:932551215764607007>"
+        self.library_dict = {
+            "pycord": disnake,
+            "nextcord": disnake,
+            "hikari": disnake,
+            "cock": disnake,
+            "nestcord": disnake,
+            "diskord": disnake,
+        }
 
     async def cog_check(self, ctx: commands.Context) -> int:
         return ctx.author.id == 656073353215344650
@@ -24,73 +33,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
             os.execv(sys.executable, ["python"] + sys.argv)
         except Exception:
-            await ctx.author.send(
-                embed=disnake.Embed(
-                    description="Bot failed to restart.", color=disnake.Color.red()
-                )
-            )
-            await ctx.message.add_reaction(":x:")
-
-    async def _execute_children(self, ctx: commands.Context, code: str):
-        vars: dict = {
-            "ctx": ctx,
-            "bot": self.bot,
-            "_channel": ctx.channel,
-            "_author": ctx.author,
-            "_guild": ctx.guild,
-            "_message": ctx.message,
-            **globals(),
-        }
-
-        err = out = None
-
-        try:
-            exec(
-                f'async def _execute_human():\n{textwrap.indent(cleanup_code(code), "  ")}',
-                vars,
-            )
-        except Exception as e:
-            err = await ctx.send(f"```py\n{e.__class__.__name__}: {e}\n```")
-            return await ctx.message.add_reaction(self.no)
-
-        try:
-            with contextlib.redirect_stdout(io.StringIO()):
-                var = await vars["_execute_human"]()
-        except Exception:
-            value = io.StringIO().getvalue()
-            err = await ctx.send(f"```py\n{value}{traceback.format_exc()}\n```")
-        else:
-            value = io.StringIO().getvalue()
-            if var is None:
-                if value:
-                    try:
-
-                        out = await ctx.send(f"```py\n{value}\n```")
-                    except Exception:
-                        paginated_text = paginate(value)
-                        for page in paginated_text:
-                            if page == paginated_text[-1]:
-                                out = await ctx.send(f"```py\n{page}\n```")
-                                break
-                            await ctx.send(f"```py\n{page}\n```")
-
-            else:
-                try:
-                    out = await ctx.send(f"```py\n{value}{var}\n```")
-                except Exception:
-                    paginated_text = paginate(f"{value}{var}")
-                    for page in paginated_text:
-                        if page == paginated_text[-1]:
-                            out = await ctx.send(f"```py\n{page}\n```")
-                            break
-                        await ctx.send(f"```py\n{page}\n```")
-
-        if out:
-            await ctx.message.add_reaction(self.yes)
-        elif err:
-            await ctx.message.add_reaction(self.no)
-        else:
-            await ctx.message.add_reaction(self.yes)
+            pass
 
     @commands.command(aliases=["rs"])
     async def restart(self, ctx: commands.Context) -> None:
@@ -99,22 +42,44 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     @commands.command(name="eval", aliases=["e"])
     async def _eval(self, ctx: commands.Context, *, code: str):
 
-        """Evaluates python code."""
+        variables: dict = {
+            "ctx": ctx,
+            "bot": self.bot,
+            "disnake": disnake,
+            "_channel": ctx.channel,
+            "_author": ctx.author,
+            "_guild": ctx.guild,
+            "_message": ctx.message,
+            "nl": "\n",
+            **globals(),
+            **self.library_dict,
+        }
 
-        await self._execute_children(ctx, code)
+        code = cleanup_code(code)
+        stdout = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(stdout):
 
-    @commands.command()
-    @commands.is_owner()
-    async def toggle(self, ctx: commands.Context, command: str):
-        await ctx.message.add_reaction("✅")
+                exec(
+                    f'async def _execute_human():\n{textwrap.indent(code, "  ")}',
+                    variables,
+                )
+                obj = await variables["_execute_human"]()
+                result = str(obj)
 
-        cmd = self.bot.get_command(command.lower())
+        except Exception as e:
+            result = "".join(traceback.format_exception(e, e, e.__traceback__))
 
-        if cmd.enabled:
-            cmd.enabled = False
-            return
+        if len(result) >= 4000:
+            paginator = TextPaginator(
+                ctx, [result[i : i + 4000] for i in range(0, len(result), 4000)]
+            )
+            return await paginator.start()
 
-        cmd.enabled = True
+        embed = disnake.Embed(
+            description=f"```py\n{result}\n```", color=disnake.Color.blurple()
+        )
+        await ctx.reply(embed=embed)
 
 
 def setup(bot):
