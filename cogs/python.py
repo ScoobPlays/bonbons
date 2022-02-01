@@ -96,6 +96,7 @@ class Python(commands.Cog):
         page_types = {
             "python": "https://docs.python.org/3",
             "disnake": "https://disnake.readthedocs.io/en/latest",
+            "nextcord": "https://nextcord.readthedocs.io/en/latest/"
         }
 
         if obj is None:
@@ -106,7 +107,7 @@ class Python(commands.Cog):
             await ctx.trigger_typing()
             await self.build_rtfm_lookup_table(page_types)
 
-        obj = re.sub(r"^(?:disnake\.(?:ext\.)?)?(?:commands\.)?(.+)", r"\1", obj)
+        obj = re.sub(r"^(?:nextcord\.(?:ext\.)?)?(?:commands\.)?(.+)", r"\1", obj)
 
         if key.startswith("master"):
             q = obj.lower()
@@ -142,21 +143,26 @@ class Python(commands.Cog):
         await view.start(ctx)
 
     @commands.group(
-        name="docs", aliases=["rtfd", "rtfm", "d", "doc"], invoke_without_command=True
+        name="docs", aliases=["rtfd", "rtfm"], invoke_without_command=True
     )
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve documentation on Python libraries."""
 
-        await self.do_rtfm(ctx, "disnake", obj)
+        await self.do_rtfm(ctx, "nextcord", obj)
 
     @rtfm_group.command(name="python", aliases=["py"])
     async def rtfm_python_cmd(self, ctx: commands.Context, *, obj: str = None):
-        """Retrieve's documentation about the Python language."""
+        """Retrieve's documentation about the python language."""
         await self.do_rtfm(ctx, "python", obj)
 
+    @rtfm_group.command(name="nextcord", aliases=["nc"])
+    async def rtfm_nextcord(self, ctx: commands.Context, *, obj: str = None):
+        """Retrieve's documentation about the nextcord library."""
+        await self.do_rtfm(ctx, "nextcord", obj)
+
     @rtfm_group.command(name="disnake")
-    async def rtfm_disnake_cmd(self, ctx: commands.Context, *, obj: str = None):
-        """Retrieve's documentation about the Disnake library."""
+    async def rtfm_disnake(self, ctx: commands.Context, *, obj: str = None):
+        """Retrieve's documentation about the disnake library."""
         await self.do_rtfm(ctx, "disnake", obj)
 
     async def insert_into_db(self, obj):
@@ -232,33 +238,6 @@ class Python(commands.Cog):
 
         return [pkg for pkg in packages if package.lower() in pkg.lower()]
 
-    @commands.slash_command()
-    async def docs(self, inter, object: str):
-
-        data = getattr(disnake, object.replace("disnake.", ""))
-        file = StringIO()
-        file.write(data.__doc__)
-        file.seek(0)
-        await inter.response.send_message(file=disnake.File(file, filename="file.txt"))
-
-    @docs.autocomplete(option_name="object")
-    async def docs_autocomplete(
-        self, inter: disnake.ApplicationCommandInteraction, object: str
-    ) -> str:
-
-        return [obj for obj in self.docs_cache if obj.lower() in object.lower()]
-
-    def cache_items(self, *inventories):
-
-        for inventory in inventories:
-            for obj in dir(inventory):
-                if obj not in self.docs_cache:
-                    self.docs_cache.append(f"disnake.{obj}")
-
-    def cache_items_for_docs(self):
-        self.cache_items(
-            disnake,
-        )
 
 
 def setup(bot):
