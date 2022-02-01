@@ -8,7 +8,6 @@ from datetime import datetime
 import random
 from utils.replies import REPLIES
 from utils.classes import DeleteView, SphinxObjectFileReader
-from io import StringIO
 
 
 class Python(commands.Cog):
@@ -18,8 +17,6 @@ class Python(commands.Cog):
         self.bot = bot
         self.emoji = "<:python:930713365758771242>"
         self.pypi_db = self.bot.mongo["discord"]["pypi"]
-        self.docs_cache = []
-        self.cache_items_for_docs()
 
     async def send_error_message(self, ctx, msg):
         embed = disnake.Embed(
@@ -143,7 +140,7 @@ class Python(commands.Cog):
         await view.start(ctx)
 
     @commands.group(
-        name="docs", aliases=["rtfd", "rtfm"], invoke_without_command=True
+        name="rtfm", aliases=["rtfd"], invoke_without_command=True
     )
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve documentation on Python libraries."""
