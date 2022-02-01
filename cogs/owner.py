@@ -19,9 +19,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             "pycord": disnake,
             "nextcord": disnake,
             "hikari": disnake,
-            "cock": disnake,
             "nestcord": disnake,
-            "diskord": disnake,
         }
 
     async def cog_check(self, ctx: commands.Context) -> int:
@@ -75,6 +73,9 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                 ctx, [result[i : i + 4000] for i in range(0, len(result), 4000)]
             )
             return await paginator.start()
+
+        if result == "None":
+            return
 
         embed = disnake.Embed(
             description=f"```py\n{result}\n```", color=disnake.Color.blurple()

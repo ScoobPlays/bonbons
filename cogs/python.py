@@ -93,7 +93,8 @@ class Python(commands.Cog):
         page_types = {
             "python": "https://docs.python.org/3",
             "disnake": "https://disnake.readthedocs.io/en/latest",
-            "nextcord": "https://nextcord.readthedocs.io/en/latest/"
+            "nextcord": "https://nextcord.readthedocs.io/en/latest",
+            "discord.py": "https://discordpy.readthedocs.io/en/master"
         }
 
         if obj is None:
@@ -104,7 +105,7 @@ class Python(commands.Cog):
             await ctx.trigger_typing()
             await self.build_rtfm_lookup_table(page_types)
 
-        obj = re.sub(r"^(?:nextcord\.(?:ext\.)?)?(?:commands\.)?(.+)", r"\1", obj)
+        obj = re.sub(r"^(?:discord\.(?:ext\.)?)?(?:commands\.)?(.+)", r"\1", obj)
 
         if key.startswith("master"):
             q = obj.lower()
@@ -143,9 +144,9 @@ class Python(commands.Cog):
         name="rtfm", aliases=["rtfd"], invoke_without_command=True
     )
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
-        """Retrieve documentation on Python libraries."""
+        """Retrieve documentation on python libraries. Defaults to `discord.py` if no sub-command was passed."""
 
-        await self.do_rtfm(ctx, "nextcord", obj)
+        await self.do_rtfm(ctx, "discord.py", obj)
 
     @rtfm_group.command(name="python", aliases=["py"])
     async def rtfm_python_cmd(self, ctx: commands.Context, *, obj: str = None):
