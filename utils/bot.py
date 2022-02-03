@@ -1,5 +1,4 @@
 from .help_command import HelpCommand
-from .survive import survive
 from datetime import datetime
 from disnake.ext.commands import (
     Bot,
@@ -54,13 +53,14 @@ class Bonbons(Bot):
 
     def setup(self):
 
-        survive()
+        os.system("pip install disnake_docs")
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
         os.environ["JISHAKU_PY_RES"] = "false"
         os.environ["JISHAKU_EMBEDDED_JSK"] = "1"
         os.environ["JISHAKU_EMBEDDED_JSK_COLOUR"] = "0x2F3136"
         os.environ["JISHAKU_NO_UNDERSCORE"] = "1"
         self.load_extension("jishaku")
+        self.load_extension('docs')
 
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):
