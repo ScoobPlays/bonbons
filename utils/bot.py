@@ -23,7 +23,6 @@ from disnake import (
 from motor import motor_asyncio
 from aiohttp import ClientSession
 import os
-from .music.music_client import Music
 
 
 class Bonbons(Bot):
@@ -48,7 +47,6 @@ class Bonbons(Bot):
         self.invoked_commands = 0
         self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
         self.LAST_COMMANDS_USAGE = []
-        self.player = Music()
 
     def run(self):
         self.setup()
