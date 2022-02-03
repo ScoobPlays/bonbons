@@ -7,5 +7,5 @@ dnspython
 disnake
 aiopyston
 Flask
-disnake-docs
+disnake_docs
 googletrans==4.0.0rc1
