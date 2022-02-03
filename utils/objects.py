@@ -21,6 +21,7 @@ def cleanup_code(content: str) -> str:
 def get_mobile():
     import ast
     import inspect
+    import disnake
     import re
 
     def source(o):
