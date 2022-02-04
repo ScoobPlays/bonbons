@@ -28,7 +28,7 @@ class Reminders(
         )
 
     @command()
-    async def remindme(self, ctx: Context, time: TimeConverter, reminder: str = None):
+    async def remindme(self, ctx: Context, time: TimeConverter, *, reminder: str = None):
         await ctx.send(f"I will remind you in {time} seconds.")
         self._cached_channels[ctx.channel.id] = ctx.channel
 
