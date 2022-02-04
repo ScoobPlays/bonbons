@@ -1,6 +1,8 @@
-from disnake.ext.commands import Bot
-from aiohttp import ClientSession
 from typing import Union
+
+from aiohttp import ClientSession
+from disnake.ext.commands import Bot
+
 from .constants import applications
 
 

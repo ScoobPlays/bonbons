@@ -1,5 +1,6 @@
-import disnake
 import io
+
+import disnake
 from disnake.ext import commands
 from easy_pil import Canvas, Editor, Font
 

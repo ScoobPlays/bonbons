@@ -1,7 +1,9 @@
-from typing import Optional
-from disnake.ext import commands
-import disnake
 import random
+from typing import Optional
+
+import disnake
+from disnake.ext import commands
+
 from utils.replies import REPLIES
 
 facepalms = ("🤦‍♂️", "🤦‍♀️", "🤦")

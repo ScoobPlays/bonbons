@@ -1,7 +1,8 @@
-from flask import Flask
-from threading import Thread
-import os
 import logging
+import os
+from threading import Thread
+
+from flask import Flask
 
 app = Flask("")
 

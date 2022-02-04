@@ -1,6 +1,8 @@
 import contextlib
+
 import disnake
 from disnake.ext import commands
+
 from .paginators import Paginator
 
 
@@ -23,7 +25,7 @@ class HelpCommandSelectOptions(disnake.ui.Select):
                 "Emojis",
                 "MessageCommands",
                 "Tasks",
-                "Docs"
+                "Docs",
             ]:
                 continue
 

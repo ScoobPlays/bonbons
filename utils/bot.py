@@ -1,27 +1,15 @@
-from .help_command import HelpCommand
-from datetime import datetime
-from disnake.ext.commands import (
-    Bot,
-    Context,
-    CommandNotFound,
-    MissingRequiredArgument,
-    DisabledCommand,
-    CheckFailure,
-    CommandOnCooldown,
-    when_mentioned_or,
-)
-from disnake import (
-    Intents,
-    AllowedMentions,
-    Forbidden,
-    Message,
-    Activity,
-    ActivityType,
-    DMChannel,
-)
-from motor import motor_asyncio
-from aiohttp import ClientSession
 import os
+from datetime import datetime
+
+from aiohttp import ClientSession
+from disnake import (Activity, ActivityType, AllowedMentions, DMChannel,
+                     Forbidden, Intents, Message)
+from disnake.ext.commands import (Bot, CheckFailure, CommandNotFound,
+                                  CommandOnCooldown, Context, DisabledCommand,
+                                  MissingRequiredArgument, when_mentioned_or)
+from motor import motor_asyncio
+
+from .help_command import HelpCommand
 
 
 class Bonbons(Bot):
@@ -60,7 +48,7 @@ class Bonbons(Bot):
         os.environ["JISHAKU_EMBEDDED_JSK_COLOUR"] = "0x2F3136"
         os.environ["JISHAKU_NO_UNDERSCORE"] = "1"
         self.load_extension("jishaku")
-        self.load_extension('docs')
+        self.load_extension("docs")
 
         for filename in os.listdir("./cogs"):
             if filename.endswith(".py"):

@@ -1,13 +1,15 @@
-from disnake.ext import commands
-from utils.rtfm import fuzzy
-from typing import Dict
-import re
 import os
-import disnake
-from datetime import datetime
 import random
-from utils.replies import REPLIES
+import re
+from datetime import datetime
+from typing import Dict
+
+import disnake
+from disnake.ext import commands
+
 from utils.classes import DeleteView, SphinxObjectFileReader
+from utils.replies import REPLIES
+from utils.rtfm import fuzzy
 
 
 class Python(commands.Cog):
@@ -94,7 +96,7 @@ class Python(commands.Cog):
             "python": "https://docs.python.org/3",
             "disnake": "https://disnake.readthedocs.io/en/latest",
             "nextcord": "https://nextcord.readthedocs.io/en/latest",
-            "discord.py": "https://discordpy.readthedocs.io/en/master"
+            "discord.py": "https://discordpy.readthedocs.io/en/master",
         }
 
         if obj is None:
@@ -140,9 +142,7 @@ class Python(commands.Cog):
         view._update_labels()
         await view.start(ctx)
 
-    @commands.group(
-        name="rtfm", aliases=["rtfd"], invoke_without_command=True
-    )
+    @commands.group(name="rtfm", aliases=["rtfd"], invoke_without_command=True)
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve documentation on python libraries. Defaults to `discord.py` if no sub-command was passed."""
 
@@ -235,7 +235,6 @@ class Python(commands.Cog):
             packages.append(pkg["name"])
 
         return [pkg for pkg in packages if package.lower() in pkg.lower()]
-
 
 
 def setup(bot):

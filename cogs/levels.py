@@ -1,10 +1,11 @@
-from disnake.ext import commands
-from easy_pil import Canvas, Editor, Font, load_image_async
-import disnake
 import io
 import random
 import time
 from datetime import datetime
+
+import disnake
+from disnake.ext import commands
+from easy_pil import Canvas, Editor, Font, load_image_async
 
 
 class Levels(commands.Cog):

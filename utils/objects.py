@@ -18,11 +18,13 @@ def cleanup_code(content: str) -> str:
         return "\n".join(content.split("\n")[1:-1])
     return content.strip("` \n")
 
+
 def get_mobile():
     import ast
     import inspect
-    import disnake
     import re
+
+    import disnake
 
     def source(o):
         s = inspect.getsource(o).split("\n")

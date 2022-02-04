@@ -1,8 +1,9 @@
+import io
+import re
+import zlib
+
 import disnake
 from disnake.ext import commands
-import re
-import io
-import zlib
 
 
 class SphinxObjectFileReader:

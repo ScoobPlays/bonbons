@@ -1,12 +1,14 @@
-from disnake.ext import commands
+import contextlib
 import io
 import os
 import sys
 import textwrap
 import traceback
-import contextlib
-from utils.objects import cleanup_code
+
 import disnake
+from disnake.ext import commands
+
+from utils.objects import cleanup_code
 from utils.paginators import TextPaginator
 
 

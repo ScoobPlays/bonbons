@@ -1,8 +1,10 @@
-from disnake.ext.commands import Cog, command, Context, Bot
-from utils.classes import TimeConverter
 from datetime import timedelta
+
 import disnake
 from disnake.ext import tasks
+from disnake.ext.commands import Bot, Cog, Context, command
+
+from utils.classes import TimeConverter
 
 
 class Reminders(
@@ -28,7 +30,9 @@ class Reminders(
         )
 
     @command()
-    async def remindme(self, ctx: Context, time: TimeConverter, *, reminder: str = None):
+    async def remindme(
+        self, ctx: Context, time: TimeConverter, *, reminder: str = None
+    ):
         await ctx.send(f"I will remind you in {time} seconds.")
         self._cached_channels[ctx.channel.id] = ctx.channel
 

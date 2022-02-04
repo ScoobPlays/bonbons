@@ -1,7 +1,9 @@
-from disnake.ext import commands
-from utils.replies import REPLIES
 import random
+
 import disnake
+from disnake.ext import commands
+
+from utils.replies import REPLIES
 
 
 class Emojis(commands.Cog):

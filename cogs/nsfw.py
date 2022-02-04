@@ -1,5 +1,5 @@
-from disnake.ext.commands import Cog, Context, Bot, group, is_nsfw, command
 import disnake
+from disnake.ext.commands import Bot, Cog, Context, command, group, is_nsfw
 
 BASE_URL = "https://api.waifu.im"
 

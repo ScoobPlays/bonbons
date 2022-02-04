@@ -1,6 +1,7 @@
+import random
+
 import disnake
 from disnake.ext import commands
-import random
 
 db = {}
 

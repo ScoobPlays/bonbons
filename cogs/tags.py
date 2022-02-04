@@ -1,7 +1,9 @@
-from disnake.ext.commands import Cog, Context, group, guild_only, Bot
-from utils.paginators import TagPages
 import copy
-from disnake import Message, DMChannel
+
+from disnake import DMChannel, Message
+from disnake.ext.commands import Bot, Cog, Context, group, guild_only
+
+from utils.paginators import TagPages
 
 # TODO: implement difflib in `delete`/`get`
 

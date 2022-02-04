@@ -1,4 +1,4 @@
-from disnake.ext.commands import Context, Bot, Cog, command
+from disnake.ext.commands import Bot, Cog, Context, command
 
 
 class Music(Cog, description="Music that makes you feel!"):
