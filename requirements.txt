@@ -6,5 +6,4 @@ easy_pil
 dnspython
 disnake
 aiopyston
-disnake-docs
 googletrans==4.0.0rc1
