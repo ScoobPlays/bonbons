@@ -23,6 +23,7 @@ class HelpCommandSelectOptions(disnake.ui.Select):
                 "Emojis",
                 "MessageCommands",
                 "Tasks",
+                "Docs"
             ]:
                 continue
 
