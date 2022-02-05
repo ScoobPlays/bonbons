@@ -26,7 +26,6 @@ class HelpCommandSelectOptions(disnake.ui.Select):
                 "MessageCommands",
                 "Tasks",
                 "Docs",
-                "NSFW"
             ]:
                 continue
 
@@ -113,9 +112,12 @@ class HelpCommandSelectOptions(disnake.ui.Select):
         await interaction.response.defer()
 
         if self.values[0] == "Home":
-            await interaction.edit_original_message(content=None, embed=self.embed)
-            return
+            return await interaction.edit_original_message(content=None, embed=self.embed)
 
+        if self.values[0] == "NSFW" and not interaction.channel.is_nsfw():
+            return await interaction.response.send_message("You can only view this category in an NSFW channel.")
+        
+        
         cog = self.bot.get_cog(self.values[0])
         title = cog.qualified_name or "No"
 
