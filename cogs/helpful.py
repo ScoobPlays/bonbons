@@ -7,7 +7,7 @@ import googletrans
 from disnake.ext import commands
 from pyston import File, PystonClient
 
-import utils.paginators import MyPages
+from utils.paginators import MyPages
 
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
