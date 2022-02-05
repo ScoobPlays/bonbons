@@ -172,7 +172,9 @@ class Helpful(commands.Cog):
             )
 
         if data is not None:
-            await self.message_database.update_one({"_id": message.author.id}, {"$inc": {"messages": 1}})
+            await self.message_database.update_one(
+                {"_id": message.author.id}, {"$inc": {"messages": 1}}
+            )
             await self.message_database.update_one(
                 {"_id": message.author.id}, {"$set": {"name": str(message.author)}}
             )
