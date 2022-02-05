@@ -4,11 +4,15 @@ from disnake.ext.commands import Bot, Cog, Context, command, group, is_nsfw
 BASE_URL = "https://api.waifu.im"
 
 
-class NotSafeForWork(Cog, description="NSFW related commands."):
+class NSFW(Cog, description="NSFW related commands."):
     def __init__(self, bot: Bot):
         self.bot = bot
         self.emoji = "🔞"
 
+    async def cog_check(self, ctx):
+        return ctx.guild.id == 880030618275155998
+
+        
     async def _get_image(self, ctx: Context, type: str, *, gif: bool = False):
         if gif:
             url = f"{BASE_URL}/nsfw/{type}/?gif=True"
