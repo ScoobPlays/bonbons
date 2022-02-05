@@ -60,7 +60,7 @@ class Tags(Cog):
         await self.db.update_one({"name": name}, {"$set": {"content": content}})
 
         await ctx.send(
-            f"Tag successfully edited! Do {prefix}tag {name} to view the tag."
+            f"Tag successfully edited! Do {prefix[2]}tag {name} to view the tag."
         )
 
     async def create_tag(self, ctx: Context, name: str, content: str):
@@ -82,7 +82,7 @@ class Tags(Cog):
 
         await db.insert_one(tag_data)
         return await ctx.send(
-            f"Tag successfully created. Do {prefix}tag {name} to view the tag."
+            f"Tag successfully created. Do {prefix[2]}tag {name} to view the tag."
         )
 
     @group(name="tag", invoke_without_command=True, case_insensitive=True)
