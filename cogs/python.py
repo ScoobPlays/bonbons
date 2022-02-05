@@ -134,7 +134,7 @@ class Python(commands.Cog):
 
         print(matches)
 
-        e.description = "\n".join(f"[{key}]({url})" for key, url in matches)
+        embed.description = "\n".join(f"[{key}]({url})" for key, url in matches)
         ref = ctx.message.reference
         reference = None
         if ref and isinstance(ref.resolved, disnake.Message):
