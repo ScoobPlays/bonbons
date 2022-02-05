@@ -30,7 +30,7 @@ class Helpful(commands.Cog):
 
         await self.bot_database.update_one(tag, {"$inc": {"uses": 1}})
 
-        self.bot.invoked_commands = uses
+        self.bot.invoked_commands = tag["uses"] + 1
 
     async def run_code(self, ctx: commands.Context, lang: str, code: str) -> None:
         matches = CODE_REGEX.findall(code)
@@ -172,9 +172,7 @@ class Helpful(commands.Cog):
             )
 
         if data is not None:
-            await self.message_database.update_one(
-                {"_id": message.author.id}, {"$inc": {"messages": 1}}
-            )
+            await self.message_database.update_one({"_id": message.author.id}, {"$inc": {"messages": 1}})
             await self.message_database.update_one(
                 {"_id": message.author.id}, {"$set": {"name": str(message.author)}}
             )
