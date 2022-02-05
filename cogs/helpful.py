@@ -11,6 +11,7 @@ from utils.paginators import MyPages
 
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
+
 class Helpful(commands.Cog):
     """Commands that may be helpful?"""
 
@@ -120,7 +121,7 @@ class Helpful(commands.Cog):
         except Exception:
             return
 
-    @commands.command() # TODO: Optimize this.
+    @commands.command()  # TODO: Optimize this.
     @commands.is_owner()
     async def echo(
         self,
@@ -191,7 +192,9 @@ class Helpful(commands.Cog):
                 return
 
     @commands.command(hidden=True)
-    async def translate(self, ctx: commands.Context, *, message: commands.clean_content = None):
+    async def translate(
+        self, ctx: commands.Context, *, message: commands.clean_content = None
+    ):
         """Translates a message to using google translate."""
 
         if message is None:
@@ -202,7 +205,9 @@ class Helpful(commands.Cog):
                 return await ctx.send("Missing a message to translate.")
 
         try:
-            ret = await self.bot.loop.run_in_executor(None, self.translator.translate, message)
+            ret = await self.bot.loop.run_in_executor(
+                None, self.translator.translate, message
+            )
         except Exception as e:
             return await ctx.send(f"An error occurred: {e.__class__.__name__}: {e}")
 
