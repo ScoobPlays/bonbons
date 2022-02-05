@@ -74,7 +74,7 @@ class Helpful(commands.Cog):
 
         except Exception:
             print(lang, code)
-            output = await self.pysclient.execute(str(lang), [File(matches[0][2])])
+            output = await self.pysclient.execute(lang, [File(code)])
 
             if (
                 output.raw_json["run"]["stdout"] == ""
