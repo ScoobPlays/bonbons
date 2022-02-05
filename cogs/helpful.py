@@ -73,7 +73,7 @@ class Helpful(commands.Cog):
                 return
 
         except Exception:
-            print(mathces)
+            print(matches)
             output = await self.pysclient.execute(str(lang), [File(matches[0][2])])
 
             if (
