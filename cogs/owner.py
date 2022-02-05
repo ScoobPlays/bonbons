@@ -1,7 +1,5 @@
 import contextlib
 import io
-import os
-import sys
 import textwrap
 import traceback
 
@@ -26,18 +24,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
     async def cog_check(self, ctx: commands.Context) -> int:
         return ctx.author.id == 656073353215344650
-
-    async def restart_bot(self, ctx: commands.Context) -> None:
-        try:
-            await ctx.message.add_reaction("✅")
-
-            os.execv(sys.executable, ["python"] + sys.argv)
-        except Exception:
-            pass
-
-    @commands.command(aliases=["rs"])
-    async def restart(self, ctx: commands.Context) -> None:
-        await self.restart_bot(ctx)
 
     @commands.command(name="eval", aliases=["e"])
     async def _eval(self, ctx: commands.Context, *, code: str):
