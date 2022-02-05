@@ -26,6 +26,7 @@ class HelpCommandSelectOptions(disnake.ui.Select):
                 "MessageCommands",
                 "Tasks",
                 "Docs",
+                "NSFW"
             ]:
                 continue
 
