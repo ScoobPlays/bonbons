@@ -49,6 +49,7 @@ class Bonbons(Bot):
         self.uptime = datetime.now().timestamp()
         self.invoked_commands = 0
         self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
+        self._prefix_cache = {}
 
     def run(self):
         self.setup()
@@ -85,7 +86,9 @@ class Bonbons(Bot):
 
         prefix = await db.find_one({"_id": message.guild.id})
 
-        return when_mentioned_or(str(prefix["prefix"]))(bot, message)
+        self._prefix_cache = prefix["prefix"]
+
+        return when_mentioned_or(prefix["prefix"])(bot, message)
 
     async def on_command_error(self, ctx: Context, error: Exception):
 

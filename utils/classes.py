@@ -38,14 +38,14 @@ class SphinxObjectFileReader:
                 pos = buf.find(b"\n")
 
 
-class DeleteView(disnake.ui.View):
-    def __init__(self, *, refer, embed, ctx, now, when):
+class RTFMView(disnake.ui.View):
+    def __init__(self, *, reference, embed, ctx, now, when):
         super().__init__()
         self.now = now
         self.when = when
         self.ctx = ctx
         self.embed = embed
-        self.refer = refer
+        self.reference = reference
 
     async def interaction_check(self, inter):
         if inter.author.id != self.ctx.author.id:
@@ -57,7 +57,7 @@ class DeleteView(disnake.ui.View):
 
     async def start(self, ctx):
         self._update_labels()
-        await self.ctx.send(embed=self.embed, reference=self.refer, view=self)
+        await self.ctx.send(embed=self.embed, reference=self.reference, view=self)
 
     @disnake.ui.button(emoji="🗑️")
     async def delete(self, button, inter):

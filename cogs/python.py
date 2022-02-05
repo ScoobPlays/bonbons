@@ -7,7 +7,7 @@ from typing import Dict
 import disnake
 from disnake.ext import commands
 
-from utils.classes import DeleteView, SphinxObjectFileReader
+from utils.classes import RTFMView, SphinxObjectFileReader
 from utils.replies import REPLIES
 from utils.rtfm import fuzzy
 
@@ -18,7 +18,7 @@ class Python(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.emoji = "<:python:930713365758771242>"
-        self.pypi_db = self.bot.mongo["discord"]["pypi"]
+        self.pypi_database = self.bot.mongo["discord"]["pypi"]
 
     async def send_error_message(self, ctx, msg):
         embed = disnake.Embed(
@@ -122,7 +122,7 @@ class Python(commands.Cog):
 
         matches = fuzzy.finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
 
-        e = disnake.Embed(colour=disnake.Colour.blurple())
+        embed = disnake.Embed(colour=0x2F3136)
         if len(matches) == 0:
             responses = (
                 "I looked far and wide but nothing was found.",
@@ -132,13 +132,16 @@ class Python(commands.Cog):
             )
             return await self.send_error_message(ctx, random.choice(responses))
 
-        e.description = "\n".join(f"[`{key}`]({url})" for key, url in matches)
+        print(matches)
+
+        e.description = "\n".join(f"[{key}]({url})" for key, url in matches)
         ref = ctx.message.reference
-        refer = None
+        reference = None
         if ref and isinstance(ref.resolved, disnake.Message):
-            refer = ref.resolved.to_reference()
+            reference = ref.resolved.to_reference()
+
         done = time.perf_counter()
-        view = DeleteView(refer=refer, embed=e, ctx=ctx, now=done, when=now)
+        view = RTFMView(reference=reference, embed=embed, ctx=ctx, now=done, when=now)
         view._update_labels()
         await view.start(ctx)
 
@@ -169,10 +172,10 @@ class Python(commands.Cog):
         await self.do_rtfm(ctx, "disnake", obj)
 
     async def insert_into_db(self, obj):
-        data = await self.pypi_db.find_one({"name": obj})
+        data = await self.pypi_database.find_one({"name": obj})
 
         if data is None:
-            await self.pypi_db.insert_one(
+            await self.pypi_database.insert_one(
                 {"name": obj, "inserted_at": int(datetime.now().timestamp())}
             )
 
@@ -236,7 +239,7 @@ class Python(commands.Cog):
     ) -> str:
         packages = []
 
-        for pkg in await self.pypi_db.find({}).to_list(1000):
+        for pkg in await self.pypi_database.find({}).to_list(1000):
             packages.append(pkg["name"])
 
         return [pkg for pkg in packages if package.lower() in pkg.lower()]
