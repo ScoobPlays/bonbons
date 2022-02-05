@@ -144,7 +144,7 @@ class Helpful(commands.Cog):
 
     @commands.command(name="say")
     async def say(self, ctx: commands.Context, *, text: str):
-       """Says whatever you want for you."""
+        """Says whatever you want for you."""
         await ctx.send(text)
 
     @commands.command()
