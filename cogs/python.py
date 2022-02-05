@@ -132,9 +132,7 @@ class Python(commands.Cog):
             )
             return await self.send_error_message(ctx, random.choice(responses))
 
-        print(matches)
-
-        embed.description = "\n".join(f"[{key}]({url})" for key, url in matches)
+        embed.description = "\n".join(f"[**`{key}`**]({url})" for key, url in matches)
         ref = ctx.message.reference
         reference = None
         if ref and isinstance(ref.resolved, disnake.Message):
