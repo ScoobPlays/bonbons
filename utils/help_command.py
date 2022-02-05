@@ -109,14 +109,14 @@ class HelpCommandSelectOptions(disnake.ui.Select):
         self.embeds = None
 
     async def callback(self, interaction: disnake.MessageInteraction):
-        await interaction.response.defer()
 
         if self.values[0] == "Home":
             return await interaction.edit_original_message(content=None, embed=self.embed)
 
         if self.values[0] == "NSFW" and not interaction.channel.is_nsfw():
             return await interaction.response.send_message("You can only view this category in an NSFW channel.")
-        
+
+        await interaction.response.defer()
         
         cog = self.bot.get_cog(self.values[0])
         title = cog.qualified_name or "No"
