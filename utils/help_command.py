@@ -114,7 +114,7 @@ class HelpCommandSelectOptions(disnake.ui.Select):
             return await interaction.edit_original_message(content=None, embed=self.embed)
 
         if self.values[0] == "NSFW" and not interaction.channel.is_nsfw():
-            return await interaction.response.send_message("You can only view this category in an NSFW channel.")
+            return await interaction.response.send_message("You can only view this category in an NSFW channel.", ephemeral=True)
 
         await interaction.response.defer()
         
