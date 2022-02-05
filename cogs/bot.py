@@ -71,7 +71,8 @@ class Bot(commands.Cog):
         )
 
         embed.add_field(
-            name="Commands", value=f"**{self.bot.invoked_commands}** commands have been invoked."
+            name="Commands",
+            value=f"**{self.bot.invoked_commands}** commands have been invoked.",
         )
         embed.add_field(
             name="Uptime",

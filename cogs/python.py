@@ -142,7 +142,12 @@ class Python(commands.Cog):
         view._update_labels()
         await view.start(ctx)
 
-    @commands.group(name="rtfm", aliases=["rtfd"], invoke_without_command=True, case_insensitive=True)
+    @commands.group(
+        name="rtfm",
+        aliases=["rtfd"],
+        invoke_without_command=True,
+        case_insensitive=True,
+    )
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve documentation on python libraries. Defaults to `discord.py` if no sub-command was passed."""
 
