@@ -8,10 +8,6 @@ class NSFW(Cog, description="NSFW related commands."):
     def __init__(self, bot: Bot):
         self.bot = bot
         self.emoji = "🔞"
-
-    async def cog_check(self, ctx):
-        return ctx.guild.id == 880030618275155998
-
         
     async def _get_image(self, ctx: Context, type: str, *, gif: bool = False):
         if gif:
