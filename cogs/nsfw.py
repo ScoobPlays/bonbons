@@ -54,66 +54,77 @@ class NSFW(Cog, description="NSFW related commands."):
         await ctx.send_help("nsfw")
 
     @nsfw.command()
+    @is_nsfw()
     async def ass(self, ctx: Context, gif: bool = False):
         """Ass focused content."""
         img = await self._get_image(ctx, "ass", gif=gif)
         await ctx.send(embed=img)
 
     @nsfw.command(aliases=["ero"])
+    @is_nsfw()
     async def erotic(self, ctx: Context, gif: bool = False):
         """Erotic content."""
         img = await self._get_image(ctx, "ero", gif=gif)
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def hentai(self, ctx: Context, gif: bool = False):
         """Any kind of erotic content."""
         img = await self._get_image(ctx, "hentai", gif=gif)
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def maid(self, ctx: Context):
         """Sexy womans or girl employed to do domestic work in their working uniform."""
         img = await self._get_image(ctx, "maid")
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def milf(self, ctx: Context, gif: bool = False):
         """A sexually attractive middle-aged woman."""
         img = await self._get_image(ctx, "milf", gif=gif)
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def oppai(self, ctx: Context, gif: bool = False):
         """Boobs focused content."""
         img = await self._get_image(ctx, "oppai", gif=gif)
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def oral(self, ctx: Context, gif: bool = False):
         """Any kind of erotic content, basically any nsfw image."""
         img = await self._get_image(ctx, "oral", gif=gif)
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def paizuri(self, ctx: Context):
         """A category of hentai that involves breast sex, also known as titty fucking."""
         img = await self._get_image(ctx, "paizuri")
         await ctx.send(embed=img)
 
     @nsfw.command(aliases=["selfies"])
+    @is_nsfw()
     async def selfie(self, ctx: Context):
         """A girl taking a lewd picture of herself."""
         img = await self._get_image(ctx, "selfies")
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def uniform(self, ctx: Context, gif: bool = False):
         """Girls wearing any kind of uniform."""
         img = await self._get_image(ctx, "uniform", gif=gif)
         await ctx.send(embed=img)
 
     @nsfw.command()
+    @is_nsfw()
     async def ecchi(self, ctx: Context):
         """Slightly explicit sexual content."""
         img = await self._get_image(ctx, "ecchi")
