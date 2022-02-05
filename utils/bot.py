@@ -34,7 +34,6 @@ class Bonbons(Bot):
         self.uptime = datetime.now().timestamp()
         self.invoked_commands = 0
         self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
-        self.LAST_COMMANDS_USAGE = []
 
     def run(self):
         self.setup()

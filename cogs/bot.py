@@ -2,38 +2,6 @@ import disnake
 from disnake.ext import commands
 
 
-class Advertising(disnake.ui.View):
-    def __init__(self, bot):
-        super().__init__()
-        self.add_item(
-            disnake.ui.Button(
-                label="Invite Me",
-                url="https://discordapp.com/oauth2/authorize?client_id=888309915620372491&scope=bot+applications.commands&permissions=0",
-            )
-        )
-        self.bot = bot
-
-    @disnake.ui.button(label="Recent Commands")
-    async def rc(self, button: disnake.ui.Button, interaction: disnake.Interaction):
-        await interaction.response.defer()
-
-        commands_usage = []
-        DELIMITER = "\n"
-
-        for result in self.bot.LAST_COMMANDS_USAGE[-5:]:
-            commands_usage.append(
-                f"<t:{result['timestamp']}:R>: {result['mention'].mention}"
-            )
-
-        embede = disnake.Embed(
-            title="Recent Command Usages",
-            description=DELIMITER.join(commands_usage) or "No commands have been used.",
-            color=disnake.Color.blurple(),
-        )
-
-        await interaction.edit_original_message(embed=embede)
-
-
 class Bot(commands.Cog):
     """Bot-related commands."""
 
@@ -102,16 +70,15 @@ class Bot(commands.Cog):
             description=f"I have access to {len(self.bot.guilds)} guilds and can see {len(self.bot.users)} users.",
         )
 
-        data = await self.db.find_one({"_id": self.bot.user.id})
         embed.add_field(
-            name="Commands", value=f"**{data['uses']}** commands have been invoked."
+            name="Commands", value=f"**{self.bot.invoked_commands}** commands have been invoked."
         )
         embed.add_field(
             name="Uptime",
             value=f"<t:{int(self.bot.uptime)}:F> (<t:{int(self.bot.uptime)}:R>)",
             inline=False,
         )
-        await ctx.send(embed=embed, view=Advertising(self.bot))
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def cleanup(self, ctx: commands.Context, limit: int = 5):
