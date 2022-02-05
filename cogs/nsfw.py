@@ -43,7 +43,7 @@ class NotSafeForWork(Cog, description="NSFW related commands."):
                 .set_image(url=base["url"])
             )
 
-    @group(name="nsfw", invoke_without_command=True)
+    @group(name="nsfw", invoke_without_command=True, case_insensitive=True)
     @is_nsfw()
     async def nsfw(self, ctx: Context):
         """The base command for all the NSFW commands."""

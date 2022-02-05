@@ -34,7 +34,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
             )
         )
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, case_insensitive=True)
     async def thank(
         self,
         ctx: commands.Context,
@@ -136,7 +136,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
                 "No threads were found.",
             )
 
-    @commands.group(invoke_without_command=True)
+    @commands.group(invoke_without_command=True, case_insensitive=True)
     async def thread(self, ctx: commands.Context):
         """The base command for thread."""
         await ctx.send_help("thread")
@@ -144,7 +144,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
     @thread.command()
     async def find(self, ctx: commands.Context, *, name: str):
 
-        """Searches the current server for a thread."""
+        """Searches the server for a thread."""
 
         await self.find_thread(ctx, name)
 

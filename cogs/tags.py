@@ -85,7 +85,7 @@ class Tags(Cog):
             f"Tag successfully created. Do {prefix}tag {name} to view the tag."
         )
 
-    @group(name="tag", invoke_without_command=True)
+    @group(name="tag", invoke_without_command=True, case_insensitive=True)
     @guild_only()
     async def tag(self, ctx: Context, tag: str = None):
         """Sends the help embed for the tag command group. If an argument was passed then it'll send the tag content."""
