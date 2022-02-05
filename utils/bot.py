@@ -11,12 +11,13 @@ from motor import motor_asyncio
 
 from .help_command import HelpCommand
 
+# TODO: Implement caching in `get_prefix_from_database`
 
 class Bonbons(Bot):
     def __init__(self, **kwargs):
 
         super().__init__(
-            command_prefix=self.get_prefix_from_database,
+            command_prefix=self.get_prefix_from_db,
             case_insensitive=True,
             test_guilds=[
                 880030618275155998,
@@ -61,7 +62,7 @@ class Bonbons(Bot):
 
         print("Logged in.")
 
-    async def get_prefix_from_database(self, bot: Bot, message: Message):
+    async def get_prefix_from_db(self, bot: Bot, message: Message):
 
         if isinstance(message.channel, DMChannel):
             return when_mentioned_or(".")(bot, message)
