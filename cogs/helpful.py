@@ -167,13 +167,13 @@ class Helpful(commands.Cog):
         data = await self.message_database.find_one({"_id": message.author.id})
 
         if data is None:
-            await db.insert_one(
+            await self.message_database.insert_one(
                 {"_id": message.author.id, "messages": 1, "name": str(message.author)}
             )
 
         if data is not None:
-            await db.update_one({"_id": message.author.id}, {"$inc": {"messages": 1}})
-            await db.update_one(
+            await self.message_database.update_one({"_id": message.author.id}, {"$inc": {"messages": 1}})
+            await self.message_database.update_one(
                 {"_id": message.author.id}, {"$set": {"name": str(message.author)}}
             )
 
