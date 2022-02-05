@@ -126,4 +126,4 @@ class NSFW(Cog, description="NSFW related commands."):
 
 
 def setup(bot: Bot):
-    bot.add_cog(NotSafeForWork(bot))
+    bot.add_cog(NSFW(bot))
