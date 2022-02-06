@@ -86,6 +86,30 @@ class Helpful(commands.Cog):
                 )
                 return
 
+    async def _run_code(self, inter, code: str):
+        matches = self.CODE_REGEX.findall(str(code))
+        print(matches)
+        print(code)
+        language = matches[0][1]
+        code = matches[0][2]
+
+        output = await self.pysclient.execute(str(language), [File(code)])
+
+        if output.raw_json["run"]["stdout"] == "" and output.raw_json["run"]["stderr"]:
+            return await inter.response.send_message(
+                content=f"{inter.author.mention} :warning: Your run job has completed with return code 1.\n\n```\n{output}\n```"
+            )
+
+        if output.raw_json["run"]["stdout"] == "":
+            return await inter.response.send_message(
+                content=f"{inter.author.mention} :warning: Your run job has completed with return code 0.\n\n```\n[No output]\n```"
+            )
+
+        else:
+            return await inter.response.send_message(
+                content=f"{inter.author.mention} :white_check_mark: Your run job has completed with return code 0.\n\n```\n{output}\n```"
+            )
+
     @commands.command(name="run", aliases=["runl"])
     async def run(self, ctx: commands.Context, lang, *, code: str):
         """Runs code."""
@@ -94,7 +118,7 @@ class Helpful(commands.Cog):
 
     @commands.message_command(name="Run Code")
     async def run(self, inter, message: disnake.Message):
-        await self.run_code(inter, message.content.replace(".run", ""))
+        await self._run_code(inter, message.content.replace(".run", ""))
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
