@@ -87,7 +87,7 @@ class Helpful(commands.Cog):
                 return
 
     async def _run_code(self, inter, code: str):
-        matches = self.CODE_REGEX.findall(str(code))
+        matches = CODE_REGEX.findall(str(code))
         print(matches)
         print(code)
         language = matches[0][1]
