@@ -62,7 +62,6 @@ class Helpful(commands.Cog):
                 return
 
         except Exception:
-            print(lang, code)
             output = await self.pysclient.execute(lang, [File(code)])
 
             if (
@@ -117,7 +116,7 @@ class Helpful(commands.Cog):
             await self.run_code(ctx, lang, code)
 
     @commands.message_command(name="Run Code")
-    async def run(self, inter, message: disnake.Message):
+    async def _run(self, inter, message: disnake.Message):
         await self._run_code(inter, message.content.replace(".run", ""))
 
     @commands.Cog.listener()
