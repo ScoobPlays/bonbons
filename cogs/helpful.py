@@ -45,23 +45,24 @@ class Helpful(commands.Cog):
                 and output.raw_json["run"]["stderr"]
             ):
                 self._run_cache[ctx.author.id] = await ctx.reply(
-                    content=f"{ctx.author.mention} :warning: Your run job has completed with return code 1.\n\n```\n{output}\n```"
+                    content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 1.\n\n```\n{output}\n```"
                 )
                 return
 
             if output.raw_json["run"]["stdout"] == "":
                 self._run_cache[ctx.author.id] = await ctx.send(
-                    content=f"{ctx.author.mention} :warning: Your run job has completed with return code 0.\n\n```\n[No output]\n```"
+                    content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 0.\n\n```\n[No output]\n```"
                 )
                 return
 
             else:
                 self._run_cache[ctx.author.id] = await ctx.send(
-                    content=f"{ctx.author.mention} :white_check_mark: Your run job has completed with return code 0.\n\n```\n{output}\n```"
+                    content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
                 )
                 return
 
-        except Exception:
+        except Exception as e:
+            print(e)
             output = await self.pysclient.execute(lang, [File(code)])
 
             if (
@@ -69,23 +70,26 @@ class Helpful(commands.Cog):
                 and output.raw_json["run"]["stderr"]
             ):
                 self._run_cache[ctx.author.id] = await ctx.reply(
-                    content=f"{ctx.author.mention} :warning: Your run job has completed with return code 1.\n\n```\n{output}\n```"
+                    content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 1.\n\n```\n{output}\n```"
                 )
                 return
 
             if output.raw_json["run"]["stdout"] == "":
                 self._run_cache[ctx.author.id] = await ctx.send(
-                    content=f"{ctx.author.mention} :warning: Your run job has completed with return code 0.\n\n```\n[No output]\n```"
+                    content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 0.\n\n```\n[No output]\n```"
                 )
                 return
 
             else:
                 self._run_cache[ctx.author.id] = await ctx.send(
-                    content=f"{ctx.author.mention} :white_check_mark: Your run job has completed with return code 0.\n\n```\n{output}\n```"
+                    content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
                 )
                 return
 
     async def _run_code(self, inter, code: str):
+
+        await inter.response.defer()
+
         matches = CODE_REGEX.findall(str(code))
         print(matches)
         print(code)
@@ -96,17 +100,17 @@ class Helpful(commands.Cog):
 
         if output.raw_json["run"]["stdout"] == "" and output.raw_json["run"]["stderr"]:
             return await inter.response.send_message(
-                content=f"{inter.author.mention} :warning: Your run job has completed with return code 1.\n\n```\n{output}\n```"
+                content=f"{inter.author.mention} :warning: Your {language} job has completed with return code 1.\n\n```\n{output}\n```"
             )
 
         if output.raw_json["run"]["stdout"] == "":
             return await inter.response.send_message(
-                content=f"{inter.author.mention} :warning: Your run job has completed with return code 0.\n\n```\n[No output]\n```"
+                content=f"{inter.author.mention} :warning: Your {language} job has completed with return code 0.\n\n```\n[No output]\n```"
             )
 
         else:
             return await inter.response.send_message(
-                content=f"{inter.author.mention} :white_check_mark: Your run job has completed with return code 0.\n\n```\n{output}\n```"
+                content=f"{inter.author.mention} :white_check_mark: Your {language} job has completed with return code 0.\n\n```\n{output}\n```"
             )
 
     @commands.command(name="run", aliases=["runl"])
