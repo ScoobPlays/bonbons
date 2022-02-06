@@ -92,6 +92,10 @@ class Helpful(commands.Cog):
         async with ctx.typing():
             await self.run_code(ctx, lang, code)
 
+    @commands.message_command(name="Run Code")
+    async def run(self, inter, message: disnake.Message):
+        await self.run_code(inter, message.content.replace(".run", ""))
+
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
         ctx = await self.bot.get_context(after)

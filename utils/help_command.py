@@ -23,7 +23,6 @@ class HelpCommandSelectOptions(disnake.ui.Select):
                 "Jishaku",
                 "Owner",
                 "Emojis",
-                "MessageCommands",
                 "Tasks",
                 "Docs",
             ]:
