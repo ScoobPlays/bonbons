@@ -10,6 +10,7 @@ from disnake import (
     Forbidden,
     Intents,
     Message,
+    Guild
 )
 from disnake.ext.commands import (
     Bot,
@@ -24,12 +25,13 @@ from disnake.ext.commands import (
 from motor import motor_asyncio
 
 from .help_command import HelpCommand
+from disnake.abc import GuildChannel
 
 # TODO: Implement caching in `get_prefix_from_database`
 
 
 class Bonbons(Bot):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
 
         super().__init__(
             command_prefix=self.get_prefix_from_db,
@@ -51,11 +53,11 @@ class Bonbons(Bot):
         self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
         self._prefix_cache = {}
 
-    def run(self):
+    def run(self) -> None:
         self.setup()
         super().run(os.environ["token"], reconnect=True)
 
-    def setup(self):
+    def setup(self) -> None:
 
         os.system("pip install disnake_docs")
         os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
@@ -70,7 +72,7 @@ class Bonbons(Bot):
             if filename.endswith(".py"):
                 self.load_extension(f"cogs.{filename[:-3]}")
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
 
         if not hasattr(self, "session"):
             self.session = ClientSession(loop=self.loop)
@@ -90,7 +92,7 @@ class Bonbons(Bot):
 
         return when_mentioned_or(prefix["prefix"])(bot, message)
 
-    async def on_command_error(self, ctx: Context, error: Exception):
+    async def on_command_error(self, ctx: Context, error: Exception) -> None:
 
         if isinstance(error, CommandNotFound):
             return
@@ -120,3 +122,9 @@ class Bonbons(Bot):
 
         else:
             await ctx.reply(error)
+
+    async def get_channel(self, id: int) -> GuildChannel:
+        return super().get_channel(id) or await super().get_channel(id)
+            
+    async def get_guild(self, id: int) -> Guild:
+        return super().get_guild(id) or await super().fetch_guild(id)
