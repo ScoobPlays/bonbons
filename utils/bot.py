@@ -10,7 +10,6 @@ from disnake import (
     Forbidden,
     Intents,
     Message,
-    Guild
 )
 from disnake.ext.commands import (
     Bot,
@@ -25,7 +24,6 @@ from disnake.ext.commands import (
 from motor import motor_asyncio
 
 from .help_command import HelpCommand
-from disnake.abc import GuildChannel
 
 # TODO: Implement caching in `get_prefix_from_database`
 
@@ -123,8 +121,3 @@ class Bonbons(Bot):
         else:
             await ctx.reply(error)
 
-    async def get_channel(self, id: int) -> GuildChannel:
-        return super().get_channel(id) or await super().get_channel(id)
-            
-    async def get_guild(self, id: int) -> Guild:
-        return super().get_guild(id) or await super().fetch_guild(id)
