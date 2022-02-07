@@ -191,7 +191,7 @@ class Python(commands.Cog):
                     raw = await data.json()
 
                     embed = disnake.Embed(
-                        title=name,
+                        title=raw["info"]["name"],
                         description=raw["info"]["summary"],
                         url=raw["info"]["project_url"],
                         color=disnake.Color.greyple(),
@@ -199,7 +199,7 @@ class Python(commands.Cog):
                         url="https://cdn.discordapp.com/emojis/766274397257334814.png"
                     )
                     await ctx.send(embed=embed)
-                    await self.insert_into_db(name)
+                    await self.insert_into_db(raw["info"]["name"])
 
                 else:
                     await ctx.send("A package with that name does not exist.")
@@ -216,7 +216,7 @@ class Python(commands.Cog):
                 raw = await data.json()
 
                 embed = disnake.Embed(
-                    title=package,
+                    title=raw["info"]["name"],
                     description=raw["info"]["summary"],
                     url=raw["info"]["project_url"],
                     color=disnake.Color.greyple(),
@@ -224,7 +224,7 @@ class Python(commands.Cog):
                     url="https://cdn.discordapp.com/emojis/766274397257334814.png"
                 )
                 await inter.response.send_message(embed=embed)
-                await self.insert_into_db(package)
+                await self.insert_into_db(raw["info"]["name"])
 
             else:
                 await inter.response.send_message(
@@ -237,8 +237,8 @@ class Python(commands.Cog):
     ) -> str:
         packages = []
 
-        for pkg in await self.pypi_database.find({}).to_list(1000):
-            packages.append(pkg["name"])
+        async for package in self.pypi_database.find():
+            packages.append(package["name"])
 
         return [pkg for pkg in packages if package.lower() in pkg.lower()]
 
