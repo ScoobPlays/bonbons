@@ -1,59 +1,123 @@
-from disnake.ui import Select, View
-from disnake import Embed, Interaction, MessageInteraction, Color, Embed, SelectOption
+from disnake.ui import Select, View, button
+from disnake import Embed, MessageInteraction, Color, SelectOption, ButtonStyle
 from disnake.ext.commands import Context, Bot, Group, Command
-from utils.paginators import Paginator
+
+
+BUTTON_ROW = 1
+
+class HelpMenuPaginator(View):
+    def __init__(
+        self, ctx: Context, messages: list, *, embed: bool = False, timeout: int = 60, row: int=0
+    ):
+        super().__init__(timeout=timeout)
+        self.messages = messages
+        self.embed = embed
+        self.current_page = 0
+        self.ctx = ctx
+        self.row = row
+        self.add_rows()
+
+    def add_rows(self) -> None:
+        global BUTTON_ROW
+
+        BUTTON_ROW = self.row
+
+    async def on_timeout(self) -> None:
+        await self.msg.edit(view=None)
+
+    async def interaction_check(self, inter: MessageInteraction) -> bool:
+        if inter.author.id != self.ctx.author.id:
+            await inter.response.send_message(
+                f"You are not the owner of this message.",
+                ephemeral=True,
+            )
+            return False
+        return True
+
+    async def show_page(self, inter: MessageInteraction, page: int):
+        if page >= len(self.messages):
+            self.current_page = 0
+        else:
+            self.current_page = page
+
+        data = self.messages[self.current_page]
+
+        if self.embed:
+            await inter.edit_original_message(embed=data, view=self)
+        if not self.embed:
+            await inter.edit_original_message(content=data, view=self)
+
+    @button(label="<<", style=ButtonStyle.grey, row=BUTTON_ROW)
+    async def back_two(self, button: Button, inter: MessageInteraction):
+        await inter.response.defer()
+        await self.show_page(inter, self.current_page - self.current_page)
+
+    @button(label="Back", style=ButtonStyle.blurple, row=BUTTON_ROW)
+    async def back_one(self, button: Button, inter: MessageInteraction):
+        await inter.response.defer()
+        await self.show_page(inter, self.current_page - 1)
+
+    @button(label="Next", style=ButtonStyle.blurple, row=BUTTON_ROW)
+    async def next_one(self, button: Button, inter: MessageInteraction):
+        await inter.response.defer()
+        await self.show_page(inter, self.current_page + 1)
+
+    @button(label="️>>", style=ButtonStyle.grey, row=BUTTON_ROW)
+    async def next_two(self, button: Button, inter: MessageInteraction):
+        await inter.response.defer()
+        await self.show_page(inter, self.current_page - self.current_page - 1)
+
+def _get_options(bot: Bot):
+    options = []
+
+    for cog in bot.cogs:
+
+        cog = bot.get_cog(cog)
+    
+        if cog.qualified_name in [
+            "Jishaku",
+            "Owner",
+            "Emojis",
+            "Tasks",
+            "Docs",
+            ]:
+            continue
+            
+        options.append(
+            SelectOption(
+                label=cog.qualified_name,
+                description=cog.description,
+                emoji=cog.emoji,
+                )
+                )
+    options.append(
+        SelectOption(
+            label="Home", description="Go back to the main help page.", emoji="🏠"
+            )
+            )
+
+    return options
+
 
 class HelpCommandDropdown(Select):
     def __init__(
         self, ctx: Context, bot: Bot, embed: Embed
     ) -> None:
-        self.ctx = ctx
-        self.bot = bot
-        self.embed = embed
-
-        options = []
-
-        for cog in self.bot.cogs:
-
-            cog = self.bot.get_cog(cog)
-            if cog.qualified_name in [
-                "Jishaku",
-                "Owner",
-                "Emojis",
-                "Tasks",
-                "Docs",
-            ]:
-                continue
-
-            options.append(
-                SelectOption(
-                    label=cog.qualified_name,
-                    description=cog.description,
-                    emoji=cog.emoji if cog.emoji else None,
-                )
-            )
-        options.append(
-            SelectOption(
-                label="Home", description="Go back to the main help page.", emoji="🏠"
-            )
-        )
-
         super().__init__(
             placeholder="Choose a category!",
             min_values=1,
             max_values=1,
-            options=options,
+            options=_get_options(bot),
             row=0
         )
-        self.commands = []
+        self.ctx = ctx
+        self.bot = bot
+        self.embed = embed
+        self._commands = []
         self.embeds = []
 
 
-    def _get_options(self):
-        ...
-
-
-    async def get_embed(self, title: str, description: str, _commands) -> list:
+    async def _get_embed(self, title: str, description: str, _commands) -> list:
         
         """
         Extracts all of a category's commands, groups, then edits them to append them into a list for future usage.
@@ -62,9 +126,9 @@ class HelpCommandDropdown(Select):
         for command in _commands:
             if isinstance(command, Group):
                 for cmd in command.commands:
-                    [self.commands.append({"name": f"{command.name} {cmd.name}", "brief": cmd.description}) for cmd in command.commands]
+                    [self._commands.append({"name": f"{command.name} {cmd.name}", "brief": cmd.description}) for cmd in command.commands]
 
-                self.commands.append(
+                self._commands.append(
                     {
                         "name": command.name,
                         "brief": command.description,
@@ -73,13 +137,13 @@ class HelpCommandDropdown(Select):
                 break
 
             if isinstance(command, Command):
-                self.commands.append(
+                self._commands.append(
                     {"name": command.name, "brief": command.description or command.help}
                 )
 
-        return self.commands
+        return self._commands
 
-    async def do_paginate(self, title: str, description: str, data, per_page: int, interaction: MessageInteraction) -> None:
+    async def paginate(self, title: str, description: str, data, per_page: int, interaction: MessageInteraction) -> None:
 
         embeds = []
 
@@ -103,7 +167,7 @@ class HelpCommandDropdown(Select):
 
         self.embeds = embeds
 
-        view = Paginator(self.ctx, self.embeds, timeout=40, embed=True, row=1)
+        view = HelpMenuPaginator(self.ctx, self.embeds, timeout=40, embed=True, row=1)
         view.add_item(self)
 
         view.msg = await interaction.edit_original_message(
@@ -123,16 +187,16 @@ class HelpCommandDropdown(Select):
 
         cog = self.bot.get_cog(self.values[0])
 
-        await self.do_paginate(
+        await self.paginate(
             "Category Help",
             cog.description,
-            await self.get_embed(
+            await self._get_embed(
                 "Category Help", cog.description, cog.get_commands()
             ),
             7,
             interaction,
         )
-        self.commands = []
+        self._commands = []
 
 
 class HelpCommandMenu(View):
@@ -143,8 +207,8 @@ class HelpCommandMenu(View):
         self.embed = embed
         self.add_item(HelpCommandDropdown(self.ctx, self.bot, self.embed))
 
-    async def interaction_check(self, interaction: Interaction) -> bool:
-        if interaction.author != self.ctx.author:
+    async def interaction_check(self, interaction: MessageInteraction) -> bool:
+        if interaction.author.id != self.ctx.author.id:
             await interaction.response.send_message(
                 f"You are not the owner of this message.",
                 ephemeral=True,

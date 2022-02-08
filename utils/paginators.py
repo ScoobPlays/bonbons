@@ -5,34 +5,25 @@ from disnake import (
     ButtonStyle,
     Color,
     Embed,
-    Interaction,
+    MessageInteraction,
 )
 from disnake.ext.commands import Context
 from disnake.ui import Button, View, button
 
-BUTTON_ROW = 1
-
 class Paginator(View):
     def __init__(
-        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 60, row: int=0
+        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 60
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
         self.embed = embed
         self.current_page = 0
         self.ctx = ctx
-        self.row = row
-        self.add_rows()
-
-    def add_rows(self) -> None:
-        global BUTTON_ROW
-
-        BUTTON_ROW = self.row
 
     async def on_timeout(self) -> None:
         await self.msg.edit(view=None)
 
-    async def interaction_check(self, inter: ApplicationCommandInteraction) -> bool:
+    async def interaction_check(self, inter: MessageInteraction) -> bool:
         if inter.author.id != self.ctx.author.id:
             await inter.response.send_message(
                 f"You are not the owner of this message.",
@@ -41,7 +32,7 @@ class Paginator(View):
             return False
         return True
 
-    async def show_page(self, inter: Interaction, page: int):
+    async def show_page(self, inter: MessageInteraction, page: int):
         if page >= len(self.messages):
             self.current_page = 0
         else:
@@ -54,23 +45,23 @@ class Paginator(View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-    @button(label="<<", style=ButtonStyle.grey, row=BUTTON_ROW)
-    async def back_two(self, button: Button, inter: Interaction):
+    @button(label="<<", style=ButtonStyle.grey)
+    async def back_two(self, button: Button, inter: MessageInteraction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @button(label="Back", style=ButtonStyle.blurple, row=BUTTON_ROW)
-    async def back_one(self, button: Button, inter: Interaction):
+    @button(label="Back", style=ButtonStyle.blurple)
+    async def back_one(self, button: Button, inter: MessageInteraction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @button(label="Next", style=ButtonStyle.blurple, row=BUTTON_ROW)
-    async def next_one(self, button: Button, inter: Interaction):
+    @button(label="Next", style=ButtonStyle.blurple)
+    async def next_one(self, button: Button, inter: MessageInteraction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @button(label="️>>", style=ButtonStyle.grey, row=BUTTON_ROW)
-    async def next_two(self, button: Button, inter: Interaction):
+    @button(label="️>>", style=ButtonStyle.grey)
+    async def next_two(self, button: Button, inter: MessageInteraction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 

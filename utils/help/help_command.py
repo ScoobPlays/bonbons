@@ -21,7 +21,7 @@ class CustomHelpCommand(HelpCommand):
                 "help": "Shows help about a category, or a command.",
             }
         )
-        self.commands = []
+        self._commands = []
 
     async def send(self, **kwargs):
         return await self.get_destination().send(**kwargs)
@@ -59,7 +59,7 @@ class CustomHelpCommand(HelpCommand):
 
         await self.send(embed=embed)
 
-    async def do_paginate(self, title, desc, data, per_page):
+    async def paginate(self, title: str, desc: str, data, *, per_page: int):
         embeds = []
 
         for i in range(0, len(data), per_page):
@@ -89,13 +89,13 @@ class CustomHelpCommand(HelpCommand):
         for command in _commands:
             if isinstance(command, Group):
                 for cmd in command.commands:
-                    self.commands.append(
+                    self._commands.append(
                         {
                             "name": f"{command.name} {cmd.name}",
                             "brief": cmd.description or cmd.help or "...",
                         }
                     )
-                self.commands.append(
+                self._commands.append(
                     {
                         "name": command.name,
                         "brief": command.description or command.help or "...",
@@ -104,14 +104,15 @@ class CustomHelpCommand(HelpCommand):
                 break
 
             if isinstance(command, commands.Command):
-                self.commands.append(
+                self._commands.append(
                     {
                         "name": command.name,
                         "brief": command.description or command.help or "...",
                     }
                 )
 
-        await self.do_paginate(title, description or "...", self.commands, 7)
+        await self.paginate(
+            title, description, self._commands, per_page = 7)
 
     async def send_group_help(self, group: Group):
         await self.send_help_embed(
