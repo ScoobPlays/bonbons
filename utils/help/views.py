@@ -167,7 +167,7 @@ class HelpCommandDropdown(Select):
 
         self.embeds = embeds
 
-        view = HelpMenuPaginator(self.ctx, self.embeds, timeout=40, embed=True, row=1)
+        view = HelpMenuPaginator(self.ctx, self.embeds, timeout=60, embed=True, row=1)
         view.add_item(self)
 
         view.msg = await interaction.edit_original_message(

@@ -27,19 +27,13 @@ class CustomHelpCommand(HelpCommand):
         return await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping):
-        how2gethelp = f"""
-        ```
-        help [command]
-        help [category]
-        help [group]
-        ```
-        """
+        value = "Click the dropdown and pick an option! Or...\n\n```\nhelp [command]\nhelp [category]\nhelp [group]\n```"
 
         embed = HelpEmbed(
             title="Bonbons Help Page",
             description=f"Hello! I am bonbons, I was made by {self.context.bot.owner} around <t:1631859987:R>.",
         )
-        embed.add_field(name="How do I get help?", value=how2gethelp)
+        embed.add_field(name="How do I get help?", value=value)
 
         view = HelpCommandMenu(self.context, self.context.bot, embed)
 
