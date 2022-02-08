@@ -185,7 +185,7 @@ class Python(commands.Cog):
     async def pypi(self, ctx: commands.Context, name: str):
 
         """Finds a package on PyPI."""
-        
+
         async with ctx.typing():
             async with self.bot.session.get(
                 f"https://pypi.org/pypi/{name}/json"

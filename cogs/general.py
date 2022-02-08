@@ -6,16 +6,10 @@ from datetime import datetime
 from typing import Optional
 
 import aiohttp
-from disnake import (
-    AllowedMentions,
-    ApplicationCommandInteraction,
-    Color,
-    Embed,
-    Member,
-    Message,
-    TextChannel,
-)
-from disnake.ext.commands import Cog, Context, Param, command, guild_only, slash_command
+from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
+                     Embed, Member, Message, TextChannel)
+from disnake.ext.commands import (Cog, Context, Param, command, guild_only,
+                                  slash_command)
 
 import utils
 

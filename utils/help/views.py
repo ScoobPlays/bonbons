@@ -1,9 +1,9 @@
-from disnake.ui import Select, View, button, Button
-from disnake import Embed, MessageInteraction, Color, SelectOption, ButtonStyle
-from disnake.ext.commands import Context, Bot, Group, Command
-
+from disnake import ButtonStyle, Color, Embed, MessageInteraction, SelectOption
+from disnake.ext.commands import Bot, Command, Context, Group
+from disnake.ui import Button, Select, View, button
 
 BUTTON_ROW = 1
+
 
 class HelpMenuPaginator(View):
     def __init__(
@@ -60,48 +60,47 @@ class HelpMenuPaginator(View):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
+
 def _get_options(bot: Bot):
     options = []
 
     for cog in bot.cogs:
 
         cog = bot.get_cog(cog)
-    
+
         if cog.qualified_name in [
             "Jishaku",
             "Owner",
             "Emojis",
             "Tasks",
             "Docs",
-            ]:
+        ]:
             continue
-            
+
         options.append(
             SelectOption(
                 label=cog.qualified_name,
                 description=cog.description,
                 emoji=cog.emoji,
-                )
-                )
+            )
+        )
     options.append(
         SelectOption(
             label="Home", description="Go back to the main help page.", emoji="🏠"
-            )
-            )
+        )
+    )
 
     return options
 
 
 class HelpCommandDropdown(Select):
-    def __init__(
-        self, ctx: Context, bot: Bot, embed: Embed
-    ) -> None:
+    def __init__(self, ctx: Context, bot: Bot, embed: Embed) -> None:
         super().__init__(
             placeholder="Choose a category!",
             min_values=1,
             max_values=1,
             options=_get_options(bot),
-            row=0
+            row=0,
         )
         self.ctx = ctx
         self.bot = bot
@@ -109,9 +108,8 @@ class HelpCommandDropdown(Select):
         self._commands = []
         self.embeds = []
 
-
     async def _get_embed(self, title: str, description: str, _commands) -> list:
-        
+
         """
         Extracts all of a category's commands, groups, then edits them to append them into a list for future usage.
         """
@@ -119,7 +117,15 @@ class HelpCommandDropdown(Select):
         for command in _commands:
             if isinstance(command, Group):
                 for cmd in command.commands:
-                    [self._commands.append({"name": f"{command.name} {cmd.name}", "brief": cmd.description or "..."}) for cmd in command.commands]
+                    [
+                        self._commands.append(
+                            {
+                                "name": f"{command.name} {cmd.name}",
+                                "brief": cmd.description or "...",
+                            }
+                        )
+                        for cmd in command.commands
+                    ]
 
                 self._commands.append(
                     {
@@ -136,7 +142,14 @@ class HelpCommandDropdown(Select):
 
         return self._commands
 
-    async def paginate(self, title: str, description: str, data, per_page: int, interaction: MessageInteraction) -> None:
+    async def paginate(
+        self,
+        title: str,
+        description: str,
+        data,
+        per_page: int,
+        interaction: MessageInteraction,
+    ) -> None:
 
         embeds = []
 
@@ -172,21 +185,23 @@ class HelpCommandDropdown(Select):
     async def callback(self, interaction: MessageInteraction) -> None:
 
         if self.values[0] == "NSFW" and not interaction.channel.is_nsfw():
-            return await interaction.response.send_message("You can only view this category in an NSFW channel.", ephemeral=True)
+            return await interaction.response.send_message(
+                "You can only view this category in an NSFW channel.", ephemeral=True
+            )
 
         await interaction.response.defer()
 
         if self.values[0] == "Home":
-            return await interaction.edit_original_message(content=None, embed=self.embed)        
+            return await interaction.edit_original_message(
+                content=None, embed=self.embed
+            )
 
         cog = self.bot.get_cog(self.values[0])
 
         await self.paginate(
             "Category Help",
             cog.description,
-            await self._get_embed(
-                "Category Help", cog.description, cog.get_commands()
-            ),
+            await self._get_embed("Category Help", cog.description, cog.get_commands()),
             7,
             interaction,
         )

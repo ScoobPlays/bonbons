@@ -76,5 +76,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         if before.content.startswith((".e", ".eval")):
             await bot.process_commands(after)
 
+
 def setup(bot):
     bot.add_cog(Owner(bot))

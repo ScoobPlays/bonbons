@@ -1,4 +1,5 @@
-from disnake import Embed, Color
+from disnake import Color, Embed
+
 
 class HelpEmbed(Embed):
     def __init__(self, **kwargs):

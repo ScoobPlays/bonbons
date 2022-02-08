@@ -1,12 +1,13 @@
-from disnake import Embed, Color
-from disnake.ext.commands import HelpCommand, Group, Command
+from disnake import Color, Embed
+from disnake.ext.commands import Command, Group, HelpCommand
+
 from utils.paginators import Paginator
-from .views import HelpCommandMenu
+
 from .ext import HelpEmbed
+from .views import HelpCommandMenu
 
 # TODO:
 # Add cleaner typehints
-# Better method names
 
 class CustomHelpCommand(HelpCommand):
 
@@ -54,9 +55,10 @@ class CustomHelpCommand(HelpCommand):
         """
 
         embed = HelpEmbed(title="Command Help")
-    
-        embed.description = f"```\n{self.get_command_signature(command)}\n```\n\n{command.description}"
-        
+
+        embed.description = (
+            f"```\n{self.get_command_signature(command)}\n```\n\n{command.description}"
+        )
 
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
@@ -101,8 +103,16 @@ class CustomHelpCommand(HelpCommand):
         for command in _commands:
             if isinstance(command, Group):
                 for cmd in command.commands:
-                    [self._commands.append({"name": f"{command.name} {cmd.name}", "brief": cmd.description or "..."}) for cmd in command.commands]
-                    
+                    [
+                        self._commands.append(
+                            {
+                                "name": f"{command.name} {cmd.name}",
+                                "brief": cmd.description or "...",
+                            }
+                        )
+                        for cmd in command.commands
+                    ]
+
                 self._commands.append(
                     {
                         "name": command.name,
@@ -119,15 +129,10 @@ class CustomHelpCommand(HelpCommand):
                     }
                 )
 
-        await self.paginate(
-            title, description, self._commands, per_page = 7)
+        await self.paginate(title, description, self._commands, per_page=7)
 
     async def send_group_help(self, group: Group):
-        await self.send_help_embed(
-            "Group Help", group.description, group.commands
-        )
+        await self.send_help_embed("Group Help", group.description, group.commands)
 
     async def send_cog_help(self, cog: Group):
-        await self.send_help_embed(
-            "Category Help", cog.description, cog.get_commands()
-        )
+        await self.send_help_embed("Category Help", cog.description, cog.get_commands())
