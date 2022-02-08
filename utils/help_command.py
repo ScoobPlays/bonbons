@@ -5,6 +5,10 @@ from disnake.ext import commands
 
 from .paginators import Paginator
 
+# TODO:
+# Move views/selects to another file/folder
+# Add cleaner typehints
+# Better method names
 
 class HelpCommandSelectOptions(disnake.ui.Select):
     def __init__(
@@ -83,7 +87,7 @@ class HelpCommandSelectOptions(disnake.ui.Select):
             embed = disnake.Embed(
                 title=title,
                 description=desc,
-                colour=disnake.Color.blurple(),
+                colour=disnake.Color.greyple(),
             )
             for res in data[i : i + per_page]:
                 embed.add_field(
@@ -118,10 +122,9 @@ class HelpCommandSelectOptions(disnake.ui.Select):
             return await interaction.edit_original_message(content=None, embed=self.embed)        
 
         cog = self.bot.get_cog(self.values[0])
-        title = cog.qualified_name or "No"
 
         await self.do_paginate(
-            title,
+            "Category Help",
             cog.description,
             await self.get_embed(title, cog.description, cog.get_commands()),
             7,
@@ -157,7 +160,7 @@ class HelpCommandSelectOption(disnake.ui.View):
 class HelpEmbed(disnake.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.color = disnake.Color.blurple()
+        self.color = disnake.Color.greyple()
 
 
 class HelpCommand(commands.HelpCommand):
@@ -175,7 +178,11 @@ class HelpCommand(commands.HelpCommand):
 
     async def send_bot_help(self, mapping):
         how2gethelp = f"""
-        Theres a select menu. Wanna click it?\nAnd if you still want more help, do `help [command]`.\nReplace `[command]` with whatever the command/category/group name is.
+        ```
+        help [command]
+        help [category]
+        help [group]
+        ```
         """
 
         embed = HelpEmbed(
@@ -192,11 +199,10 @@ class HelpCommand(commands.HelpCommand):
         )
 
     async def send_command_help(self, command: commands.Command):
-        embed = HelpEmbed(title=command.name, description=command.description or "...")
-
-        embed.add_field(name="Syntax", value=self.get_command_signature(command))
-        if cog := command.cog:
-            embed.add_field(name="Category", value=cog.qualified_name)
+        embed = HelpEmbed(title="Command Help")
+    
+        embed.description = f"```\n{self.get_command_signature(command))}\n```\n\n{command.description}"
+        
 
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
@@ -210,7 +216,7 @@ class HelpCommand(commands.HelpCommand):
             embed = disnake.Embed(
                 title=title,
                 description=desc,
-                colour=disnake.Color.blurple(),
+                colour=disnake.Color.greyple(),
             )
             for res in data[i : i + per_page]:
                 embed.add_field(
@@ -257,12 +263,11 @@ class HelpCommand(commands.HelpCommand):
         await self.do_paginate(title, description or "...", self.commands, 7)
 
     async def send_group_help(self, group: commands.Group):
-        await self.send_help_embed(group.name, group.description, group.commands)
-
-    async def send_cog_help(self, cog):
-
-        title = cog.qualified_name or "No "
-
         await self.send_help_embed(
-            f"{title} Category", cog.description, cog.get_commands()
+            "Group Help", group.description, group.commands
+        )
+
+    async def send_cog_help(self, cog: commands.Group):
+        await self.send_help_embed(
+            "Category Help", cog.description, cog.get_commands()
         )
