@@ -1,6 +1,7 @@
 from disnake.ui import Select, View
 from disnake import Embed, Interaction, MessageInteraction, Color, Embed, SelectOption
 from disnake.ext.commands import Context, Bot, Group, Command
+from utils.paginators import Paginator
 
 class HelpCommandDropdown(Select):
     def __init__(
