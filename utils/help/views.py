@@ -42,6 +42,7 @@ class HelpCommandDropdown(Select):
             min_values=1,
             max_values=1,
             options=options,
+            row=0
         )
         self.commands = []
         self.embeds = []
@@ -101,9 +102,8 @@ class HelpCommandDropdown(Select):
 
         self.embeds = embeds
 
-        view = View()
+        view = Paginator(self.ctx, self.embeds, timeout=40, embed=True)
         view.add_item(self)
-        #view.add_item(Paginator(self.ctx, self.embeds, timeout=40, embed=True))
 
         view.msg = await interaction.edit_original_message(
             content=None, embed=self.embeds[0], view=view
