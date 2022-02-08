@@ -13,6 +13,7 @@ from utils.rtfm import fuzzy
 
 
 class Python(commands.Cog):
+
     """Commands relating to the python langage."""
 
     def __init__(self, bot):
@@ -182,7 +183,9 @@ class Python(commands.Cog):
 
     @commands.command()
     async def pypi(self, ctx: commands.Context, name: str):
+
         """Finds a package on PyPI."""
+        
         async with ctx.typing():
             async with self.bot.session.get(
                 f"https://pypi.org/pypi/{name}/json"

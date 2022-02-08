@@ -27,7 +27,12 @@ class CustomHelpCommand(HelpCommand):
         return await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping):
-        value = "Click the dropdown and pick an option! Or...\n\n```\nhelp [command]\nhelp [category]\nhelp [group]\n```"
+
+        """
+        Sends the base help command menu.
+        """
+
+        value = "Click the dropdown and pick an option! Or...\n```\nhelp [command]\nhelp [category]\nhelp [group]\n```"
 
         embed = HelpEmbed(
             title="Bonbons Help Page",
@@ -43,6 +48,11 @@ class CustomHelpCommand(HelpCommand):
         )
 
     async def send_command_help(self, command: Command):
+
+        """
+        Sends help about a command.
+        """
+
         embed = HelpEmbed(title="Command Help")
     
         embed.description = f"```\n{self.get_command_signature(command)}\n```\n\n{command.description}"
@@ -54,6 +64,10 @@ class CustomHelpCommand(HelpCommand):
         await self.send(embed=embed)
 
     async def paginate(self, title: str, desc: str, data, *, per_page: int):
+
+        """
+        A method that paginates through lists.
+        """
         embeds = []
 
         for i in range(0, len(data), per_page):
@@ -80,15 +94,15 @@ class CustomHelpCommand(HelpCommand):
 
     async def send_help_embed(self, title: str, description: str, _commands):
 
+        """
+        A helper method that extracts all of a category's commands, groups, then edits them to append them into a list for future usage.
+        """
+
         for command in _commands:
             if isinstance(command, Group):
                 for cmd in command.commands:
-                    self._commands.append(
-                        {
-                            "name": f"{command.name} {cmd.name}",
-                            "brief": cmd.description or cmd.help or "...",
-                        }
-                    )
+                    [self._commands.append({"name": f"{command.name} {cmd.name}", "brief": cmd.description or "..."}) for cmd in command.commands]
+                    
                 self._commands.append(
                     {
                         "name": command.name,
@@ -97,7 +111,7 @@ class CustomHelpCommand(HelpCommand):
                 )
                 break
 
-            if isinstance(command, commands.Command):
+            if isinstance(command, Command):
                 self._commands.append(
                     {
                         "name": command.name,

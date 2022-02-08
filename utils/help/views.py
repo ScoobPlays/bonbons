@@ -7,20 +7,13 @@ BUTTON_ROW = 1
 
 class HelpMenuPaginator(View):
     def __init__(
-        self, ctx: Context, messages: list, *, embed: bool = False, timeout: int = 60, row: int=0
+        self, ctx: Context, messages: list, *, embed: bool = False, timeout: int = 60
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
         self.embed = embed
         self.current_page = 0
         self.ctx = ctx
-        self.row = row
-        self.add_rows()
-
-    def add_rows(self) -> None:
-        global BUTTON_ROW
-
-        BUTTON_ROW = self.row
 
     async def on_timeout(self) -> None:
         await self.msg.edit(view=None)
@@ -126,7 +119,7 @@ class HelpCommandDropdown(Select):
         for command in _commands:
             if isinstance(command, Group):
                 for cmd in command.commands:
-                    [self._commands.append({"name": f"{command.name} {cmd.name}", "brief": cmd.description}) for cmd in command.commands]
+                    [self._commands.append({"name": f"{command.name} {cmd.name}", "brief": cmd.description or "..."}) for cmd in command.commands]
 
                 self._commands.append(
                     {
@@ -138,7 +131,7 @@ class HelpCommandDropdown(Select):
 
             if isinstance(command, Command):
                 self._commands.append(
-                    {"name": command.name, "brief": command.description or command.help}
+                    {"name": command.name, "brief": command.description or "..."}
                 )
 
         return self._commands
@@ -166,14 +159,15 @@ class HelpCommandDropdown(Select):
             embed.set_footer(text=f"Page {index+1}/{len(embeds)}")
 
         self.embeds = embeds
+        print(self.embeds)
 
-        view = HelpMenuPaginator(self.ctx, self.embeds, timeout=60, embed=True, row=1)
+        view = HelpMenuPaginator(self.ctx, self.embeds, timeout=60, embed=True)
         view.add_item(self)
 
         view.msg = await interaction.edit_original_message(
             content=None, embed=self.embeds[0], view=view
         )
-        self.embeds = None
+        self.embeds = []
 
     async def callback(self, interaction: MessageInteraction) -> None:
 
