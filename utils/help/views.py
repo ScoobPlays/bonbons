@@ -103,7 +103,7 @@ class HelpCommandDropdown(Select):
 
         self.embeds = embeds
 
-        view = Paginator(self.ctx, self.embeds, timeout=40, embed=True)
+        view = Paginator(self.ctx, self.embeds, timeout=40, embed=True, row=1)
         view.add_item(self)
 
         view.msg = await interaction.edit_original_message(

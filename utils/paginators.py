@@ -10,18 +10,26 @@ from disnake import (
 from disnake.ext.commands import Context
 from disnake.ui import Button, View, button
 
+BUTTON_ROW = 0 
 
 class Paginator(View):
     def __init__(
-        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 60
+        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 60, row: int=0
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
         self.embed = embed
         self.current_page = 0
         self.ctx = ctx
+        self.row = row
+        self.add_rows()
 
-    async def on_timeout(self):
+    def add_rows(self) -> None:
+        global BUTTON_ROW
+
+        BUTTON_ROW = self.row
+
+    async def on_timeout(self) -> None:
         await self.msg.edit(view=None)
 
     async def interaction_check(self, inter: ApplicationCommandInteraction) -> bool:
@@ -46,22 +54,22 @@ class Paginator(View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-    @button(label="<<", style=ButtonStyle.grey)
+    @button(label="<<", style=ButtonStyle.grey, row=BUTTON_ROW)
     async def back_two(self, button: Button, inter: Interaction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @button(label="Back", style=ButtonStyle.blurple)
+    @button(label="Back", style=ButtonStyle.blurple, row=BUTTON_ROW)
     async def back_one(self, button: Button, inter: Interaction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @button(label="Next", style=ButtonStyle.blurple)
+    @button(label="Next", style=ButtonStyle.blurple, row=BUTTON_ROW)
     async def next_one(self, button: Button, inter: Interaction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @button(label="️>>", style=ButtonStyle.grey)
+    @button(label="️>>", style=ButtonStyle.grey, row=BUTTON_ROW)
     async def next_two(self, button: Button, inter: Interaction):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
