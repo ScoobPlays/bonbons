@@ -10,7 +10,7 @@ from disnake import (
 from disnake.ext.commands import Context
 from disnake.ui import Button, View, button
 
-BUTTON_ROW = 0 
+BUTTON_ROW = 1
 
 class Paginator(View):
     def __init__(
