@@ -127,7 +127,9 @@ class HelpCommandSelectOptions(disnake.ui.Select):
         await self.do_paginate(
             "Category Help",
             cog.description,
-            await self.get_embed(title, cog.description, cog.get_commands()),
+            await self.get_embed(
+                "Category Help", cog.description, cog.get_commands()
+            ),
             7,
             interaction,
         )
