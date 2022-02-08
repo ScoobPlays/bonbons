@@ -1,4 +1,4 @@
-from disnake.ui import Select, View, button
+from disnake.ui import Select, View, button, Button
 from disnake import Embed, MessageInteraction, Color, SelectOption, ButtonStyle
 from disnake.ext.commands import Context, Bot, Group, Command
 
