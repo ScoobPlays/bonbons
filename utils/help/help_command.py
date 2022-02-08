@@ -1,6 +1,6 @@
 from disnake import Embed, Color
 from disnake.ext.commands import HelpCommand, Group, Command
-from .paginators import Paginator
+from utils.paginators import Paginator
 from .views import HelpCommandMenu
 from .ext import HelpEmbed
 
