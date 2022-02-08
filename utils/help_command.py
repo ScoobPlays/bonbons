@@ -103,8 +103,9 @@ class HelpCommandSelectOptions(disnake.ui.Select):
 
         self.embeds = embeds
 
-        view = Paginator(self.ctx, self.embeds, timeout=40, embed=True)
+        view = disnake.ui.View()
         view.add_item(self)
+        view.add_item(Paginator(self.ctx, self.embeds, timeout=40, embed=True))
 
         view.msg = await inter.edit_original_message(
             content=None, embed=self.embeds[0], view=view
