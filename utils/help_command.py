@@ -202,7 +202,7 @@ class HelpCommand(commands.HelpCommand):
     async def send_command_help(self, command: commands.Command):
         embed = HelpEmbed(title="Command Help")
     
-        embed.description = f"```\n{self.get_command_signature(command))}\n```\n\n{command.description}"
+        embed.description = f"```\n{self.get_command_signature(command)}\n```\n\n{command.description}"
         
 
         if command.aliases:
