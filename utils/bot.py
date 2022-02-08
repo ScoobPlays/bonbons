@@ -23,14 +23,13 @@ from disnake.ext.commands import (
 )
 from motor import motor_asyncio
 
-from .help_command import HelpCommand
+from .help.help_command import CustomHelpCommand
 
 # TODO: Implement caching in `get_prefix_from_database`
 
 
 class Bonbons(Bot):
     def __init__(self, **kwargs) -> None:
-
         super().__init__(
             command_prefix=self.get_prefix_from_db,
             case_insensitive=True,
@@ -41,9 +40,8 @@ class Bonbons(Bot):
             ],
             intents=Intents.all(),
             allowed_mentions=AllowedMentions(everyone=False, roles=False),
-            help_command=HelpCommand(),
+            help_command=CustomHelpCommand(),
             strip_after_prefix=True,
-            activity=Activity(type=ActivityType.listening, name="you ❤️"),
             **kwargs,
         )
         self.uptime = datetime.now().timestamp()

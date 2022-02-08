@@ -20,6 +20,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             "nextcord": disnake,
             "hikari": disnake,
             "nestcord": disnake,
+            "discord": disnake,
         }
 
     async def cog_check(self, ctx: commands.Context) -> int:
@@ -70,6 +71,10 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         )
         await ctx.reply(embed=embed)
 
+    @commands.Cog.listener()
+    async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
+        if before.content.startswith((".e", ".eval")):
+            await bot.process_commands(after)
 
 def setup(bot):
     bot.add_cog(Owner(bot))
