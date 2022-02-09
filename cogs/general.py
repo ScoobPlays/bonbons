@@ -140,7 +140,7 @@ class General(Cog, description="General commands."):
                     embed.set_footer(text=f"Message edited at")
                     embed.set_author(
                         name=message["author"],
-                        icon_url=message["msg"].author._avatar.url,
+                        icon_url=message["msg"].author.display_avatar.url,
                     )
                     return await ctx.send(embed=embed)
 
