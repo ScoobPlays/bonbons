@@ -44,7 +44,7 @@ class General(Cog, description="General commands."):
             return
 
         self._snipe_cache.append(
-            {"author": str(message.author), "channel": message.channel.id, "content": message.content, "timestmap": datetime.utcnow(), "msg": message}
+            {"author": str(message.author), "channel": message.channel.id, "content": message.content, "timestamp": datetime.utcnow(), "msg": message}
         ) 
 
     @Cog.listener()
@@ -53,8 +53,8 @@ class General(Cog, description="General commands."):
         if after.author.bot:
             return
 
-        self._snipe_cache.append(
-            {"author": str(before.author), "channel": before.channel.id, "content": before.content, "timestmap": datetime.utcnow(), "msg": before}
+        self._edit_cache.append(
+            {"author": str(before.author), "channel": before.channel.id, "content": before.content, "timestamp": datetime.utcnow(), "msg": before}
         ) 
 
     @Cog.listener()
