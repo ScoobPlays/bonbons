@@ -82,7 +82,6 @@ class General(Cog, description="General commands."):
         if message.mentions:
             for member in message.mentions:
                 mention_data = await afk_db.find_one({"_id": member.id})
-                print(mention_data)
                 if mention_data:
                     if mention_data["message"] == message.id:
                         return
@@ -120,6 +119,9 @@ class General(Cog, description="General commands."):
 
         """Tells you most recently edited message."""
 
+        print(self._edit_cache)
+
+
         if len(self._edit_cache) == 0:
             return await ctx.send("There currently are no recently edited messages.")
 
@@ -148,6 +150,8 @@ class General(Cog, description="General commands."):
     async def snipe(self, ctx: Context, id: int=0):
        
         """Tells you the most recently deleted message."""
+
+        print(self._snipe_cache)
 
         if len(self._snipe_cache) == 0:
             return await ctx.send("No message was deleted, or the message was not in my cache.")
