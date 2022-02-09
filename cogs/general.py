@@ -17,8 +17,8 @@ import utils
 class General(Cog, description="General commands."):
     def __init__(self, bot):
         self.bot = bot
-        self._snipe_cache = {} 
-        self._edit_cache = {}
+        self._snipe_cache = []
+        self._edit_cache = []
         self.emoji = "🙌"
         self.afk = self.bot.mongo["discord"]["afk"]
 
