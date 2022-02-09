@@ -609,7 +609,7 @@ class General(Cog, description="General commands."):
                 return
 
             await afk_db.insert_one(
-                {"_id": ctx.author.id, "timestamp": int(datetime.utcnow().timestamp())}
+                {"_id": ctx.author.id, "timestamp": int(datetime.utcnow().timestamp()), "message": ctx.message.id}
             )
             await ctx.send(
                 embed=Embed(
