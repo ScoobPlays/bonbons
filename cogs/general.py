@@ -121,8 +121,8 @@ class General(Cog, description="General commands."):
 
         try:
             message = self._edit_cache[id]
-        except:
-            message = self._edit_cache[-1]
+        except Exception:
+            message = self._edit_cache[len(self._edit_cache)-1]
 
         try:
             if message["channel"] == ctx.channel.id:
@@ -151,8 +151,8 @@ class General(Cog, description="General commands."):
 
         try:
             message = self._snipe_cache[id]
-        except:
-            message = self._snipe_cache[-1]
+        except Exception:
+            message = self._snipe_cache[len(self._snipe_cache)-1]
 
         try:
             if message["channel"] == ctx.channel.id:
