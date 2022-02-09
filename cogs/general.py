@@ -119,13 +119,15 @@ class General(Cog, description="General commands."):
 
         """Tells you most recently edited message."""
 
+        if len(self._edit_cache) == 0:
+            return await ctx.send("There currently are no recently edited messages.")
+
         try:
             message = self._edit_cache[id]
         except Exception:
-            message = self._edit_cache[len(self._edit_cache)-1]
+            message = self._edit_cache[-1]
 
-        try:
-            if message["channel"] == ctx.channel.id:
+        if message["channel"] == ctx.channel.id:
 
                     embed = Embed(
                         description=message["content"],
@@ -139,23 +141,22 @@ class General(Cog, description="General commands."):
                     )
                     return await ctx.send(embed=embed)
 
-        except Exception:
-            await ctx.send(
-                "There currently are no recently edited messages.",
-            )
+
 
     @command()
     async def snipe(self, ctx: Context, id: int=0):
        
         """Tells you the most recently deleted message."""
 
+        if len(self._snipe_cache) == 0:
+            return await ctx.send("No message was deleted, or the message was not in my cache.")
+
         try:
             message = self._snipe_cache[id]
         except Exception:
-            message = self._snipe_cache[len(self._snipe_cache)-1]
+            message = self._snipe_cache[-1]
 
-        try:
-            if message["channel"] == ctx.channel.id:
+        if message["channel"] == ctx.channel.id:
 
                     embed = Embed(
                         description=message["content"],
@@ -168,11 +169,6 @@ class General(Cog, description="General commands."):
                         icon_url=message["msg"].author.display_avatar.url,
                     )
                     return await ctx.send(embed=embed)
-
-        except Exception:
-            await ctx.send(
-                "No message was deleted, or the message was not in my cache.",
-            )
 
     @command()
     async def joke(self, ctx: Context):
