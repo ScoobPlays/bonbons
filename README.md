@@ -3,5 +3,5 @@
 
 ## Credits
 - [Kraots](https://github.com/Kraots/) for the help command, paginator.
-- [Geno](https://github.com/thegenocides) Black.
+- [Geno](https://github.com/thegenocides) for formatting the code.
 - Ninja/Soap for giving me ideas.
