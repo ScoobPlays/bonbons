@@ -6,16 +6,10 @@ from datetime import datetime
 from typing import Optional
 
 import aiohttp
-from disnake import (
-    AllowedMentions,
-    ApplicationCommandInteraction,
-    Color,
-    Embed,
-    Member,
-    Message,
-    TextChannel,
-)
-from disnake.ext.commands import Cog, Context, Param, command, guild_only, slash_command
+from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
+                     Embed, Member, Message, TextChannel)
+from disnake.ext.commands import (Cog, Context, Param, command, guild_only,
+                                  slash_command)
 
 import utils
 
@@ -50,14 +44,8 @@ class General(Cog, description="General commands."):
             return
 
         self._snipe_cache.append(
-            {
-                "author": str(message.author),
-                "channel": message.channel.id,
-                "content": message.content,
-                "timestamp": datetime.utcnow(),
-                "msg": message,
-            }
-        )
+            {"author": str(message.author), "channel": message.channel.id, "content": message.content, "timestamp": datetime.utcnow(), "msg": message}
+        ) 
 
     @Cog.listener()
     async def on_message_edit(self, before: Message, after: Message):
@@ -66,18 +54,12 @@ class General(Cog, description="General commands."):
             return
 
         self._edit_cache.append(
-            {
-                "author": str(before.author),
-                "channel": before.channel.id,
-                "content": before.content,
-                "timestamp": datetime.utcnow(),
-                "msg": before,
-            }
-        )
+            {"author": str(before.author), "channel": before.channel.id, "content": before.content, "timestamp": datetime.utcnow(), "msg": before}
+        ) 
 
     @Cog.listener()
     async def on_message(self, message: Message):
-
+        
         if not isinstance(message.channel, TextChannel):
             return
 
@@ -133,11 +115,9 @@ class General(Cog, description="General commands."):
                     break
 
     @command()
-    async def editsnipe(self, ctx: Context, id: int = None):
+    async def editsnipe(self, ctx: Context, id: int=None):
 
         """Tells you most recently edited message."""
-
-        print(self._edit_cache)
 
         if len(self._edit_cache) == 0:
             return await ctx.send("There currently are no recently edited messages.")
@@ -149,29 +129,27 @@ class General(Cog, description="General commands."):
 
         if message["channel"] == ctx.channel.id:
 
-            embed = Embed(
-                description=message["content"],
-                timestamp=message["timestamp"],
-                color=Color.blurple(),
-            )
-            embed.set_footer(text=f"Message edited at")
-            embed.set_author(
-                name=message["author"],
-                icon_url=message["msg"].author.display_avatar.url,
-            )
-            return await ctx.send(embed=embed)
+                    embed = Embed(
+                        description=message["content"],
+                        timestamp=message["timestamp"],
+                        color=Color.blurple(),
+                    )
+                    embed.set_footer(text=f"Message edited at")
+                    embed.set_author(
+                        name=message["author"],
+                        icon_url=message["msg"].author.display_avatar.url,
+                    )
+                    return await ctx.send(embed=embed)
+
+
 
     @command()
-    async def snipe(self, ctx: Context, id: int = 0):
-
+    async def snipe(self, ctx: Context, id: int=None):
+       
         """Tells you the most recently deleted message."""
 
-        print(self._snipe_cache)
-
         if len(self._snipe_cache) == 0:
-            return await ctx.send(
-                "No message was deleted, or the message was not in my cache."
-            )
+            return await ctx.send("No message was deleted, or the message was not in my cache.")
 
         try:
             message = self._snipe_cache[id]
@@ -180,17 +158,17 @@ class General(Cog, description="General commands."):
 
         if message["channel"] == ctx.channel.id:
 
-            embed = Embed(
-                description=message["content"],
-                timestamp=message["timestamp"],
-                color=Color.blurple(),
-            )
-            embed.set_footer(text=f"Message deleted at")
-            embed.set_author(
-                name=message["author"],
-                icon_url=message["msg"].author.display_avatar.url,
-            )
-            return await ctx.send(embed=embed)
+                    embed = Embed(
+                        description=message["content"],
+                        timestamp=message["timestamp"],
+                        color=Color.blurple(),
+                    )
+                    embed.set_footer(text=f"Message deleted at")
+                    embed.set_author(
+                        name=message["author"],
+                        icon_url=message["msg"].author.display_avatar.url,
+                    )
+                    return await ctx.send(embed=embed)
 
     @command()
     async def joke(self, ctx: Context):
@@ -630,11 +608,7 @@ class General(Cog, description="General commands."):
                 return
 
             await afk_db.insert_one(
-                {
-                    "_id": ctx.author.id,
-                    "timestamp": int(datetime.utcnow().timestamp()),
-                    "message": ctx.message.id,
-                }
+                {"_id": ctx.author.id, "timestamp": int(datetime.utcnow().timestamp()), "message": ctx.message.id}
             )
             await ctx.send(
                 embed=Embed(
