@@ -7,7 +7,7 @@ from typing import Optional
 
 import aiohttp
 from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
-                     Embed, Member, Message, TextChannel, utils)
+                     Embed, Member, Message, TextChannel)
 from disnake.ext.commands import (Cog, Context, Param, command, guild_only,
                                   slash_command)
 
@@ -44,7 +44,7 @@ class General(Cog, description="General commands."):
             return
 
         self._snipe_cache.append(
-            {"author": str(message.author), "channel": message.channel.id, "content": message.content, "timestmap": utils.utcnow(), "msg": message}
+            {"author": str(message.author), "channel": message.channel.id, "content": message.content, "timestmap": datetime.utcnow(), "msg": message}
         ) 
 
     @Cog.listener()
@@ -54,7 +54,7 @@ class General(Cog, description="General commands."):
             return
 
         self._snipe_cache.append(
-            {"author": str(before.author), "channel": before.channel.id, "content": before.content, "timestmap": utils.utcnow(), "msg": before}
+            {"author": str(before.author), "channel": before.channel.id, "content": before.content, "timestmap": datetime.utcnow(), "msg": before}
         ) 
 
     @Cog.listener()
