@@ -9,6 +9,7 @@ from .views import HelpCommandMenu
 # TODO:
 # Add cleaner typehints
 
+
 class CustomHelpCommand(HelpCommand):
 
     """
