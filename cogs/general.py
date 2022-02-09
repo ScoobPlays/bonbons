@@ -82,6 +82,7 @@ class General(Cog, description="General commands."):
         if message.mentions:
             for member in message.mentions:
                 mention_data = await afk_db.find_one({"_id": member.id})
+                print(mention_data)
                 if mention_data:
                     if mention_data["message"] == message.id:
                         return
