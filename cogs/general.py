@@ -17,8 +17,8 @@ import utils
 class General(Cog, description="General commands."):
     def __init__(self, bot):
         self.bot = bot
-        self.snipe_cache = None
-        self.before = None
+        self._snipe_cache = {} 
+        self._edit_cache = {}
         self.emoji = "🙌"
         self.afk = self.bot.mongo["discord"]["afk"]
 
@@ -43,7 +43,9 @@ class General(Cog, description="General commands."):
         if not isinstance(message.channel, TextChannel):
             return
 
-        self.snipe_cache = message
+        self._snipe_cache.append(
+            {"author": str(message.author), "channel": message.channel.id, "content": message.content, "timestmap": disnake.utils.utcnow(), "msg": message}
+        ) 
 
     @Cog.listener()
     async def on_message_edit(self, before: Message, after: Message):
@@ -51,10 +53,13 @@ class General(Cog, description="General commands."):
         if after.author.bot:
             return
 
-        self.before = before
+        self._snipe_cache.append(
+            {"author": str(before.author), "channel": before.channel.id, "content": before.content, "timestmap": disnake.utils.utcnow(), "msg": before}
+        ) 
 
     @Cog.listener()
     async def on_message(self, message: Message):
+        
         if not isinstance(message.channel, TextChannel):
             return
 
@@ -110,25 +115,29 @@ class General(Cog, description="General commands."):
                     break
 
     @command()
-    async def editsnipe(self, ctx: Context):
+    async def editsnipe(self, ctx: Context, id: int=None):
 
-        """Snipes most recently edited message."""
+        """Tells you most recently edited message."""
 
         try:
-            if self.before.guild.id == ctx.guild.id:
-                if self.before.channel.id == ctx.channel.id:
+            message = self._edit_cache[id]
+        except:
+            message = self._edit_cache[-1]
 
-                    before = Embed(
-                        description=f"{self.before.content}",
-                        timestamp=datetime.utcnow(),
+        try:
+            if message["channel"] == ctx.channel.id:
+
+                    embed = Embed(
+                        description=message["content"],
+                        timestamp=message["timestamp"],
                         color=Color.blurple(),
                     )
-                    before.set_footer(text=f"Message from {self.before.author}")
-                    before.set_author(
-                        name=f"{self.before.author}",
-                        icon_url=self.before.author.display_avatar,
+                    embed.set_footer(text=f"Message edited at")
+                    embed.set_author(
+                        name=message["author"],
+                        icon_url=message["msg"].author.display.url,
                     )
-                    await ctx.send(embed=before)
+                    return await ctx.send(embed=embed)
 
         except Exception:
             await ctx.send(
@@ -136,41 +145,47 @@ class General(Cog, description="General commands."):
             )
 
     @command()
-    async def snipe(self, ctx: Context):
-        """Snipes most recently deleted message."""
+    async def snipe(self, ctx: Context, id: int=0):
+       
+        """Tells you the most recently deleted message."""
 
         try:
-            if self.snipe_cache.guild.id == ctx.guild.id:
-                if self.snipe_cache.channel.id == ctx.channel.id:
+            message = self._snipe_cache[id]
+        except:
+            message = self._snipe_cache[-1]
+
+        try:
+            if message["channel"] == ctx.channel.id:
 
                     embed = Embed(
-                        description=f"{self.snipe_cache.content}",
-                        timestamp=datetime.utcnow(),
+                        description=message["content"],
+                        timestamp=message["timestamp"],
                         color=Color.blurple(),
                     )
-                    embed.set_footer(text=f"Message from {self.snipe_cache.author}")
+                    embed.set_footer(text=f"Message deleted at")
                     embed.set_author(
-                        name=f"{self.snipe_cache.author}",
-                        icon_url=self.snipe_cache.author.display_avatar,
+                        name=message["author"],
+                        icon_url=message["msg"].author.display_avatar.url,
                     )
-                    await ctx.send(embed=embed)
+                    return await ctx.send(embed=embed)
 
-        except Exception as e:
+        except Exception:
             await ctx.send(
                 "No message was deleted, or the message was not in my cache.",
             )
-            print(e)
 
-    @command(help="Gives a joke.")
+    @command()
     async def joke(self, ctx: Context):
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get("https://some-random-api.ml/joke") as r:
-                data = await r.json(content_type=None)
-                await ctx.send(data["joke"])
+
+        """Tells you a random joke!"""
+
+        async with self.bot.session.get("https://some-random-api.ml/joke") as payload:
+            data = await payload.json(content_type=None)
+            return await ctx.send(data["joke"])
 
     @slash_command()
     async def base64(self, inter: ApplicationCommandInteraction):
-        pass
+        ...
 
     @base64.sub_command()
     async def encode(
