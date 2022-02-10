@@ -670,7 +670,7 @@ class General(Cog, description="General commands."):
             result = simple_eval(expressions)
             return await ctx.send(f"{result: ,}")
 
-        except Excpetion:
+        except Exception:
             return await ctx.send("I could not evalute expression your experession(s).")
 
 
