@@ -1,6 +1,6 @@
 import copy
 
-from disnake import DMChannel, Message
+from disnake import DMChannel, Message, Embed
 from disnake.ext.commands import Bot, Cog, Context, group, guild_only
 
 from utils.paginators import TagPages
@@ -10,6 +10,7 @@ from datetime import datetime
 
 
 class Tags(Cog):
+
     """Tag-related commands."""
 
     def __init__(self, bot: Bot):
@@ -18,10 +19,19 @@ class Tags(Cog):
         self.base = self.bot.mongo["tags"]
         self._tags_cache = []
 
+    def prepare_embed(self, ctx: Context, data: dict) -> Embed:
+
+        owner = self.bot.get_user(data["owner"]) or await self.bot.fetch_user(data["owner"])
+        embed = Embed(title=data["name"])
+        embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
+        embed.add_field(name="Owner", value=owner.mention)
+
+        return embed
+
     async def get_tag(self, ctx: Context, name: str):
         db = self.base[str(ctx.guild.id)]
 
-        tag = await db.find_one({"name": name})
+        tag = await db.find_one({"name": name.lower()})
 
         if tag is not None:
             return await ctx.send(tag["content"])
@@ -99,7 +109,7 @@ class Tags(Cog):
         if tag is None:
             await ctx.send_help("tag")
 
-    @tag.command(aliases=["build"])
+    @tag.command(name="create", aliases=["build"])
     @guild_only()
     async def create(self, ctx: Context, name: str, *, content: str):
 
@@ -109,11 +119,27 @@ class Tags(Cog):
 
         await self.create_tag(ctx, name, content)
 
-    @tag.command(aliases=["modify"])
+    @tag.command(name="info", aliases=["information"])
+    @guild_only()
+    async def info(self, ctx: Context, *, name: str):
+
+        """Tells you information about a tag.""""
+
+        db = self.base[str(ctx.guild.id)]
+
+        tag_info = await db.find_one({"name": name.lower()})
+
+        if tag_info is not None:
+            embed = self.prepare_embed(ctx, tag_info)
+
+        if tag_info is None:
+            return await ctx.reply("Not a valid tag!")
+
+    @tag.command(name="edit", aliases=["modify"])
     @guild_only()
     async def edit(self, ctx: Context, name: str, *, content: str):
 
-        """Edits a tag you own."""
+        """Tries to edit a tag you own."""
 
         await self.edit_tag(ctx, name, content)
 
@@ -124,8 +150,9 @@ class Tags(Cog):
         """Tells you all the tags in the current server."""
 
         db = self.base[str(ctx.guild.id)]
+        data = await db.find().to_list(100000)
 
-        view = TagPages(await db.find().to_list(10000))
+        view = TagPages(data)
 
         await view.start(ctx, per_page=20)
 
