@@ -213,7 +213,7 @@ class Calculator(disnake.ui.View):
     )
     async def clear(self, button, inter):
         await inter.response.defer()
-        await inter.edit_original_message(content=self.strig)
+        await inter.edit_original_message(content=self.string)
 
     @disnake.ui.button(
         label="Stop", style=disnake.ButtonStyle.red, row=3, custom_id="calc:stop"
