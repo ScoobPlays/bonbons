@@ -136,6 +136,8 @@ class CustomHelpCommand(HelpCommand):
                 )
 
         await self.paginate(title, description, self._commands, per_page=7)
+        
+        self._commands = []
 
     async def send_group_help(self, group: Group):
         await self.send_help_embed("Group Help", group.description, group.commands)
