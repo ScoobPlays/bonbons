@@ -129,6 +129,7 @@ class Tags(Cog):
 
         if tag_info is not None:
             embed = await self.prepare_embed(ctx, tag_info)
+            return await ctx.send(embed=embed)
 
         if tag_info is None:
             return await ctx.reply("Not a valid tag!")
