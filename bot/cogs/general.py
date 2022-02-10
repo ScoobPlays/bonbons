@@ -649,7 +649,7 @@ class General(Cog, description="General commands."):
 
         await ctx.send(random.choice(args))
 
-    @command(name="bcalc", aliases=["bcalculator"]])
+    @command(name="bcalc", aliases=["bcalculator"])
     async def button_calculator(self, ctx: Context):
 
         """
