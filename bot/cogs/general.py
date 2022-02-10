@@ -47,20 +47,28 @@ class General(Cog, description="General commands."):
 
     @base64_group.command()
     async def encode(self, ctx: Context, *, string: str):
+
+        """
+        Encodes a string.
+        """
         
         try:
             return await ctx.send(self.base64_encode(string))
         except Exception:
-            return await ctx.send("Could not encode '{string}'.")
+            return await ctx.send(f"Could not encode '{string}'.")
 
     @base64_group.command()
     async def decode(self, ctx: Context, *, string: str):
+
+        """
+        Decodes a base64 string
+        """
         
         try:
             return await ctx.send(self.base64_decode(string))
-            
+
         except Exception:
-            return await ctx.send("Could not decode '{string}'.")
+            return await ctx.send(f"Could not decode '{string}'.")
 
     @Cog.listener()
     async def on_message_delete(self, message: Message):

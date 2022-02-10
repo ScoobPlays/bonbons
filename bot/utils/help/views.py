@@ -116,15 +116,13 @@ class HelpCommandDropdown(Select):
 
         for command in _commands:
             if isinstance(command, Group):
-                [
+                for cmd in command.commands:
                     self._commands.append(
                         {
                             "name": f"{command.name} {cmd.name}",
                             "brief": cmd.description or cmd.help or "...",
                         }
                     )
-                    for cmd in command.commands
-                ]
 
                 self._commands.append(
                     {
@@ -136,7 +134,10 @@ class HelpCommandDropdown(Select):
 
             if isinstance(command, Command):
                 self._commands.append(
-                    {"name": command.name, "brief": command.description or command.help or "..."}
+                    {
+                        "name": command.name,
+                        "brief": command.description or command.help or "..."
+                    }
                 )
 
         return self._commands
