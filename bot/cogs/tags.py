@@ -101,7 +101,7 @@ class Tags(Cog):
     @guild_only()
     async def tag(self, ctx: Context, tag: str = None):
 
-        """Sends the help embed for the tag command group. Sends a tag's content if a valid tag name was passed."""
+        """Sends the help embed for the tag group, sends a tag's content if a valid tag name was passed."""
 
         if tag is not None:
             await self.get_tag(ctx, tag)
@@ -113,9 +113,7 @@ class Tags(Cog):
     @guild_only()
     async def create(self, ctx: Context, name: str, *, content: str):
 
-        """
-        Creates a tag.
-        """
+        """Creates a tag."""
 
         await self.create_tag(ctx, name, content)
 
@@ -123,7 +121,7 @@ class Tags(Cog):
     @guild_only()
     async def info(self, ctx: Context, *, name: str):
 
-        """Tells you information about a tag.""""
+        """Tells you information about a tag."""
 
         db = self.base[str(ctx.guild.id)]
 
