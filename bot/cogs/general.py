@@ -11,8 +11,8 @@ from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
 from disnake.ext.commands import (Cog, Context, Param, command, guild_only,
                                   slash_command)
 
-import utils
-
+from utils import Calculator, Paginator
+from simpleeval import simple_eval, FeatureNotAvailable
 
 class General(Cog, description="General commands."):
     def __init__(self, bot):
@@ -567,7 +567,7 @@ class General(Cog, description="General commands."):
                         emb = Embed(description=name, color=Color.blurple())
                         embeds.append(emb)
 
-                    view = utils.Paginator(ctx, embeds, embed=True)
+                    view = Paginator(ctx, embeds, embed=True)
                     view.msg = await ctx.send(
                         embed=embeds[0],
                         view=view,
@@ -649,10 +649,32 @@ class General(Cog, description="General commands."):
 
         await ctx.send(random.choice(args))
 
-    @command(name="calculator", aliases=["calc"])
-    async def calculator(self, ctx: Context):
-        view = utils.Calculator()
+    @command(name="bcalc", aliases=["bcalculator"]])
+    async def button_calculator(self, ctx: Context):
+
+        """
+        A custom calculator made using buttons.
+        """
+
+        view =Calculator()
         await ctx.send("Click a button!", view=view)
+
+    @command(name="calc")
+    async def calc(self, ctx: Context, *, expressions: str):
+
+        """
+        Tells you the result of expressions.
+        """
+
+        try:
+            result = simple_eval(expressions)
+            return await ctx.send(result)
+
+        except FeatureNotAvailable:
+            return await ctx.send("I could not evalute expression your experession(s).")
+
+
+
 
 
 def setup(bot):
