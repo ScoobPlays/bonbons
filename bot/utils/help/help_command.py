@@ -25,6 +25,10 @@ class CustomHelpCommand(HelpCommand):
         )
         self._commands = []
 
+    @property
+    def ctx(self):
+        return self.context
+        
     async def send(self, **kwargs):
         return await self.get_destination().send(**kwargs)
 
@@ -71,6 +75,7 @@ class CustomHelpCommand(HelpCommand):
         """
         A method that paginates through lists.
         """
+        
         embeds = []
 
         for i in range(0, len(data), per_page):
@@ -136,4 +141,8 @@ class CustomHelpCommand(HelpCommand):
         await self.send_help_embed("Group Help", group.description, group.commands)
 
     async def send_cog_help(self, cog: Group):
+        
+        if cog.qualifed_name == "NSFW" and not self.ctx.channel.is_nsfw():
+            return await self.send("You can only view this category in an NSFW channel.")
+        
         await self.send_help_embed("Category Help", cog.description, cog.get_commands())
