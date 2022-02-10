@@ -19,7 +19,7 @@ class Tags(Cog):
         self.base = self.bot.mongo["tags"]
         self._tags_cache = []
 
-    def prepare_embed(self, ctx: Context, data: dict) -> Embed:
+    async def prepare_embed(self, ctx: Context, data: dict) -> Embed:
 
         owner = self.bot.get_user(data["owner"]) or await self.bot.fetch_user(data["owner"])
         embed = Embed(title=data["name"])
