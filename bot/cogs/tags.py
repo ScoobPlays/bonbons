@@ -4,6 +4,7 @@ from disnake import DMChannel, Message
 from disnake.ext.commands import Bot, Cog, Context, group, guild_only
 
 from utils.paginators import TagPages
+from datetime import datetime
 
 # TODO: implement difflib in `delete`/`get`
 
@@ -78,6 +79,7 @@ class Tags(Cog):
             "owner": ctx.author.id,
             "name": name,
             "content": content,
+            "created": int(datetime.now().timestamp())
         }
 
         await db.insert_one(tag_data)
@@ -88,27 +90,38 @@ class Tags(Cog):
     @group(name="tag", invoke_without_command=True, case_insensitive=True)
     @guild_only()
     async def tag(self, ctx: Context, tag: str = None):
-        """Sends the help embed for the tag command group. If an argument was passed then it'll send the tag content."""
-        if tag is None:
-            await ctx.send_help("tag")
+
+        """Sends the help embed for the tag command group. Sends a tag's content if a valid tag name was passed."""
+
         if tag is not None:
             await self.get_tag(ctx, tag)
 
+        if tag is None:
+            await ctx.send_help("tag")
+
     @tag.command(aliases=["build"])
+    @guild_only()
     async def create(self, ctx: Context, name: str, *, content: str):
+
         """
         Creates a tag.
         """
+
         await self.create_tag(ctx, name, content)
 
     @tag.command(aliases=["modify"])
+    @guild_only()
     async def edit(self, ctx: Context, name: str, *, content: str):
+
         """Edits a tag you own."""
+
         await self.edit_tag(ctx, name, content)
 
     @tag.command(aliases=["list"])
+    @guild_only()
     async def all(self, ctx: Context):
-        """Sends all the tags in the current server."""
+        
+        """Tells you all the tags in the current server."""
 
         db = self.base[str(ctx.guild.id)]
 
@@ -117,8 +130,11 @@ class Tags(Cog):
         await view.start(ctx, per_page=20)
 
     @tag.command(aliases=["remove"])
+    @guild_only()
     async def delete(self, ctx: Context, *, name: str):
-        """Deletes a tag you own."""
+
+        """Deletes a tag."""
+
         await self.try_to_delete_tag(ctx, name)
 
     @Cog.listener("on_message")
