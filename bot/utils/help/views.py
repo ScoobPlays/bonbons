@@ -130,7 +130,6 @@ class HelpCommandDropdown(Select):
                         "brief": command.description or command.help,
                     }
                 )
-                break
 
             if isinstance(command, Command):
                 self._commands.append(
