@@ -668,9 +668,9 @@ class General(Cog, description="General commands."):
 
         try:
             result = simple_eval(expressions)
-            return await ctx.send(result)
+            return await ctx.send(f"{result: ,}")
 
-        except FeatureNotAvailable:
+        except Excpetion:
             return await ctx.send("I could not evalute expression your experession(s).")
 
 
