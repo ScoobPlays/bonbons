@@ -56,7 +56,7 @@ class Mod(commands.Cog, description="Moderation related commands."):
             await ctx.send(embed=embed)
 
     async def context_change_name(
-        ctx: commands.Context, member: disnake.Member, nickname: str
+        self, ctx: commands.Context, member: disnake.Member, nickname: str
     ) -> str:
         try:
             if ctx.author.top_role.position < member.top_role.position:
