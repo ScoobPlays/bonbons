@@ -171,16 +171,14 @@ class HelpCommandDropdown(Select):
         for index, embed in enumerate(embeds):
             embed.set_footer(text=f"Page {index+1}/{len(embeds)}")
 
-        self.embeds = embeds
-        print(self.embeds)
-
-        view = HelpMenuPaginator(self.ctx, self.embeds, timeout=60, embed=True)
+        view = HelpMenuPaginator(self.ctx, embeds, timeout=60, embed=True)
         view.add_item(self)
 
         view.msg = await interaction.edit_original_message(
-            content=None, embed=self.embeds[0], view=view
+            content=None, embed=embeds[0], view=view
         )
-        self.embeds = []
+        
+        embeds = None
 
     async def callback(self, interaction: MessageInteraction) -> None:
 
