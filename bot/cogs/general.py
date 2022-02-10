@@ -9,7 +9,7 @@ import aiohttp
 from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
                      Embed, Member, Message, TextChannel)
 from disnake.ext.commands import (Cog, Context, Param, command, guild_only,
-                                  slash_command)
+                                  slash_command, group)
 
 from utils import Calculator, Paginator
 from simpleeval import simple_eval, FeatureNotAvailable
@@ -23,18 +23,44 @@ class General(Cog, description="General commands."):
         self.afk = self.bot.mongo["discord"]["afk"]
 
     @staticmethod
-    def b64_encode(text: str):
+    def base64_encode(text: str):
         message_bytes = text.encode("ascii")
         base64_bytes = base64.b64encode(message_bytes)
         message = base64_bytes.decode("ascii")
         return message
 
     @staticmethod
-    def b64_decode(text: str):
+    def base64_decode(text: str):
         b64msg = text.encode("ascii")
         message_bytes = base64.b64decode(b64msg)
         message = message_bytes.decode("ascii")
         return message
+
+    @group(name="base64", aliases=["b64"], invoke_without_command=True, case_insensitive=True)
+    async def base64_group(self, ctx: Context):
+
+        """
+        The base command for base64.
+        """
+
+        await ctx.send_help("base64")
+
+    @base64_group.command()
+    async def encode(self, ctx: Context, *, string: str):
+        
+        try:
+            return await ctx.send(self.base64_encode(string))
+        except Exception:
+            return await ctx.send("Could not encode '{string}'.")
+
+    @base64_group.command()
+    async def decode(self, ctx: Context, *, string: str):
+        
+        try:
+            return await ctx.send(self.base64_decode(string))
+            
+        except Exception:
+            return await ctx.send("Could not decode '{string}'.")
 
     @Cog.listener()
     async def on_message_delete(self, message: Message):
@@ -180,42 +206,6 @@ class General(Cog, description="General commands."):
         async with self.bot.session.get("https://some-random-api.ml/joke") as payload:
             data = await payload.json(content_type=None)
             return await ctx.send(data["joke"])
-
-    @slash_command()
-    async def base64(self, inter: ApplicationCommandInteraction):
-        ...
-
-    @base64.sub_command()
-    async def encode(
-        self,
-        inter: ApplicationCommandInteraction,
-        argument: str = Param(description="A string"),
-    ):
-        """Encodes a message into a base64 string"""
-        try:
-            await inter.response.send_message(
-                self.b64_encode(argument), ephemeral=False
-            )
-        except Exception:
-            await inter.response.send_message(
-                "I couldn't encode that message.", ephemeral=False
-            )
-
-    @base64.sub_command()
-    async def decode(
-        self,
-        inter: ApplicationCommandInteraction,
-        argument: str = Param(description="The base64 string"),
-    ):
-        """Decodes a base64 string"""
-        try:
-            await inter.response.send_message(
-                self.b64_decode(argument), ephemeral=False
-            )
-        except Exception:
-            await inter.response.send_message(
-                "Couldn't decode that message.", ephemeral=False
-            )
 
     @command(name="wikipedia", aliases=("wiki",))
     async def wikipedia_cmd(self, ctx: Context, *, query: str):

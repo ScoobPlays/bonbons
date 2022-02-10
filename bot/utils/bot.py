@@ -33,11 +33,6 @@ class Bonbons(Bot):
         super().__init__(
             command_prefix=self.get_prefix_from_db,
             case_insensitive=True,
-            test_guilds=[
-                880030618275155998,
-                581139467381768192,
-                926115595307614249,
-            ],
             intents=Intents.all(),
             allowed_mentions=AllowedMentions(everyone=False, roles=False),
             help_command=CustomHelpCommand(),
