@@ -526,7 +526,7 @@ class General(Cog, description="General commands."):
             return await ctx.send(f"{result: ,}")
 
         except Exception:
-            if len(result) >= 500:
+            if len(str(result)) >= 500:
               buffer = BytesIO(result.encode("utf-8"))
               file = File(buffer, "result.txt")
               await ctx.send(f"The result was too big (`{len(result)}`), sending it to your DMs now..")
