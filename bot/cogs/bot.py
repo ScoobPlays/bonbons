@@ -1,4 +1,4 @@
-from disnake import Message, ChannelType, Guild, Embed, Color, ApplicationCommandInteraction
+from disnake import Message, ChannelType, Guild, Embed, Color, ApplicationCommandInteraction, slash_command
 from disnake.ext.commands import Cog, Context, Bot, check, command
 
 
