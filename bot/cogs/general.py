@@ -671,7 +671,7 @@ class General(Cog, description="General commands."):
             return await ctx.send(f"{result: ,}")
 
         except Exception:
-            return await ctx.send("I could not evalute expression your experession(s).")
+            return await ctx.send("I could not evaluate your expression(s).")
 
 
 
