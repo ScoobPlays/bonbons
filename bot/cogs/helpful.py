@@ -13,6 +13,7 @@ CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
 
 class Helpful(commands.Cog):
+    
     """Commands that may be helpful?"""
 
     def __init__(self, bot):

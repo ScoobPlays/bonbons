@@ -3,6 +3,7 @@ from disnake.ext.commands import Cog, Context, Bot, check, command, slash_comman
 
 
 class Bot(Cog):
+    
     """Bot-related commands."""
 
     def __init__(self, bot: Bot):
