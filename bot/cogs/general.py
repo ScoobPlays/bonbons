@@ -535,8 +535,5 @@ class General(Cog, description="General commands."):
             return await ctx.send("I could not evalute expression your expression(s).")
 
 
-
-
-
 def setup(bot):
     bot.add_cog(General(bot))
