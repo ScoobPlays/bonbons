@@ -37,6 +37,8 @@ class General(Cog, description="General commands."):
         message = message_bytes.decode("ascii")
         return message
 
+      
+      
     @group(name="base64", aliases=["b64"], invoke_without_command=True, case_insensitive=True)
     async def base64_group(self, ctx: Context):
 
@@ -514,6 +516,10 @@ class General(Cog, description="General commands."):
         view =Calculator()
         await ctx.send("Click a button!", view=view)
 
+    @staticmethod
+    def parse_expressions(expressions: str):
+      return expressions.replace("^", "**")
+        
     @command(name="calc")
     async def calc(self, ctx: Context, *, expressions: str):
 
@@ -522,15 +528,16 @@ class General(Cog, description="General commands."):
         """
 
         try:
-            data = simple_eval(expressions)
-            result = f"{data: ,}"
-            return await ctx.send(result)
+            result = simple_eval(self.parse_expressions(expressions))
+            return await ctx.send(f"Result: `{result: ,}`")
 
         except Exception:
-            if len(result) >= 500:
+            if len(str(result)) >= 500:
+              
+              result = f"{result: ,}"
               buffer = BytesIO(result.encode("utf-8"))
               file = File(buffer, "result.txt")
-              await ctx.send(f"The result was too big (`{len(result)}`), sending it to your DMs now..")
+              await ctx.send(f"The result was too big (`{len(result.replace(',', ''))}`), sending it to your DMs now..")
               return await ctx.author.send(file=file)
             
             return await ctx.send("I could not evalute expression your expression(s).")
