@@ -7,12 +7,13 @@ from typing import Optional
 
 import aiohttp
 from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
-                     Embed, Member, Message, TextChannel)
+                     Embed, Member, Message, TextChannel, File)
 from disnake.ext.commands import (Cog, Context, Param, command, guild_only,
                                   slash_command, group)
 
 from utils import Calculator, Paginator
 from simpleeval import simple_eval, FeatureNotAvailable
+from io import BytesIO
 
 class General(Cog, description="General commands."):
     def __init__(self, bot):
@@ -668,6 +669,13 @@ class General(Cog, description="General commands."):
 
         try:
             result = simple_eval(expressions)
+            
+            if len(result) >= 500:
+              buffer = BytesIO(result.encode("utf-8"))
+              file = File(buffer, "result.txt")
+              await ctx.send(f"The result was too big (`{len(result)}`), sending it to your DMs now..")
+              return await ctx.author.send(file=fiile)
+            
             return await ctx.send(f"{result: ,}")
 
         except Exception:
