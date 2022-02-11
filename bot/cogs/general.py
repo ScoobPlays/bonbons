@@ -267,59 +267,6 @@ class General(Cog, description="General commands."):
                 )
                 await ctx.send(embed=embed)
 
-    @slash_command(name="wikipedia")
-    async def wikipedia_slash(self, inter: ApplicationCommandInteraction, query: str):
-        """Searches for something on the wikipedia"""
-        async with self.bot.session.get(
-            (
-                "https://en.wikipedia.org//w/api.php?action=query"
-                f"&format=json&list=search&utf8=1&srsearch={query}&srlimit=5&srprop="
-            )
-        ) as r:
-            sea = (await r.json())["query"]
-
-            if sea["searchinfo"]["totalhits"] == 0:
-                await inter.response.send_message(
-                    "Sorry, your search could not be found.", ephemeral=False
-                )
-            else:
-                for x in range(len(sea["search"])):
-                    article = sea["search"][x]["title"]
-                    async with self.bot.session.get(
-                        "https://en.wikipedia.org//w/api.php?action=query"
-                        "&utf8=1&redirects&format=json&prop=info|images"
-                        f"&inprop=url&titles={query}"
-                    ) as r:
-                        req = (await r.json())["query"]["pages"]
-                        if str(list(req)[0]) != "-1":
-                            break
-                else:
-                    return await inter.response.send_message(
-                        "Sorry, your search could not be found.", ephemeral=False
-                    )
-                article = req[list(req)[0]]["title"]
-                arturl = req[list(req)[0]]["fullurl"]
-                async with self.bot.session.get(
-                    "https://en.wikipedia.org/api/rest_v1/page/summary/" + article
-                ) as r:
-                    artdesc = (await r.json())["extract"]
-                embed = Embed(
-                    title=f"**{article}**",
-                    url=arturl,
-                    description=artdesc,
-                    color=0x3FCAFF,
-                    timestamp=datetime.utcnow(),
-                )
-                embed.set_footer(
-                    text=f"Search result for {query}",
-                    icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
-                )
-                embed.set_author(
-                    name="Wikipedia",
-                    url="https://en.wikipedia.org/",
-                    icon_url="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png",
-                )
-                await inter.response.send_message(embed=embed, ephemeral=False)
 
     @command(name="minecraft")
     async def minecraft(self, ctx: Context, username=None):
@@ -374,14 +321,6 @@ class General(Cog, description="General commands."):
             f"{ctx.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627"
         )
 
-    @slash_command(name="kiss")
-    @guild_only()
-    async def kiss_slash(self, inter: ApplicationCommandInteraction, member: Member):
-        """Kiss a user!"""
-        await inter.response.send_message(
-            f"{inter.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627",
-            ephemeral=False,
-        )
 
     @command(name="bonk")
     @guild_only()
@@ -395,21 +334,6 @@ class General(Cog, description="General commands."):
         bonkiuwu = random.choice(bonkis)
         await ctx.send(f"{ctx.author.mention} bonked {member.mention}!\n{bonkiuwu}")
 
-    @slash_command(name="bonk")
-    @guild_only()
-    async def bonk_slash(self, inter: ApplicationCommandInteraction, member: Member):
-        """Bonk a user!"""
-        bonkis = [
-            "https://tenor.com/view/despicable-me-minions-bonk-hitting-cute-gif-17663380",
-            "https://tenor.com/view/lol-gif-21667170",
-            "https://tenor.com/view/azura-bonk-azura-bonk-gif-21733152",
-        ]
-        bonkiuwu = random.choice(bonkis)
-        await inter.response.send_message(
-            f"{inter.author.mention} bonked {member.mention}!\n{bonkiuwu}",
-            ephemeral=False,
-        )
-
     @command(name="spank")
     @guild_only()
     async def spank_cmd(self, ctx: Context, member: Member):
@@ -418,30 +342,12 @@ class General(Cog, description="General commands."):
             f"{ctx.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590"
         )
 
-    @slash_command(name="spank")
-    @guild_only()
-    async def spank_slash(self, inter: ApplicationCommandInteraction, member: Member):
-        """Spank a user!"""
-        await inter.response.send_message(
-            f"{inter.author.mention} spanked {member.mention}!\nhttps://tenor.com/view/cats-funny-spank-slap-gif-15308590",
-            ephemeral=False,
-        )
-
     @command(name="slap")
     @guild_only()
     async def slap_cmd(self, ctx: Context, member: Member):
         """Slap a user!"""
         await ctx.send(
             f"{ctx.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299"
-        )
-
-    @slash_command(name="slap")
-    @guild_only()
-    async def slap_slash(self, inter: ApplicationCommandInteraction, member: Member):
-        """Slap a user!"""
-        await inter.response.send_message(
-            f"{inter.author.mention} slapped {member.mention}!\nhttps://tenor.com/view/slap-bear-slap-me-you-gif-17942299",
-            ephemeral=False,
         )
 
     @command(name="pat")
@@ -456,19 +362,6 @@ class General(Cog, description="General commands."):
                     f"{ctx.author.mention} patted {member.mention}!!\n{image}"
                 )
 
-    @slash_command(name="pat")
-    @guild_only()
-    async def pat_slash(self, inter: ApplicationCommandInteraction, member: Member):
-        """Pat a user!"""
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get("https://some-random-api.ml/animu/pat") as r:
-                data = await r.json()
-                image = data["link"]
-                await inter.response.send_message(
-                    f"{inter.author.mention} patted {member.mention}!!\n{image}",
-                    ephemeral=False,
-                )
-
     @command(name="cat")
     async def cat(self, ctx: Context) -> None:
         """Sends a random cat image."""
@@ -480,16 +373,6 @@ class General(Cog, description="General commands."):
                         embed=Embed(color=Color.blurple()).set_image(url=data["file"])
                     )
 
-    @slash_command(name="cat")
-    async def cat_slash(self, inter: ApplicationCommandInteraction) -> None:
-        """Sends a random cat image"""
-        async with self.bot.session.get("http://aws.random.cat/meow") as r:
-            if r.status == 200:
-                data = await r.json()
-                await inter.response.send_message(
-                    embed=Embed(color=Color.blurple()).set_image(url=data["file"]),
-                    ephemeral=False,
-                )
 
     @command(name="dog")
     async def dog(self, ctx: Context):
@@ -506,17 +389,6 @@ class General(Cog, description="General commands."):
                         )
                     )
 
-    @slash_command(name="dog")
-    async def dog_slash(self, inter: ApplicationCommandInteraction):
-        """Sends a random dog image"""
-        async with self.bot.session.get("https://dog.ceo/api/breeds/image/random") as r:
-            if r.status == 200:
-                data = await r.json()
-
-                await inter.response.send_message(
-                    embed=Embed(color=Color.blurple()).set_image(url=data["message"]),
-                    ephemeral=False,
-                )
 
     @command(name="hug")
     @guild_only()
@@ -529,19 +401,7 @@ class General(Cog, description="General commands."):
                 await ctx.send(
                     f"{ctx.author.mention} hugged {member.mention}!!\n{image}"
                 )
-
-    @slash_command(name="hug")
-    @guild_only()
-    async def hug_slash(self, inter: ApplicationCommandInteraction, member: Member):
-        """Hug a user!"""
-        async with aiohttp.ClientSession() as cs:
-            async with cs.get("https://some-random-api.ml/animu/hug") as r:
-                data = await r.json()
-                image = data["link"]
-                await inter.response.send_message(
-                    f"{inter.author.mention} hugged {member.mention}!!\n{image}"
-                )
-
+                
     async def get_urban_response(self, ctx: Context, term: str):
 
         headers = {
@@ -584,7 +444,7 @@ class General(Cog, description="General commands."):
         await self.get_urban_response(ctx, term)
 
     @command()
-    async def afk(self, ctx: Context, *, reason: Optional[str]):
+    async def afk(self, ctx: Context, *, reason: Optional[str]=None):
         """Become AFK."""
 
         afk_db = self.afk[str(ctx.guild.id)]
@@ -622,26 +482,20 @@ class General(Cog, description="General commands."):
     @command(name="ping")
     async def ping(self, ctx: Context) -> None:
 
-        """Returns the bots latency."""
+        """Tells you my latency."""
 
-        embed = Embed(
-            description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
-            color=Color.blurple(),
-        )
+        latency = f"`{self.bot.latency * 1000:.2f}`ms"
 
-        await ctx.reply(embed=embed, mention_author=False)
+        await ctx.reply(latency, mention_author=False)
 
     @slash_command(name="ping")
     async def ping_slash(self, inter: ApplicationCommandInteraction) -> None:
 
-        """Returns the bots latency"""
+        """Tells you my latency"""
 
-        embed = Embed(
-            description=f"**Ponged!** {self.bot.latency * 1000:.2f}ms",
-            color=Color.blurple(),
-        )
+        latency = f"`{self.bot.latency * 1000:.2f}`ms"
 
-        await inter.response.send_message(embed=embed, ephemeral=True)
+        await inter.response.send_message(latency, ephemeral=True)
 
     @command()
     async def choose(self, ctx: Context, *args):
@@ -669,17 +523,16 @@ class General(Cog, description="General commands."):
 
         try:
             result = simple_eval(expressions)
-            
+            return await ctx.send(f"{result: ,}")
+
+        except Exception:
             if len(result) >= 500:
               buffer = BytesIO(result.encode("utf-8"))
               file = File(buffer, "result.txt")
               await ctx.send(f"The result was too big (`{len(result)}`), sending it to your DMs now..")
-              return await ctx.author.send(file=fiile)
+              return await ctx.author.send(file=file)
             
-            return await ctx.send(f"{result: ,}")
-
-        except Exception:
-            return await ctx.send("I could not evalute expression your experession(s).")
+            return await ctx.send("I could not evalute expression your expression(s).")
 
 
 
