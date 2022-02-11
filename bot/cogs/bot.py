@@ -1,20 +1,20 @@
-import disnake
-from disnake.ext import commands
+from disnake import Message, ChannelType, Guild, Embed, Color, ApplicationCommandInteraction
+from disnake.ext.commands import Cog, Context, Bot, check, command
 
 
-class Bot(commands.Cog):
+class Bot(Cog):
     """Bot-related commands."""
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Bot):
         self.bot = bot
         self.db = self.bot.mongo["discord"]["bot"]
         self.prefix = self.bot.mongo["discord"]["prefixes"]
         self.emoji = "🤖"
 
-    @commands.Cog.listener("on_message")
-    async def prefix_ping(self, message: disnake.Message):
+    @Cog.listener("on_message")
+    async def prefix_ping(self, message: Message):
 
-        if message.channel.type == disnake.ChannelType.private:
+        if message.channel.type == ChannelType.private:
             return
 
         prefix = await self.prefix.find_one({"_id": message.guild.id})
@@ -25,8 +25,8 @@ class Bot(commands.Cog):
                 mention_author=False,
             )
 
-    @commands.Cog.listener()
-    async def on_guild_join(self, guild: disnake.Guild):
+    @Cog.listener()
+    async def on_guild_join(self, guild: Guild):
         data = await self.prefix.find_one({"_id": guild.id})
 
         if data is None:
@@ -35,12 +35,12 @@ class Bot(commands.Cog):
         if data is not None:
             pass
 
-    @commands.command()
-    @commands.check(
+    @command()
+    @check(
         lambda ctx: ctx.author.id == 534738044004335626
         or ctx.author.id == 656073353215344650
     )
-    async def prefix(self, ctx: commands.Context, *, prefix: str):
+    async def prefix(self, ctx: Context, *, prefix: str):
 
         """Sets a prefix for the current server."""
 
@@ -55,19 +55,23 @@ class Bot(commands.Cog):
         except Exception:
             msg = await ctx.send(f"Prefix was too long, but I changed it.")
 
-    @commands.command(
+    @command(
         aliases=[
             "uptime",
         ]
     )
-    async def info(self, ctx: commands.Context):
+    async def info(self, ctx: Context):
 
         """Returns the bots information."""
 
-        embed = disnake.Embed(
-            title="My Information",
-            color=disnake.Color.blurple(),
-            description=f"I have access to {len(self.bot.guilds)} guilds and can see {len(self.bot.users)} users.",
+        users = len(self.bot.users)
+        guilds = len(self.bot.guilds)
+
+
+        embed = Embed(
+            title="Info",
+            color=Color.blurple(),
+            description=f"{guilds:,} guilds, {users:,} users.",
         )
 
         embed.add_field(
@@ -81,8 +85,8 @@ class Bot(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
-    async def cleanup(self, ctx: commands.Context, limit: int = 5):
+    @command()
+    async def cleanup(self, ctx: Context, limit: int = 5):
         """Cleanup the bots messages."""
 
         messages = await ctx.channel.purge(
@@ -96,6 +100,23 @@ class Bot(commands.Cog):
         await ctx.send(msg, delete_after=6)
         await ctx.message.add_reaction("✅")
 
+    @command(name="ping")
+    async def ping(self, ctx: Context) -> None:
 
-def setup(bot):
+        """Tells you my latency."""
+
+        latency = f"`{self.bot.latency * 1000:.2f}`ms"
+
+        await ctx.reply(latency, mention_author=False)
+
+    @slash_command(name="ping")
+    async def ping_slash(self, interaction: ApplicationCommandInteraction) -> None:
+
+        """Tells you my latency"""
+
+        latency = f"`{self.bot.latency * 1000:.2f}`ms"
+
+        await interaction.response.send_message(latency, ephemeral=True)
+
+def setup(bot: Bot):
     bot.add_cog(Bot(bot))

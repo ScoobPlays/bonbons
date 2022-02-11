@@ -4,7 +4,5 @@ REPLIES = [
     "What just happened.",
     "Oops!",
     "What!?",
-    "Ouch.",
-    "Stop.",
     "NEGATORY.",
 ]

@@ -1,18 +1,16 @@
+from datetime import datetime
+from typing import Dict
+from disnake import Message, Embed, Color, ApplicationCommandInteraction
+from disnake.ext.commands import Context, Cog, group, command, slash_command
+from utils.classes import RTFMView, SphinxObjectFileReader
+from utils.replies import REPLIES
+from disnake.abc import Messageable
+from utils.rtfm import fuzzy
 import os
 import random
 import re
-from datetime import datetime
-from typing import Dict
 
-import disnake
-from disnake.ext import commands
-
-from utils.classes import RTFMView, SphinxObjectFileReader
-from utils.replies import REPLIES
-from utils.rtfm import fuzzy
-
-
-class Python(commands.Cog):
+class Python(Cog):
 
     """Commands relating to the python langage."""
 
@@ -21,11 +19,12 @@ class Python(commands.Cog):
         self.emoji = "<:python:930713365758771242>"
         self.pypi_database = self.bot.mongo["discord"]["pypi"]
 
-    async def send_error_message(self, ctx, msg):
-        embed = disnake.Embed(
+    @staticmethod
+    async def send_error_message(ctx: Context, message: Message):
+        embed = Embed(
             title=random.choice(REPLIES),
-            description=msg,
-            color=disnake.Color.red(),
+            description=message,
+            color=Color.red(),
         )
         await ctx.send(embed=embed)
 
@@ -112,7 +111,7 @@ class Python(commands.Cog):
 
         if key.startswith("master"):
             q = obj.lower()
-            for name in dir(disnake.abc.Messageable):
+            for name in dir(Messageable):
                 if name[0] == "_":
                     continue
                 if q == name:
@@ -123,7 +122,7 @@ class Python(commands.Cog):
 
         matches = fuzzy.finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
 
-        embed = disnake.Embed(colour=0x2F3136)
+        embed = Embed(colour=0x2F3136)
         if len(matches) == 0:
             responses = (
                 "I looked far and wide but nothing was found.",
@@ -136,7 +135,7 @@ class Python(commands.Cog):
         embed.description = "\n".join(f"[`{key}`]({url})" for key, url in matches)
         ref = ctx.message.reference
         reference = None
-        if ref and isinstance(ref.resolved, disnake.Message):
+        if ref and isinstance(ref.resolved, Message):
             reference = ref.resolved.to_reference()
 
         done = time.perf_counter()
@@ -144,29 +143,29 @@ class Python(commands.Cog):
         view._update_labels()
         await view.start(ctx)
 
-    @commands.group(
+    @group(
         name="rtfm",
         aliases=["rtfd"],
         invoke_without_command=True,
         case_insensitive=True,
     )
-    async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
+    async def rtfm_group(self, ctx: Context, *, obj: str = None):
         """Retrieve documentation on python libraries. Defaults to `discord.py` if no sub-command was passed."""
 
         await self.do_rtfm(ctx, "discord.py", obj)
 
     @rtfm_group.command(name="python", aliases=["py"])
-    async def rtfm_python_cmd(self, ctx: commands.Context, *, obj: str = None):
+    async def rtfm_python_cmd(self, ctx: Context, *, obj: str = None):
         """Retrieve's documentation about the python language."""
         await self.do_rtfm(ctx, "python", obj)
 
     @rtfm_group.command(name="nextcord", aliases=["nc"])
-    async def rtfm_nextcord(self, ctx: commands.Context, *, obj: str = None):
+    async def rtfm_nextcord(self, ctx: Context, *, obj: str = None):
         """Retrieve's documentation about the nextcord library."""
         await self.do_rtfm(ctx, "nextcord", obj)
 
     @rtfm_group.command(name="disnake")
-    async def rtfm_disnake(self, ctx: commands.Context, *, obj: str = None):
+    async def rtfm_disnake(self, ctx: Context, *, obj: str = None):
         """Retrieve's documentation about the disnake library."""
         await self.do_rtfm(ctx, "disnake", obj)
 
@@ -181,8 +180,8 @@ class Python(commands.Cog):
         if data is not None:
             pass
 
-    @commands.command()
-    async def pypi(self, ctx: commands.Context, name: str):
+    @command()
+    async def pypi(self, ctx: Context, name: str):
 
         """Finds a package on PyPI."""
 
@@ -193,11 +192,11 @@ class Python(commands.Cog):
                 if data.status == 200:
                     raw = await data.json()
 
-                    embed = disnake.Embed(
+                    embed = Embed(
                         title=raw["info"]["name"],
                         description=raw["info"]["summary"],
                         url=raw["info"]["project_url"],
-                        color=disnake.Color.greyple(),
+                        color=Color.greyple(),
                     ).set_thumbnail(
                         url="https://cdn.discordapp.com/emojis/766274397257334814.png"
                     )
@@ -207,9 +206,9 @@ class Python(commands.Cog):
                 else:
                     await ctx.send("A package with that name does not exist.")
 
-    @commands.slash_command(name="pypi")
+    @slash_command(name="pypi")
     async def pypi_slash(
-        self, inter: disnake.ApplicationCommandInteraction, package: str
+        self, interaction: ApplicationCommandInteraction, package: str
     ):
         """Finds a package on PyPI."""
         async with self.bot.session.get(
@@ -218,25 +217,25 @@ class Python(commands.Cog):
             if data.status == 200:
                 raw = await data.json()
 
-                embed = disnake.Embed(
+                embed = Embed(
                     title=raw["info"]["name"],
                     description=raw["info"]["summary"],
                     url=raw["info"]["project_url"],
-                    color=disnake.Color.greyple(),
+                    color=Color.greyple(),
                 ).set_thumbnail(
                     url="https://cdn.discordapp.com/emojis/766274397257334814.png"
                 )
-                await inter.response.send_message(embed=embed)
+                await interaction.response.send_message(embed=embed)
                 await self.insert_into_db(raw["info"]["name"])
 
             else:
-                await inter.response.send_message(
+                await interaction.response.send_message(
                     "A package with that name does not exist.", ephemeral=True
                 )
 
     @pypi_slash.autocomplete(option_name="package")
     async def pypi_slash_autocomp(
-        self, inter: disnake.ApplicationCommandInteraction, package: str
+        self, interaction: ApplicationCommandInteraction, package: str
     ) -> str:
         packages = []
 

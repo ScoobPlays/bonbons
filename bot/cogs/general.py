@@ -480,25 +480,7 @@ class General(Cog, description="General commands."):
             )
         else:
             return
-
-    @command(name="ping")
-    async def ping(self, ctx: Context) -> None:
-
-        """Tells you my latency."""
-
-        latency = f"`{self.bot.latency * 1000:.2f}`ms"
-
-        await ctx.reply(latency, mention_author=False)
-
-    @slash_command(name="ping")
-    async def ping_slash(self, inter: ApplicationCommandInteraction) -> None:
-
-        """Tells you my latency"""
-
-        latency = f"`{self.bot.latency * 1000:.2f}`ms"
-
-        await inter.response.send_message(latency, ephemeral=True)
-
+            
     @command()
     async def choose(self, ctx: Context, *args):
 
@@ -529,7 +511,7 @@ class General(Cog, description="General commands."):
 
         try:
             result = simple_eval(self.parse_expressions(expressions))
-            return await ctx.send(f"Result: `{result: ,}`")
+            return await ctx.send(f"Result:`{result:,}`")
 
         except Exception:
             if len(str(result)) >= 500:

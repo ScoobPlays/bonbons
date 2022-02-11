@@ -81,12 +81,13 @@ class Bonbons(Bot):
 
         return when_mentioned_or(prefix["prefix"])(bot, message)
 
+    @staticmethod
     async def on_command_error(self, ctx: Context, error: Exception) -> None:
 
         if isinstance(error, CommandNotFound):
             return
 
-        elif isinstance(error, MissingRequiredArgument):
+        if isinstance(error, MissingRequiredArgument):
             return await ctx.reply(
                 f"```\n{ctx.command.name} {ctx.command.signature}\n```\nNot enough arguments passed.",
                 mention_author=False,
