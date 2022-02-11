@@ -42,7 +42,7 @@ class Bot(Cog):
     )
     async def prefix(self, ctx: Context, *, prefix: str):
 
-        """Sets a prefix for the current server."""
+        """Sets a prefix for the server."""
 
         try:
             await self.prefix.update_one(
@@ -62,7 +62,7 @@ class Bot(Cog):
     )
     async def info(self, ctx: Context):
 
-        """Returns the bots information."""
+        """Tells you my information."""
 
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
@@ -87,10 +87,11 @@ class Bot(Cog):
 
     @command()
     async def cleanup(self, ctx: Context, limit: int = 5):
-        """Cleanup the bots messages."""
+        
+        """Cleanup my messages."""
 
         messages = await ctx.channel.purge(
-            limit=limit, check=lambda m: m.author == self.bot.user
+            limit=limit, check=lambda m: m.author.id == self.bot.user.id
         )
 
         msg = (

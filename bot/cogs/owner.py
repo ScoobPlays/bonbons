@@ -13,15 +13,6 @@ from utils.paginators import TextPaginator
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.no = "<:no:914859683842523207>"
-        self.yes = "<:yes:932551215764607007>"
-        self.library_dict = {
-            "pycord": disnake,
-            "nextcord": disnake,
-            "hikari": disnake,
-            "nestcord": disnake,
-            "discord": disnake,
-        }
 
     async def cog_check(self, ctx: commands.Context) -> int:
         return ctx.author.id == 656073353215344650
@@ -33,13 +24,13 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             "ctx": ctx,
             "bot": self.bot,
             "disnake": disnake,
+            "discord": disnake,
             "_channel": ctx.channel,
             "_author": ctx.author,
             "_guild": ctx.guild,
             "_message": ctx.message,
             "nl": "\n",
             **globals(),
-            **self.library_dict,
         }
 
         code = cleanup_code(code)
