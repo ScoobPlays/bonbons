@@ -509,8 +509,9 @@ class General(Cog, description="General commands."):
         Tells you the result of expressions.
         """
 
-                try:
+        try:
             result = simple_eval(self.parse_expressions(expressions))
+            
             if len(str(result)) >= 500:
                 result = f"{result: ,}"
                 buffer = BytesIO(result.encode("utf-8"))
