@@ -1,6 +1,5 @@
 from disnake import Color, Embed
 from disnake.ext.commands import Command, Group, HelpCommand
-
 from utils.paginators import Paginator
 
 from .ext import HelpEmbed
@@ -28,7 +27,7 @@ class CustomHelpCommand(HelpCommand):
     @property
     def ctx(self):
         return self.context
-        
+
     async def send(self, **kwargs):
         return await self.get_destination().send(**kwargs)
 
@@ -75,7 +74,7 @@ class CustomHelpCommand(HelpCommand):
         """
         A method that paginates through lists.
         """
-        
+
         embeds = []
 
         for i in range(0, len(data), per_page):
@@ -136,19 +135,23 @@ class CustomHelpCommand(HelpCommand):
                 )
 
         await self.paginate(title, description, self._commands, per_page=7)
-        
+
         self._commands = []
 
     async def send_group_help(self, group: Group):
 
         if group.qualified_name == "nsfw" and not self.ctx.channel.is_nsfw():
-            return await self.send(content="You can only the help for this group in an NSFW channel.")
+            return await self.send(
+                content="You can only the help for this group in an NSFW channel."
+            )
 
         await self.send_help_embed("Group Help", group.description, group.commands)
 
     async def send_cog_help(self, cog: Group):
-        
+
         if cog.qualified_name == "NSFW" and not self.ctx.channel.is_nsfw():
-            return await self.send(content="You can only view the help for this category in an NSFW channel.")
-        
+            return await self.send(
+                content="You can only view the help for this category in an NSFW channel."
+            )
+
         await self.send_help_embed("Category Help", cog.description, cog.get_commands())

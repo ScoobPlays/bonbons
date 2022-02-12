@@ -5,7 +5,6 @@ import traceback
 
 import disnake
 from disnake.ext import commands
-
 from utils.objects import cleanup_code
 from utils.paginators import TextPaginator
 

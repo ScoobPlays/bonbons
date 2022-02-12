@@ -1,10 +1,9 @@
 import copy
-
-from disnake import DMChannel, Message, Embed
-from disnake.ext.commands import Bot, Cog, Context, group, guild_only
-
-from utils.paginators import TagPages
 from datetime import datetime
+
+from disnake import DMChannel, Embed, Message
+from disnake.ext.commands import Bot, Cog, Context, group, guild_only
+from utils.paginators import TagPages
 
 # TODO: implement difflib in `delete`/`get`
 
@@ -21,7 +20,9 @@ class Tags(Cog):
 
     async def prepare_embed(self, ctx: Context, data: dict) -> Embed:
 
-        owner = self.bot.get_user(data["owner"]) or await self.bot.fetch_user(data["owner"])
+        owner = self.bot.get_user(data["owner"]) or await self.bot.fetch_user(
+            data["owner"]
+        )
         embed = Embed(title=data["name"])
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
         embed.add_field(name="Owner", value=owner.mention)
@@ -89,7 +90,7 @@ class Tags(Cog):
             "owner": ctx.author.id,
             "name": name,
             "content": content,
-            "created": int(datetime.now().timestamp())
+            "created": int(datetime.now().timestamp()),
         }
 
         await db.insert_one(tag_data)
@@ -145,7 +146,7 @@ class Tags(Cog):
     @tag.command(aliases=["list"])
     @guild_only()
     async def all(self, ctx: Context):
-        
+
         """Tells you all the tags in the current server."""
 
         db = self.base[str(ctx.guild.id)]

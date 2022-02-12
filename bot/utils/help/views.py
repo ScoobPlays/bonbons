@@ -133,7 +133,7 @@ class HelpCommandDropdown(Select):
                 self._commands.append(
                     {
                         "name": command.name,
-                        "brief": command.description or command.help or "..."
+                        "brief": command.description or command.help or "...",
                     }
                 )
 
@@ -174,7 +174,7 @@ class HelpCommandDropdown(Select):
         view.msg = await interaction.edit_original_message(
             content=None, embed=embeds[0], view=view
         )
-        
+
         embeds = None
 
     async def callback(self, interaction: MessageInteraction) -> None:

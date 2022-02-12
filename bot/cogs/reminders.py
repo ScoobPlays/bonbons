@@ -1,10 +1,11 @@
 from datetime import timedelta
+from typing import Dict
 
 import disnake
 from disnake.ext import tasks
 from disnake.ext.commands import Bot, Cog, Context, command
 from utils.classes import TimeConverter
-from typing import Dict
+
 
 class Reminders(
     Cog, description="Reminders that remind you to do something in the future."
@@ -21,15 +22,15 @@ class Reminders(
 
         await db.insert_one(
             {
-                    "author": ctx.author.id,
-                    "time": time,
-                    "channel": ctx.channel.id,
-                    "reason": reason
-                }
-            )
+                "author": ctx.author.id,
+                "time": time,
+                "channel": ctx.channel.id,
+                "reason": reason,
+            }
+        )
 
     @staticmethod
-    def parse_time(time: int, *, timestamp: bool=False) -> str:
+    def parse_time(time: int, *, timestamp: bool = False) -> str:
         data = disnake.utils.utcnow() + timedelta(seconds=time)
 
         if timestamp:
@@ -38,9 +39,7 @@ class Reminders(
         return f"<t:{int(data.timestamp())}:F>"
 
     @command()
-    async def remindme(
-        self, ctx: Context, time: TimeConverter, *, reminder: str
-    ):
+    async def remindme(self, ctx: Context, time: TimeConverter, *, reminder: str):
 
         parsed_time = self.parse_time(time, timestamp=False)
         reminder_time = self.parse_time(time, timestamp=True)

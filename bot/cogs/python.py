@@ -1,14 +1,16 @@
-from datetime import datetime
-from typing import Dict
-from disnake import Message, Embed, Color, ApplicationCommandInteraction
-from disnake.ext.commands import Context, Cog, group, command, slash_command
-from utils.classes import RTFMView, SphinxObjectFileReader
-from utils.replies import REPLIES
-from disnake.abc import Messageable
-from utils.rtfm import fuzzy
 import os
 import random
 import re
+from datetime import datetime
+from typing import Dict
+
+from disnake import ApplicationCommandInteraction, Color, Embed, Message
+from disnake.abc import Messageable
+from disnake.ext.commands import Cog, Context, command, group, slash_command
+from utils.classes import RTFMView, SphinxObjectFileReader
+from utils.replies import REPLIES
+from utils.rtfm import fuzzy
+
 
 class Python(Cog):
 

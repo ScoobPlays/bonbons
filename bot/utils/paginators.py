@@ -1,12 +1,7 @@
 from typing import List
 
-from disnake import (
-    ApplicationCommandInteraction,
-    ButtonStyle,
-    Color,
-    Embed,
-    MessageInteraction,
-)
+from disnake import (ApplicationCommandInteraction, ButtonStyle, Color, Embed,
+                     MessageInteraction)
 from disnake.ext.commands import Context
 from disnake.ui import Button, View, button
 

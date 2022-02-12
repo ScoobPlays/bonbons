@@ -3,17 +3,17 @@ import json
 import os
 import random
 from datetime import datetime
+from io import BytesIO
 from typing import Optional
 
 import aiohttp
 from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
-                     Embed, Member, Message, TextChannel, File)
-from disnake.ext.commands import (Cog, Context, Param, command, guild_only,
-                                  slash_command, group)
-
+                     Embed, File, Member, Message, TextChannel)
+from disnake.ext.commands import (Cog, Context, Param, command, group,
+                                  guild_only, slash_command)
+from simpleeval import FeatureNotAvailable, simple_eval
 from utils import Calculator, Paginator
-from simpleeval import simple_eval, FeatureNotAvailable
-from io import BytesIO
+
 
 class General(Cog, description="General commands."):
     def __init__(self, bot):
@@ -37,9 +37,12 @@ class General(Cog, description="General commands."):
         message = message_bytes.decode("ascii")
         return message
 
-      
-      
-    @group(name="base64", aliases=["b64"], invoke_without_command=True, case_insensitive=True)
+    @group(
+        name="base64",
+        aliases=["b64"],
+        invoke_without_command=True,
+        case_insensitive=True,
+    )
     async def base64_group(self, ctx: Context):
 
         """
@@ -54,7 +57,7 @@ class General(Cog, description="General commands."):
         """
         Encodes a string.
         """
-        
+
         try:
             return await ctx.send(self.base64_encode(string))
         except Exception:
@@ -66,7 +69,7 @@ class General(Cog, description="General commands."):
         """
         Decodes a base64 string
         """
-        
+
         try:
             return await ctx.send(self.base64_decode(string))
 
@@ -83,8 +86,14 @@ class General(Cog, description="General commands."):
             return
 
         self._snipe_cache.append(
-            {"author": str(message.author), "channel": message.channel.id, "content": message.content, "timestamp": datetime.utcnow(), "msg": message}
-        ) 
+            {
+                "author": str(message.author),
+                "channel": message.channel.id,
+                "content": message.content,
+                "timestamp": datetime.utcnow(),
+                "msg": message,
+            }
+        )
 
     @Cog.listener()
     async def on_message_edit(self, before: Message, after: Message):
@@ -93,12 +102,18 @@ class General(Cog, description="General commands."):
             return
 
         self._edit_cache.append(
-            {"author": str(before.author), "channel": before.channel.id, "content": before.content, "timestamp": datetime.utcnow(), "msg": before}
-        ) 
+            {
+                "author": str(before.author),
+                "channel": before.channel.id,
+                "content": before.content,
+                "timestamp": datetime.utcnow(),
+                "msg": before,
+            }
+        )
 
     @Cog.listener()
     async def on_message(self, message: Message):
-        
+
         if not isinstance(message.channel, TextChannel):
             return
 
@@ -154,7 +169,7 @@ class General(Cog, description="General commands."):
                     break
 
     @command()
-    async def editsnipe(self, ctx: Context, id: int=None):
+    async def editsnipe(self, ctx: Context, id: int = None):
 
         """Tells you most recently edited message."""
 
@@ -168,27 +183,27 @@ class General(Cog, description="General commands."):
 
         if message["channel"] == ctx.channel.id:
 
-                    embed = Embed(
-                        description=message["content"],
-                        timestamp=message["timestamp"],
-                        color=Color.blurple(),
-                    )
-                    embed.set_footer(text=f"Message edited at")
-                    embed.set_author(
-                        name=message["author"],
-                        icon_url=message["msg"].author.display_avatar.url,
-                    )
-                    return await ctx.send(embed=embed)
-
-
+            embed = Embed(
+                description=message["content"],
+                timestamp=message["timestamp"],
+                color=Color.blurple(),
+            )
+            embed.set_footer(text=f"Message edited at")
+            embed.set_author(
+                name=message["author"],
+                icon_url=message["msg"].author.display_avatar.url,
+            )
+            return await ctx.send(embed=embed)
 
     @command()
-    async def snipe(self, ctx: Context, id: int=None):
-       
+    async def snipe(self, ctx: Context, id: int = None):
+
         """Tells you the most recently deleted message."""
 
         if len(self._snipe_cache) == 0:
-            return await ctx.send("No message was deleted, or the message was not in my cache.")
+            return await ctx.send(
+                "No message was deleted, or the message was not in my cache."
+            )
 
         try:
             message = self._snipe_cache[id]
@@ -197,17 +212,17 @@ class General(Cog, description="General commands."):
 
         if message["channel"] == ctx.channel.id:
 
-                    embed = Embed(
-                        description=message["content"],
-                        timestamp=message["timestamp"],
-                        color=Color.blurple(),
-                    )
-                    embed.set_footer(text=f"Message deleted at")
-                    embed.set_author(
-                        name=message["author"],
-                        icon_url=message["msg"].author.display_avatar.url,
-                    )
-                    return await ctx.send(embed=embed)
+            embed = Embed(
+                description=message["content"],
+                timestamp=message["timestamp"],
+                color=Color.blurple(),
+            )
+            embed.set_footer(text=f"Message deleted at")
+            embed.set_author(
+                name=message["author"],
+                icon_url=message["msg"].author.display_avatar.url,
+            )
+            return await ctx.send(embed=embed)
 
     @command()
     async def joke(self, ctx: Context):
@@ -269,7 +284,6 @@ class General(Cog, description="General commands."):
                 )
                 await ctx.send(embed=embed)
 
-
     @command(name="minecraft")
     async def minecraft(self, ctx: Context, username=None):
         """Gets information about a minecraft user!"""
@@ -323,7 +337,6 @@ class General(Cog, description="General commands."):
             f"{ctx.author.mention} kissed {member.mention}!!\nhttps://tenor.com/view/milk-and-mocha-bear-couple-kisses-kiss-love-gif-12498627"
         )
 
-
     @command(name="bonk")
     @guild_only()
     async def bonk_cmd(self, ctx: Context, member: Member):
@@ -375,7 +388,6 @@ class General(Cog, description="General commands."):
                         embed=Embed(color=Color.blurple()).set_image(url=data["file"])
                     )
 
-
     @command(name="dog")
     async def dog(self, ctx: Context):
         """Sends a random dog image."""
@@ -391,7 +403,6 @@ class General(Cog, description="General commands."):
                         )
                     )
 
-
     @command(name="hug")
     @guild_only()
     async def hug_cmd(self, ctx: Context, member: Member):
@@ -403,7 +414,7 @@ class General(Cog, description="General commands."):
                 await ctx.send(
                     f"{ctx.author.mention} hugged {member.mention}!!\n{image}"
                 )
-                
+
     async def get_urban_response(self, ctx: Context, term: str):
 
         headers = {
@@ -446,7 +457,7 @@ class General(Cog, description="General commands."):
         await self.get_urban_response(ctx, term)
 
     @command()
-    async def afk(self, ctx: Context, *, reason: Optional[str]=None):
+    async def afk(self, ctx: Context, *, reason: Optional[str] = None):
         """Become AFK."""
 
         afk_db = self.afk[str(ctx.guild.id)]
@@ -471,7 +482,11 @@ class General(Cog, description="General commands."):
                 return
 
             await afk_db.insert_one(
-                {"_id": ctx.author.id, "timestamp": int(datetime.utcnow().timestamp()), "message": ctx.message.id}
+                {
+                    "_id": ctx.author.id,
+                    "timestamp": int(datetime.utcnow().timestamp()),
+                    "message": ctx.message.id,
+                }
             )
             await ctx.send(
                 embed=Embed(
@@ -480,7 +495,7 @@ class General(Cog, description="General commands."):
             )
         else:
             return
-            
+
     @command()
     async def choose(self, ctx: Context, *args):
 
@@ -495,13 +510,13 @@ class General(Cog, description="General commands."):
         A custom calculator made using buttons.
         """
 
-        view =Calculator()
+        view = Calculator()
         await ctx.send("Click a button!", view=view)
 
     @staticmethod
     def parse_expressions(expressions: str):
         return expressions.replace("^", "**")
-        
+
     @command(name="calc")
     async def calc(self, ctx: Context, *, expressions: str):
 
@@ -511,15 +526,17 @@ class General(Cog, description="General commands."):
 
         try:
             result = simple_eval(self.parse_expressions(expressions))
-            
+
             if len(str(result)) >= 500:
                 buffer = BytesIO(str(result).encode("utf-8"))
                 file = File(buffer, "result.txt")
-                await ctx.send(f"The result was too big (`{len(str(result)):,)}`), sending it to your DMs now..")
+                await ctx.send(
+                    f"The result was too big (`{len(str(result)):,)}`), sending it to your DMs now.."
+                )
                 return await ctx.author.send(file=file)
-            
+
             return await ctx.send(f"Result: `{result}`")
-        
+
         except:
             return await ctx.send("I could not evalute expression your expression(s).")
 

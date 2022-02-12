@@ -1,9 +1,11 @@
-from disnake import Message, ChannelType, Guild, Embed, Color, ApplicationCommandInteraction
-from disnake.ext.commands import Cog, Context, Bot, check, command, slash_command
+from disnake import (ApplicationCommandInteraction, ChannelType, Color, Embed,
+                     Guild, Message)
+from disnake.ext.commands import (Bot, Cog, Context, check, command,
+                                  slash_command)
 
 
 class Bot(Cog):
-    
+
     """Bot-related commands."""
 
     def __init__(self, bot: Bot):
@@ -68,7 +70,6 @@ class Bot(Cog):
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
 
-
         embed = Embed(
             title="Info",
             color=Color.blurple(),
@@ -88,7 +89,7 @@ class Bot(Cog):
 
     @command()
     async def cleanup(self, ctx: Context, limit: int = 5):
-        
+
         """Cleanup my messages."""
 
         messages = await ctx.channel.purge(
@@ -119,6 +120,7 @@ class Bot(Cog):
         latency = f"`{self.bot.latency * 1000:.2f}`ms"
 
         await interaction.response.send_message(latency, ephemeral=True)
+
 
 def setup(bot: Bot):
     bot.add_cog(Bot(bot))

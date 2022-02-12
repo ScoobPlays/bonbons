@@ -6,14 +6,13 @@ import disnake
 import googletrans
 from disnake.ext import commands
 from pyston import File, PystonClient
-
 from utils.paginators import MyPages
 
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
 
 class Helpful(commands.Cog):
-    
+
     """Commands that may be helpful?"""
 
     def __init__(self, bot):
@@ -150,7 +149,6 @@ class Helpful(commands.Cog):
 
         except Exception:
             return
-
 
     @commands.command(name="say")
     async def say(self, ctx: commands.Context, *, text: str):
