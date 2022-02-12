@@ -89,8 +89,6 @@ class Helpful(commands.Cog):
 
     async def _run_code(self, inter, code: str):
 
-        await inter.response.defer()
-
         matches = CODE_REGEX.findall(str(code))
         print(matches)
         print(code)
@@ -127,6 +125,7 @@ class Helpful(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
         ctx = await self.bot.get_context(after)
+        print(ctx.prefix)
         cmd = self.bot.get_command(after.content.lower().replace(str(ctx.prefix), ""))
         try:
             if after.content.lower().startswith(f"{ctx.prefix}run"):
@@ -153,27 +152,6 @@ class Helpful(commands.Cog):
         except Exception:
             return
 
-    @commands.command()  # TODO: Optimize this.
-    @commands.is_owner()
-    async def echo(
-        self,
-        ctx: commands.Context,
-        channel: Optional[disnake.abc.GuildChannel],
-        member: disnake.User,
-        *,
-        message: Union[str, int],
-    ):
-        """
-        Echo's a message using a webhook.
-        """
-
-        channel = channel or ctx.channel
-
-        await ctx.message.delete()
-        avatar = await member.display_avatar.with_static_format("png").read()
-        webhook = await channel.create_webhook(name=member.name, avatar=avatar)
-        await webhook.send(message)
-        await webhook.delete()
 
     @commands.command(name="say")
     async def say(self, ctx: commands.Context, *, text: str):
@@ -183,7 +161,8 @@ class Helpful(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def mlb(self, ctx):
-        """The global message leaderboard."""
+
+        """Gives you the global message leaderboard."""
 
         db = await self.message_database.find().sort("messages", -1).to_list(100000)
 

@@ -3,19 +3,18 @@ from datetime import timedelta
 import disnake
 from disnake.ext import tasks
 from disnake.ext.commands import Bot, Cog, Context, command
-
 from utils.classes import TimeConverter
-
+from typing import Dict
 
 class Reminders(
     Cog, description="Reminders that remind you to do something in the future."
 ):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.emoji = "⏲️"
+        self.emoji: str = "⏲️"
         self.check_for_reminders.start()
         self.base = self.bot.mongo["reminders"]
-        self._cached_channels = {}
+        self._channels: Dict = {}
 
     async def add_reminder(self, ctx: Context, time: int, reason: str):
         db = self.base[str(ctx.guild.id)]
@@ -29,15 +28,26 @@ class Reminders(
             }
         )
 
+    @staticmethod
+    def parse_time(time: int, *, timestamp: bool=False) -> str:
+        data = disnake.utils.now() + timedelta(seconds=time)
+
+        if bool:
+            return int(data.timestamp())
+
+        return f"<t:{int(data.timestamp())}:F>"
+
     @command()
     async def remindme(
         self, ctx: Context, time: TimeConverter, *, reminder: str = None
     ):
-        await ctx.send(f"I will remind you in {time} seconds.")
-        self._cached_channels[ctx.channel.id] = ctx.channel
 
-        new_time = (disnake.utils.utcnow() + timedelta(seconds=time)).timestamp()
-        await self.add_reminder(ctx, int(new_time), reminder)
+        parsed_time = self.parse_time(time, timestamp=False)
+        reminder_time = self.parse_time(time, timestamp=True)
+        await ctx.send(f"I will remind you at {parsed_time}.")
+        self._channels[ctx.channel.id] = ctx.channel
+
+        await self.add_reminder(ctx, reminder_time, reminder)
 
     @tasks.loop(seconds=10)
     async def check_for_reminders(self):
@@ -49,7 +59,7 @@ class Reminders(
             for result in await self.base[item["name"]].find().to_list(100000):
                 if int(disnake.utils.utcnow().timestamp()) > result["time"]:
                     collection = self.base[item["name"]]
-                    channel = self._cached_channels.get(
+                    channel = self._channels.get(
                         result["channel"]
                     ) or await self.bot.fetch_channel(result["channel"])
 

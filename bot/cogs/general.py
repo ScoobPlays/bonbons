@@ -513,13 +513,12 @@ class General(Cog, description="General commands."):
             result = simple_eval(self.parse_expressions(expressions))
             
             if len(str(result)) >= 500:
-                result = f"{result: ,}"
-                buffer = BytesIO(result.encode("utf-8"))
+                buffer = BytesIO(str(result).encode("utf-8"))
                 file = File(buffer, "result.txt")
-                await ctx.send(f"The result was too big (`{len(result.replace(',', ''))}`), sending it to your DMs now..")
-                return await ctx.author.send(file = file)
+                await ctx.send(f"The result was too big (`{len(str(result)):,)}`), sending it to your DMs now..")
+                return await ctx.author.send(file=file)
             
-            return await ctx.send(f"Result:`{result:,}`")
+            return await ctx.send(f"Result: `{result}`")
         
         except:
             return await ctx.send("I could not evalute expression your expression(s).")

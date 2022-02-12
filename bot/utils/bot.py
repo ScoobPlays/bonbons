@@ -81,7 +81,6 @@ class Bonbons(Bot):
 
         return when_mentioned_or(prefix["prefix"])(bot, message)
 
-    @staticmethod
     async def on_command_error(self, ctx: Context, error: Exception) -> None:
 
         if isinstance(error, CommandNotFound):
