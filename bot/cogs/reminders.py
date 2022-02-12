@@ -63,7 +63,7 @@ class Reminders(
                         result["channel"]
                     ) or await self.bot.fetch_channel(result["channel"])
 
-                    mention = f"<@{result['author']}>"
+                    member = f"<@{result['author']}>"
 
                     await channel.send(f"Hey {member}, {result['reason']}")
 
