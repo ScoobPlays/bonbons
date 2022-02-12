@@ -125,7 +125,6 @@ class Helpful(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
         ctx = await self.bot.get_context(after)
-        print(ctx.prefix)
         cmd = self.bot.get_command(after.content.lower().replace(str(ctx.prefix), ""))
         try:
             if after.content.lower().startswith(f"{ctx.prefix}run"):

@@ -30,7 +30,7 @@ class Reminders(
 
     @staticmethod
     def parse_time(time: int, *, timestamp: bool=False) -> str:
-        data = disnake.utils.now() + timedelta(seconds=time)
+        data = disnake.utils.utcnow() + timedelta(seconds=time)
 
         if bool:
             return int(data.timestamp())
