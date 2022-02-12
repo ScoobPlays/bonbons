@@ -24,6 +24,7 @@ class Reminders(
                     "author": ctx.author.id,
                     "time": time,
                     "channel": ctx.channel.id,
+                    "reason": reason
                 }
             )
 
@@ -62,9 +63,9 @@ class Reminders(
                         result["channel"]
                     ) or await self.bot.fetch_channel(result["channel"])
 
-                    member = await self.bot.fetch_user(result["author"])
+                    mention = f"<@{result["author"]}>"
 
-                    await channel.send(f"Hey {member.mention}, {result['reason']}")
+                    await channel.send(f"Hey {member}, {result['reason']}")
 
                     await collection.delete_one({"author": result["author"]})
 
