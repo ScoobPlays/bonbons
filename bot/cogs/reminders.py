@@ -21,25 +21,24 @@ class Reminders(
 
         await db.insert_one(
             {
-                "author": ctx.author.id,
-                "time": time,
-                "channel": ctx.channel.id,
-                "reason": reason,
-            }
-        )
+                    "author": ctx.author.id,
+                    "time": time,
+                    "channel": ctx.channel.id,
+                }
+            )
 
     @staticmethod
     def parse_time(time: int, *, timestamp: bool=False) -> str:
         data = disnake.utils.utcnow() + timedelta(seconds=time)
 
-        if bool:
+        if timestamp:
             return int(data.timestamp())
 
         return f"<t:{int(data.timestamp())}:F>"
 
     @command()
     async def remindme(
-        self, ctx: Context, time: TimeConverter, *, reminder: str = None
+        self, ctx: Context, time: TimeConverter, *, reminder: str
     ):
 
         parsed_time = self.parse_time(time, timestamp=False)
