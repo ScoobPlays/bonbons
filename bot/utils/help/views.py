@@ -79,6 +79,7 @@ def _get_options(bot: Bot):
             SelectOption(
                 label=cog.qualified_name,
                 description=cog.description,
+                emoji=cog.emoji,
             )
         )
     options.append(
