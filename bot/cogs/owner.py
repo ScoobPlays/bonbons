@@ -63,7 +63,9 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
-        if before.content.startswith((".e", ".eval")):
+        context = await self.bot.get_context(after)
+                
+        if after.content.startswith((f'{context.prefix}e', f'{context.prefix}eval')):
             await self.bot.process_commands(after)
 
 
