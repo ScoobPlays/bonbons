@@ -159,8 +159,11 @@ class General(Cog, description="General commands."):
         self.bot = bot
         self._snipe_cache = []
         self._edit_cache = []
-        self.emoji = "🙌"
         self.afk = self.bot.mongo["discord"]["afk"]
+
+    @property
+    def emoji(self) -> str:
+        return "🙌"
 
     @staticmethod
     def base64_encode(text: str):

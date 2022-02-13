@@ -5,7 +5,7 @@ from disnake.ext import commands, tasks
 
 
 class Tasks(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.start_tasks()
 

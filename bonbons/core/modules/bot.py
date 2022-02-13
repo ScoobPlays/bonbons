@@ -2,17 +2,17 @@ from disnake import (ApplicationCommandInteraction, ChannelType, Color, Embed,
                      Guild, Message)
 from disnake.ext.commands import (Bot, Cog, Context, check, command,
                                   slash_command)
+from utils.constants import Emojis
 
-
-class Bot(Cog):
-
-    """Bot-related commands."""
-
+class Bot(Cog, description="Commands related to me."):
     def __init__(self, bot: Bot):
         self.bot = bot
         self.db = self.bot.mongo["discord"]["bot"]
         self.prefix = self.bot.mongo["discord"]["prefixes"]
-        self.emoji = "🤖"
+
+    @property
+    def emoji(self) -> str:
+        return Emojis.bonbons
 
     @Cog.listener("on_message")
     async def prefix_ping(self, message: Message):

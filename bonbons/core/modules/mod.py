@@ -10,8 +10,8 @@ class Mod(commands.Cog, description="Moderation related commands."):
         self.bot = bot
 
     @property
-    def emoji(self):
-        return "<:mod:926401703975198720>"
+    def emoji(self) -> str:
+        return "🛠️"
 
     async def check_ctx(self, ctx, member: disnake.Member):
 
@@ -59,19 +59,12 @@ class Mod(commands.Cog, description="Moderation related commands."):
         self, ctx: commands.Context, member: disnake.Member, nickname: str
     ) -> str:
         try:
-            if ctx.author.top_role.position < member.top_role.position:
-                return await ctx.send(
-                    embed=disnake.Embed(
-                        description="You cannot change this members nick.",
-                        color=disnake.Color.red(),
-                    )
-                )
             await member.edit(nick=nickname)
             embed = disnake.Embed(
                 description=f"You have changed {member.mention}'s nick.",
                 color=disnake.Color.green(),
             )
-            embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
+            embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
             embed.timestamp = datetime.utcnow()
             await ctx.send(embed=embed)
 
@@ -80,7 +73,7 @@ class Mod(commands.Cog, description="Moderation related commands."):
                 description=f"I can't change {member.mention}'s nick.",
                 color=disnake.Color.red(),
             )
-            embed.set_author(name=ctx.author, icon_url=ctx.author.display_avatar)
+            embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
             embed.timestamp = datetime.utcnow()
             await ctx.send(embed=embed)
 
@@ -91,20 +84,12 @@ class Mod(commands.Cog, description="Moderation related commands."):
         nickname: str,
     ) -> str:
         try:
-            if inter.author.top_role.position < member.top_role.position:
-                return await inter.response.send_message(
-                    embed=disnake.Embed(
-                        description="You cannot change this members nick.",
-                        color=disnake.Color.red(),
-                    ),
-                    ephemeral=True,
-                )
             await member.edit(nick=nickname)
             embed = disnake.Embed(
                 description=f"You have changed {member.mention}'s nick.",
                 color=disnake.Color.green(),
             )
-            embed.set_author(name=inter.author, icon_url=inter.author.display_avatar)
+            embed.set_author(name=str(inter.author), icon_url=inter.author.display_avatar)
             embed.timestamp = datetime.utcnow()
             await inter.response.send_message(embed=embed)
 
@@ -113,7 +98,7 @@ class Mod(commands.Cog, description="Moderation related commands."):
                 description=f"I can't change {member.mention}'s nick.",
                 color=disnake.Color.red(),
             )
-            embed.set_author(name=inter.author, icon_url=inter.author.display_avatar)
+            embed.set_author(name=str(inter.author), icon_url=inter.author.display_avatar)
             embed.timestamp = datetime.utcnow()
             await inter.response.send_message(embed=embed)
 

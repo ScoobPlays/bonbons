@@ -9,11 +9,13 @@ class Information(commands.Cog, description="Information related commands."):
         self.bot = bot
 
     @property
-    def emoji(self):
+    def emoji(self) -> str:
         return "ℹ️"
 
-    def created_at(self, value) -> int:
-        return f"<t:{int(disnake.Object(value).created_at.timestamp())}:F> (<t:{int(disnake.Object(value).created_at.timestamp())}:R>)"
+    @staticmethod
+    def created_at(value) -> int:
+        obj  = disnake.Object(value)
+        return f"<t:{int(obj.created_at.timestamp())}:F> (<t:{int(obj.created_at.timestamp())}:R>)"
 
     @commands.command()
     async def snowflake(self, ctx: commands.Context, id: int) -> None:
@@ -47,8 +49,7 @@ class Information(commands.Cog, description="Information related commands."):
         Display's a member's avatar.
         """
 
-        if member is None:
-            member = ctx.author
+        member = member or ctx.author
 
         embed = disnake.Embed(color=disnake.Color.blurple())
         embed.set_image(url=member.display_avatar)
@@ -67,12 +68,13 @@ class Information(commands.Cog, description="Information related commands."):
         Show's a member's avatar
         """
 
-        if member is None:
-            member = inter.author
+        member = member or inter.author
 
-        embed = disnake.Embed(
-            color=disnake.Color.blurple(), timestamp=datetime.utcnow()
-        ).set_image(url=member.display_avatar)
+        embed = disnake.Embed()
+        embed.color = disnake.Color.blurple()
+        embed.timestamp = datetime.utcnow()
+        
+        embed.set_image(url=member.display_avatar)
 
         await inter.response.send_message(embed=embed, ephemeral=False)
 
@@ -112,6 +114,10 @@ class Information(commands.Cog, description="Information related commands."):
                 value=" ".join(r.mention for r in ctx.guild.roles[::-1]),
                 inline=False,
             )
+
+        if ctx.guild.icon is None:
+            return await ctx.send(embed=embed)
+
         embed.set_thumbnail(url=ctx.guild.icon.url)
         await ctx.send(embed=embed)
 
@@ -126,33 +132,39 @@ class Information(commands.Cog, description="Information related commands."):
 
         """
 
+        guild = inter.guild
+
         embed = disnake.Embed(
-            title=inter.guild.name,
-            description=f"**ID:** {inter.guild.id}\n**Owner:** {inter.guild.owner}",
+            title=guild.name,
+            description=f"**ID:** {guild.id}\n**Owner:** {guild.owner}",
             color=disnake.Color.blurple(),
             timestamp=datetime.utcnow(),
         )
         embed.add_field(
             name="Server Created At",
-            value=f"<t:{int(inter.guild.created_at.timestamp())}:F> (<t:{int(inter.guild.created_at.timestamp())}:R>)",
+            value=f"<t:{int(guild.created_at.timestamp())}:F> (<t:{int(guild.created_at.timestamp())}:R>)",
             inline=False,
         )
         embed.add_field(
             name="Information",
-            value=f"• Members: {str(inter.guild.member_count)}\n• Channels: {len(inter.guild.channels)}\n• Emojis: {len(inter.guild.emojis)}",
+            value=f"• Members: {str(guild.member_count)}\n• Channels: {len(guild.channels)}\n• Emojis: {len(inter.guild.emojis)}",
         )
-        if len(str(inter.guild.roles)) >= 1000:
+        if len(str(guild.roles)) >= 1000:
             embed.add_field(
-                name=f"Server Roles [{len(inter.guild.roles)}]",
+                name=f"Server Roles [{len(guild.roles)}]",
                 value="There are too many roles to display.",
                 inline=False,
             )
         else:
             embed.add_field(
-                name=f"Server Roles [{len(inter.guild.roles)}]",
-                value=" ".join(r.mention for r in inter.guild.roles[::-1]),
+                name=f"Server Roles [{len(guild.roles)}]",
+                value=" ".join(role.mention for role in guild.roles[::-1]),
                 inline=False,
             )
+
+        if guild.icon is None:
+            return await inter.response.send_message(embed=embed, ephemeral=False)
+
         embed.set_thumbnail(url=inter.guild.icon.url)
         await inter.response.send_message(embed=embed, ephemeral=False)
 
@@ -161,7 +173,7 @@ class Information(commands.Cog, description="Information related commands."):
     async def membercount(self, ctx: commands.Context) -> None:
 
         """
-        Returns the amount of members in a guild.
+        Tells you the amount of members in this server.
         """
 
         embed = disnake.Embed(
@@ -175,14 +187,13 @@ class Information(commands.Cog, description="Information related commands."):
     async def whois(self, ctx: commands.Context, member: disnake.Member = None) -> None:
 
         """
-        Display's a member's information.
+        Tells you information about a member.
         """
 
-        if member is None:
-            member = ctx.author
+        member = member or ctx.author
 
         if len(member.roles) > 1:
-            roles = ", ".join([r.mention for r in member.roles][1:])
+        roles = " ".join([role.mention for role in member.roles[::-1]])
 
         embed = disnake.Embed(
             description=f"**Member:** {member.mention}\n**ID:** {member.id}",
@@ -205,7 +216,7 @@ class Information(commands.Cog, description="Information related commands."):
             inline=False,
         )
         embed.add_field(
-            name="Roles [{}]\n \n".format(len(member.roles) - 1),
+            name=f"Roles [{len(member.roles)-1}]",
             value=roles,
             inline=False,
         )
@@ -220,14 +231,12 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        Display's a member's information.
+        Tell's you information about a member
         """
 
-        if member is None:
-            member = inter.author
+        member = member or inter.author
 
-        if len(member.roles) > 1:
-            role_string = ", ".join([r.mention for r in member.roles][1:])
+        roles = " ".join([role.mention for r in member.roles[::-1]])
 
         embed = disnake.Embed(
             description=f"**Member:** {member.mention}\n**ID:** {member.id}",
@@ -250,8 +259,8 @@ class Information(commands.Cog, description="Information related commands."):
             inline=False,
         )
         embed.add_field(
-            name="Roles [{}]\n \n".format(len(member.roles) - 1),
-            value=role_string,
+            name=f"Roles [{len(member.roles) - 1}]",
+            value=roles,
             inline=False,
         )
         await inter.response.send_message(embed=embed, ephemeral=False)
@@ -263,7 +272,7 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        Display a member's spotify activity.
+        Shows you a member's spotify activity
         """
 
         member = member or ctx.author
@@ -302,6 +311,15 @@ class Information(commands.Cog, description="Information related commands."):
 
         member = member or inter.author
 
+        if member.activity is None:
+            await inter.response.send_message(
+                embed=disnake.Embed(
+                    description=f"{'You do' if member == inter.author else f'{member.mention} does'} not have a spotify activity.",
+                    color=disnake.Color.red(),
+                ),
+                ephemeral=False,
+            )
+
         for activity in member.activities:
             if isinstance(activity, disnake.Spotify):
                 embed = disnake.Embed(
@@ -319,21 +337,12 @@ class Information(commands.Cog, description="Information related commands."):
                 )
                 await inter.response.send_message(embed=embed, ephemeral=False)
 
-        if member.activity is None:
-            await inter.response.send_message(
-                embed=disnake.Embed(
-                    description="Member does not have a spotify activity.",
-                    color=disnake.Color.red(),
-                ),
-                ephemeral=False,
-            )
-
     @commands.command()
     @commands.guild_only()
     async def roleinfo(self, ctx: commands.Context, role: disnake.Role = None) -> None:
 
         """
-        Shows information about a role, will use your top role if no argument was passed.
+        Tells you information about a role, will use your top role if no role was passed.
         """
 
         role_mentionable = None
@@ -341,7 +350,7 @@ class Information(commands.Cog, description="Information related commands."):
 
         role = role or ctx.author.top_role
 
-        x_emoji = "❌"
+        x = "❌"
         check = "✅"
 
         if role.mentionable:
@@ -351,17 +360,17 @@ class Information(commands.Cog, description="Information related commands."):
             role_hoisted = check
 
         if role.mentionable is False:
-            role_mentionable = x_emoji
+            role_mentionable = x
 
         if role.hoist is False:
-            role_hoisted = x_emoji
+            role_hoisted = x
 
-        embed = disnake.Embed(
-            description=f"**Role:** {role.mention}\n**ID:** {role.id}",
-            color=role.color,
-            timestamp=datetime.utcnow(),
-        )
-        embed.set_author(name=f"{ctx.author}", icon_url=f"{ctx.author.display_avatar}")
+        embed = disnake.Embed()
+        embed.description = f"**Role:** {role.mention}\n**ID:** {role.id}"
+        embed.color = role.color
+        embed.timestamp = datetime.utcnow()
+        
+        embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
         embed.add_field(
             name="Role Created At",
             value=f"<t:{int(role.created_at.timestamp())}:F> (<t:{int(role.created_at.timestamp())}:R>)",
@@ -381,7 +390,7 @@ class Information(commands.Cog, description="Information related commands."):
     ) -> None:
 
         """
-        Shows information about a role
+        Tells you information about a role, will use your top role if no role was passed.
         """
 
         role_mentionable = None
@@ -391,8 +400,6 @@ class Information(commands.Cog, description="Information related commands."):
 
         x_emoji = "❌"
         check = "✅"
-
-        print(type(role))
 
         if role.mentionable:
             role_mentionable = check
@@ -407,12 +414,13 @@ class Information(commands.Cog, description="Information related commands."):
             role_hoisted = x_emoji
 
         embed = disnake.Embed(
-            description=f"**Role:** {role.mention}\n**ID:** {role.id}",
-            color=role.color,
-            timestamp=datetime.utcnow(),
-        )
+            description = f"**Role:** {role.mention}\n**ID:** {role.id}",
+            color = role.color,
+            timestamp=datetime.utcnow()
+            )
+        
         embed.set_author(
-            name=f"{inter.author}", icon_url=f"{inter.author.display_avatar}"
+            name=str(inter.author), icon_url=inter.author.display_avatar
         )
         embed.add_field(
             name="Role Created At",
@@ -429,18 +437,19 @@ class Information(commands.Cog, description="Information related commands."):
     @commands.command()
     @commands.guild_only()
     async def channelinfo(self, ctx, channel: disnake.abc.GuildChannel = None):
+
         """
-        Returns information about a discord channel.
+        Tells you information about a discord channel.
         """
-        if not channel:
-            channel = ctx.channel
+
+        channel = channel or ctx.channel
 
         embed = disnake.Embed(
             description=f"**Channel:** {channel.mention}\n**ID:** {channel.id}",
             color=disnake.Color.blurple(),
             timestamp=datetime.utcnow(),
         )
-        embed.set_author(name=f"{ctx.author}", icon_url=f"{ctx.author.display_avatar}")
+        embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
         embed.add_field(
             name="Channel Created At",
             value=f"<t:{int(channel.created_at.timestamp())}:F> (<t:{int(channel.created_at.timestamp())}:R>)",
@@ -461,10 +470,10 @@ class Information(commands.Cog, description="Information related commands."):
         channel: disnake.abc.GuildChannel = None,
     ):
         """
-        Returns information about a discord channel.
+        Tells you information about a discord channel
         """
-        if not channel:
-            channel = inter.channel
+        
+        channel = channel or inter.channel
 
         embed = disnake.Embed(
             description=f"**Channel:** {channel.mention}\n**ID:** {channel.id}",
@@ -472,7 +481,7 @@ class Information(commands.Cog, description="Information related commands."):
             timestamp=datetime.utcnow(),
         )
         embed.set_author(
-            name=f"{inter.author}", icon_url=f"{inter.author.display_avatar}"
+            name=inter.author, icon_url=inter.author.display_avatar
         )
         embed.add_field(
             name="Channel Created At",

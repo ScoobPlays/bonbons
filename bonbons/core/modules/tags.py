@@ -10,13 +10,16 @@ from utils.paginators import TagPages
 
 class Tags(Cog):
 
-    """Tag-related commands."""
+    """Create, edit, delete and view tags!"""
 
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.emoji = "📰"
         self.base = self.bot.mongo["tags"]
         self._tags_cache = []
+
+    @property
+    def emoji(self) -> str:
+        return "📰"
 
     async def prepare_embed(self, ctx: Context, data: dict) -> Embed:
 

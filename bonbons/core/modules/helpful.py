@@ -10,19 +10,23 @@ from utils.paginators import MyPages
 
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
+# TODO: Move run command oustide of this class
 
 class Helpful(commands.Cog):
 
-    """Commands that may be helpful?"""
+    """Helpful commands."""
 
     def __init__(self, bot):
         self.pysclient = PystonClient()
         self.bot = bot
-        self.emoji = "🫂"
         self.bot_database = self.bot.mongo["discord"]["bot"]
         self._run_cache = {}
         self.message_database = self.bot.mongo["discord"]["messages"]
         self.translator = googletrans.Translator()
+
+    @property
+    def emoji(self) -> str:
+        return "😄"
 
     @commands.Cog.listener()
     async def on_command(self, ctx: commands.Context):

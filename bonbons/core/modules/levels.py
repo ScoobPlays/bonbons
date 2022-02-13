@@ -8,16 +8,17 @@ from disnake.ext import commands
 from easy_pil import Canvas, Editor, Font, load_image_async
 
 
-class Levels(commands.Cog):
-    """A levelling category."""
-
+class Levels(commands.Cog, description="A levelling category."):
     def __init__(self, bot):
         self.bot = bot
-        self.emoji = "⬆️"
         self.db = self.bot.mongo["levels"]
         self.levels = {}
         self.base = 125
         self.update_levels()
+
+    @property
+    def emoji(self) -> str:
+        return "⬆️"
 
     def update_levels(self) -> None:
         for item in range(100):

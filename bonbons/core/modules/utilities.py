@@ -11,8 +11,11 @@ facepalms = ("🤦‍♂️", "🤦‍♀️", "🤦")
 class Utilities(commands.Cog, description="Thread and complimenting utilities!"):
     def __init__(self, bot):
         self.bot = bot
-        self.emoji = "⚙️"
         self.thank = self.bot.mongo["discord"]["thank"]
+
+    @property
+    def emoji(self) -> str:
+        return "⚙️"
 
     async def send_thank(
         self, ctx: commands.Context, member: disnake.Member, reason: str

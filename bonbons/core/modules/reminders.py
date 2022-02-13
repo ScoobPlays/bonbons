@@ -27,10 +27,13 @@ class Reminders(
 ):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.emoji: str = "⏲️"
         self.check_for_reminders.start()
         self.base = self.bot.mongo["reminders"]
         self._channels: Dict = {}
+
+    @property
+    def emoji(self) -> str:
+        return "⏲️"
 
     async def add_reminder(self, ctx: Context, time: int, reason: str):
         db = self.base[str(ctx.guild.id)]
