@@ -5,6 +5,12 @@ from disnake import (ApplicationCommandInteraction, ButtonStyle, Color, Embed,
 from disnake.ext.commands import Context
 from disnake.ui import Button, View, button
 
+__all__ = (
+    "Paginator",
+    "MyPages",
+    "TagPages",
+    "TextPaginator"
+)
 
 class Paginator(View):
     def __init__(

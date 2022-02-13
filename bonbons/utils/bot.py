@@ -11,8 +11,22 @@ from motor import motor_asyncio
 
 from .help.help_command import CustomHelpCommand
 
-# TODO: Implement caching in `get_prefix_from_database`
+# TODO: Implement caching in `get_prefix_from_db`
 
+extensions = [
+    "core.modules.bot",
+    "core.modules.general",
+    "core.modules.helpful",
+    "core.modules.info",
+    "core.modules.levels",
+    "core.modules.mod",
+    "core.modules.owner",
+    "core.modules.python",
+    "core.modules.reminders",
+    "core.modules.tags",
+    "core.modules.tasks",
+    "core.modules.utilities"
+]
 
 class Bonbons(Bot):
     def __init__(self, **kwargs) -> None:
@@ -43,9 +57,8 @@ class Bonbons(Bot):
         os.environ["JISHAKU_NO_UNDERSCORE"] = "1"
         self.load_extension("jishaku")
 
-        for filename in os.listdir("./cogs"):
-            if filename.endswith(".py"):
-                self.load_extension(f"cogs.{filename[:-3]}")
+        for ext in extensions:
+            self.load_extension(ext)
 
     async def on_ready(self) -> None:
 

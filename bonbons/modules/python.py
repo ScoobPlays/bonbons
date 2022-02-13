@@ -6,10 +6,75 @@ from typing import Dict
 
 from disnake import ApplicationCommandInteraction, Color, Embed, Message
 from disnake.abc import Messageable
+from disnake.ui import View
 from disnake.ext.commands import Cog, Context, command, group, slash_command
-from utils.classes import RTFMView, SphinxObjectFileReader
 from utils.replies import REPLIES
 import re
+
+# TODO: Add typehints
+
+class SphinxObjectFileReader:
+    BUFSIZE = 16 * 1024
+
+    def __init__(self, buffer):
+        self.stream = io.BytesIO(buffer)
+
+    def readline(self):
+        return self.stream.readline().decode("utf-8")
+
+    def skipline(self):
+        self.stream.readline()
+
+    def read_compressed_chunks(self):
+        decompressor = zlib.decompressobj()
+        while True:
+            chunk = self.stream.read(self.BUFSIZE)
+            if len(chunk) == 0:
+                break
+            yield decompressor.decompress(chunk)
+        yield decompressor.flush()
+
+    def read_compressed_lines(self):
+        buf = b""
+        for chunk in self.read_compressed_chunks():
+            buf += chunk
+            pos = buf.find(b"\n")
+            while pos != -1:
+                yield buf[:pos].decode("utf-8")
+                buf = buf[pos + 1 :]
+                pos = buf.find(b"\n")
+
+
+class RTFMView(View):
+    def __init__(self, *, reference, embed, ctx, now, when):
+        super().__init__()
+        self.now = now
+        self.when = when
+        self.ctx = ctx
+        self.embed = embed
+        self.reference = reference
+
+    async def interaction_check(self, inter):
+        if inter.author.id != self.ctx.author.id:
+            return False
+        return True
+
+    def _update_labels(self):
+        self.took_when.label = f"Took{self.now-self.when: .3f}"
+
+    async def start(self, ctx):
+        self._update_labels()
+        await self.ctx.send(embed=self.embed, reference=self.reference, view=self)
+
+    @disnake.ui.button(emoji="🗑️")
+    async def delete(self, button, inter):
+        await inter.response.defer()
+        await inter.delete_original_message()
+
+    @disnake.ui.button(label=f"...", disabled=True)
+    async def took_when(self, button, inter):
+        pass
+
 
 class Python(Cog):
 

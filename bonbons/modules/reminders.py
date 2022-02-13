@@ -4,8 +4,23 @@ from typing import Dict
 import disnake
 from disnake.ext import tasks
 from disnake.ext.commands import Bot, Cog, Context, command
-from utils.classes import TimeConverter
 
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
+        time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
+        matches = time_regex.findall(argument.lower())
+        time = 0
+        for v, k in matches:
+            try:
+                time += time_dict[k] * float(v)
+            except KeyError:
+                raise commands.BadArgument(
+                    f"{k} is an invalid time-key! h/m/s/d are valid!"
+                )
+            except ValueError:
+                raise commands.BadArgument(f"{v} is not a number!")
+        return time
 
 class Reminders(
     Cog, description="Reminders that remind you to do something in the future."

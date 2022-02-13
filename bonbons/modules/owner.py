@@ -5,13 +5,18 @@ import traceback
 
 import disnake
 from disnake.ext import commands
-from utils.objects import cleanup_code
 from utils.paginators import TextPaginator
 
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+
+    @staticmethod
+    def cleanup_code(content: str) -> str:
+        if content.startswith("```") and content.endswith("```"):
+            return "\n".join(content.split("\n")[1:-1])
+        return content.strip("` \n")
 
     async def cog_check(self, ctx: commands.Context) -> int:
         return ctx.author.id == 656073353215344650
