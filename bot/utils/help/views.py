@@ -79,7 +79,6 @@ def _get_options(bot: Bot):
             SelectOption(
                 label=cog.qualified_name,
                 description=cog.description,
-                emoji=cog.emoji,
             )
         )
     options.append(
@@ -171,6 +170,14 @@ class HelpCommandDropdown(Select):
         view = HelpMenuPaginator(self.ctx, embeds, timeout=60, embed=True)
         view.add_item(self)
 
+        if self.ctx.author.id != interaction.user.id:
+            view.msg = await interaction.response.send_message(
+            content=None, embed=embeds[0], view=view, ephemeral=True
+            )
+            embeds = None
+            return
+
+
         view.msg = await interaction.edit_original_message(
             content=None, embed=embeds[0], view=view
         )
@@ -178,11 +185,6 @@ class HelpCommandDropdown(Select):
         embeds = None
 
     async def callback(self, interaction: MessageInteraction) -> None:
-
-        if self.values[0] == "NSFW" and not interaction.channel.is_nsfw():
-            return await interaction.response.send_message(
-                "You can only view this category in an NSFW channel.", ephemeral=True
-            )
 
         await interaction.response.defer()
 

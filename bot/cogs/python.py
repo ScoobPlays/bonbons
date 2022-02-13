@@ -9,8 +9,7 @@ from disnake.abc import Messageable
 from disnake.ext.commands import Cog, Context, command, group, slash_command
 from utils.classes import RTFMView, SphinxObjectFileReader
 from utils.replies import REPLIES
-from utils.rtfm import fuzzy
-
+import re
 
 class Python(Cog):
 
@@ -30,7 +29,32 @@ class Python(Cog):
         )
         await ctx.send(embed=embed)
 
-    def parse_object_inv(self, stream: SphinxObjectFileReader, url: str) -> Dict:
+
+    @staticmethod
+    def finder(text, collection, *, key=None, lazy=True):
+        suggestions = []
+        text = str(text)
+        pat = ".*?".join(map(re.escape, text))
+        regex = re.compile(pat, flags=re.IGNORECASE)
+        
+        for item in collection:
+            to_search = key(item) if key else item
+            r = regex.search(to_search)
+            if r:
+                suggestions.append((len(r.group()), r.start(), item))
+
+        def sort_key(tup):
+            if key:
+                return tup[0], tup[1], key(tup[2])
+            return tup
+
+        if lazy:
+            return (z for _, _, z in sorted(suggestions, key=sort_key))
+        else:
+            return [z for _, _, z in sorted(suggestions, key=sort_key)]
+
+    @staticmethod
+    def parse_object_inv(stream: SphinxObjectFileReader, url: str) -> Dict:
         result = {}
         inv_version = stream.readline().rstrip()
 
@@ -75,7 +99,7 @@ class Python(Cog):
 
         return result
 
-    async def build_rtfm_lookup_table(self, page_types):
+    async def build_rtfm_lookup_table(self, page_types: dict):
         cache = {}
         for key, page in page_types.items():
             async with self.bot.session.get(page + "/objects.inv") as resp:
@@ -89,7 +113,7 @@ class Python(Cog):
 
         self._rtfm_cache = cache
 
-    async def do_rtfm(self, ctx, key, obj):
+    async def do_rtfm(self, ctx: Context, key: str, obj: str):
         import time
 
         now = time.perf_counter()
@@ -122,7 +146,7 @@ class Python(Cog):
 
         cache = list(self._rtfm_cache[key].items())
 
-        matches = fuzzy.finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
+        matches = self.finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
 
         embed = Embed(colour=0x2F3136)
         if len(matches) == 0:
