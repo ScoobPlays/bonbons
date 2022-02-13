@@ -21,7 +21,7 @@ extensions = [
     "core.modules.levels",
     "core.modules.mod",
     "core.modules.owner",
-    "core.modules.python",
+    "core.modules.useful",
     "core.modules.reminders",
     "core.modules.tags",
     "core.modules.tasks",

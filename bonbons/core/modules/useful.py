@@ -76,14 +76,17 @@ class RTFMView(View):
         pass
 
 
-class Python(Cog):
+class Useful(Cog):
 
-    """Commands relating to the python langage."""
+    """Commands that I think are useful to me."""
 
     def __init__(self, bot):
         self.bot = bot
-        self.emoji = "<:python:930713365758771242>"
         self.pypi_database = self.bot.mongo["discord"]["pypi"]
+
+    @property
+    def emoji(self) -> str:
+        return "🗯️"
 
     @staticmethod
     async def send_error_message(ctx: Context, message: Message):
@@ -337,4 +340,4 @@ class Python(Cog):
 
 
 def setup(bot):
-    bot.add_cog(Python(bot))
+    bot.add_cog(Useful(bot))
