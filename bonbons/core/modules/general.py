@@ -10,9 +10,9 @@ import aiohttp
 from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
                      Embed, File, Member, Message, TextChannel)
 from disnake.ext.commands import (Cog, Context, Param, command, group,
-                                  guild_only, slash_command)
+                                  guild_only, slash_command, ButtonStyle)
 from simpleeval import FeatureNotAvailable, simple_eval
-from disnake.ui import View, button, ButtonStyle
+from disnake.ui import View, button, 
 from utils.paginators import Paginator
 
 class Calculator(View):
