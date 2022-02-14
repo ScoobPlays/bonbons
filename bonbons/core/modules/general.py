@@ -12,7 +12,7 @@ from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
 from disnake.ext.commands import (Cog, Context, Param, command, group,
                                   guild_only, slash_command, ButtonStyle)
 from simpleeval import FeatureNotAvailable, simple_eval
-from disnake.ui import View, button, 
+from disnake.ui import View, button
 from utils.paginators import Paginator
 
 class Calculator(View):
