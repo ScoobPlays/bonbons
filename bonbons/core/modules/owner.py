@@ -37,7 +37,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             **globals(),
         }
 
-        code = cleanup_code(code)
+        code = self.cleanup_code(code)
         stdout = io.StringIO()
         try:
             with contextlib.redirect_stdout(stdout):
