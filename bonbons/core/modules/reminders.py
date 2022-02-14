@@ -4,6 +4,7 @@ from typing import Dict
 import disnake
 from disnake.ext import tasks
 from disnake.ext.commands import Bot, Cog, Context, command, Converter, BadArgument
+import re
 
 class TimeConverter(Converter):
     async def convert(self, ctx, argument):
