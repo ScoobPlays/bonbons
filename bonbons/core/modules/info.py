@@ -192,7 +192,6 @@ class Information(commands.Cog, description="Information related commands."):
 
         member = member or ctx.author
 
-        if len(member.roles) > 1:
         roles = " ".join([role.mention for role in member.roles[::-1]])
 
         embed = disnake.Embed(
