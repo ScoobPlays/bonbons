@@ -6,7 +6,7 @@ from typing import Dict
 
 from disnake import ApplicationCommandInteraction, Color, Embed, Message
 from disnake.abc import Messageable
-from disnake.ui import View
+from disnake.ui import View, button
 from disnake.ext.commands import Cog, Context, command, group, slash_command
 from utils.replies import REPLIES
 import re
@@ -66,12 +66,12 @@ class RTFMView(View):
         self._update_labels()
         await self.ctx.send(embed=self.embed, reference=self.reference, view=self)
 
-    @disnake.ui.button(emoji="🗑️")
+    @button(emoji="🗑️")
     async def delete(self, button, inter):
         await inter.response.defer()
         await inter.delete_original_message()
 
-    @disnake.ui.button(label=f"...", disabled=True)
+    @button(label=f"...", disabled=True)
     async def took_when(self, button, inter):
         pass
 
