@@ -12,7 +12,7 @@ from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
 from disnake.ext.commands import (Cog, Context, Param, command, group,
                                   guild_only, slash_command)
 from simpleeval import FeatureNotAvailable, simple_eval
-from disnake.ui import View, button
+from disnake.ui import View, button, ButtonStyle
 from utils.paginators import Paginator
 
 class Calculator(View):
@@ -84,7 +84,7 @@ class Calculator(View):
         await inter.edit_original_message(content=new)
 
     @button(
-        label="+", style=disnake.ButtonStyle.blurple, row=0, custom_id="calc:plus"
+        label="+", style=ButtonStyle.blurple, row=0, custom_id="calc:plus"
     )
     async def plus(self, button, inter):
 
@@ -107,7 +107,7 @@ class Calculator(View):
         await inter.edit_original_message(content=new)
 
     @button(
-        label="*", style=disnake.ButtonStyle.blurple, row=1, custom_id="calc:multiply"
+        label="*", style=ButtonStyle.blurple, row=1, custom_id="calc:multiply"
     )
     async def multiply(self, button, inter):
         if inter.message.content == self.string:
@@ -129,7 +129,7 @@ class Calculator(View):
         await inter.edit_original_message(content=new)
 
     @button(
-        label="=", style=disnake.ButtonStyle.blurple, row=2, custom_id="calc:equals"
+        label="=", style=ButtonStyle.blurple, row=2, custom_id="calc:equals"
     )
     async def equals(self, button, inter):
         await inter.response.defer()
@@ -137,14 +137,14 @@ class Calculator(View):
         await inter.edit_original_message(content=new)
 
     @button(
-        label="Clear", style=disnake.ButtonStyle.red, row=3, custom_id="calc:clear"
+        label="Clear", style=ButtonStyle.red, row=3, custom_id="calc:clear"
     )
     async def clear(self, button, inter):
         await inter.response.defer()
         await inter.edit_original_message(content=self.string)
 
     @button(
-        label="Stop", style=disnake.ButtonStyle.red, row=3, custom_id="calc:stop"
+        label="Stop", style=ButtonStyle.red, row=3, custom_id="calc:stop"
     )
     async def stop(self, button, inter):
         await inter.response.defer()
