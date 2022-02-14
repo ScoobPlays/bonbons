@@ -3,9 +3,9 @@ from typing import Dict
 
 import disnake
 from disnake.ext import tasks
-from disnake.ext.commands import Bot, Cog, Context, command
+from disnake.ext.commands import Bot, Cog, Context, command, Converter, BadArgument
 
-class TimeConverter(commands.Converter):
+class TimeConverter(Converter):
     async def convert(self, ctx, argument):
         time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
         time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
@@ -15,11 +15,11 @@ class TimeConverter(commands.Converter):
             try:
                 time += time_dict[k] * float(v)
             except KeyError:
-                raise commands.BadArgument(
+                raise BadArgument(
                     f"{k} is an invalid time-key! h/m/s/d are valid!"
                 )
             except ValueError:
-                raise commands.BadArgument(f"{v} is not a number!")
+                raise BadArgument(f"{v} is not a number!")
         return time
 
 class Reminders(
