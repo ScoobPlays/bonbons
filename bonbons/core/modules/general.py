@@ -8,9 +8,9 @@ from typing import Optional
 
 import aiohttp
 from disnake import (AllowedMentions, ApplicationCommandInteraction, Color,
-                     Embed, File, Member, Message, TextChannel)
+                     Embed, File, Member, Message, TextChannel, ButtonStyle)
 from disnake.ext.commands import (Cog, Context, Param, command, group,
-                                  guild_only, slash_command, ButtonStyle)
+                                  guild_only, slash_command)
 from simpleeval import FeatureNotAvailable, simple_eval
 from disnake.ui import View, button
 from utils.paginators import Paginator
