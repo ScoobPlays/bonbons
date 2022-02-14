@@ -13,7 +13,7 @@ from disnake.ext.commands import (Cog, Context, Param, command, group,
                                   guild_only, slash_command)
 from simpleeval import FeatureNotAvailable, simple_eval
 from disnake.ui import View, button
-from utils.paginators Paginator
+from utils.paginators import Paginator
 
 class Calculator(View):
     def __init__(self):
