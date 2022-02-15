@@ -24,7 +24,6 @@ extensions = [
     "core.modules.useful",
     "core.modules.reminders",
     "core.modules.tags",
-    "core.modules.tasks",
     "core.modules.utilities"
 ]
 
