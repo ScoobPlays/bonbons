@@ -71,7 +71,6 @@ def _get_options(bot: Bot):
         if cog.qualified_name in [
             "Jishaku",
             "Owner",
-            "Tasks",
         ]:
             continue
 

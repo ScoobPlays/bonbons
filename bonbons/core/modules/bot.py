@@ -1,8 +1,7 @@
 from disnake import (ApplicationCommandInteraction, ChannelType, Color, Embed,
-                     Guild, Message)
+                     Guild, Message, PartialEmoji)
 from disnake.ext.commands import (Bot, Cog, Context, check, command,
                                   slash_command)
-from utils.constants import Emojis
 
 class Bot(Cog, description="Commands related to me."):
     def __init__(self, bot: Bot):
@@ -12,7 +11,7 @@ class Bot(Cog, description="Commands related to me."):
 
     @property
     def emoji(self) -> str:
-        return Emojis.bonbons
+        return PartialEmoji(name='pfp', id=942408031071793203)
 
     @Cog.listener("on_message")
     async def prefix_ping(self, message: Message):

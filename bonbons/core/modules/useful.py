@@ -10,7 +10,7 @@ from disnake.ui import View, button
 from disnake.ext.commands import Cog, Context, command, group, slash_command
 from utils.replies import REPLIES
 import re
-
+import io
 # TODO: Add typehints
 
 class SphinxObjectFileReader:
