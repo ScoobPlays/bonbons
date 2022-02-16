@@ -108,15 +108,12 @@ class CustomHelpCommand(HelpCommand):
         for command in _commands:
             if isinstance(command, Group):
                 for cmd in command.commands:
-                    [
-                        self._commands.append(
-                            {
-                                "name": f"{command.name} {cmd.name}",
-                                "brief": cmd.description or "...",
-                            }
-                        )
-                        for cmd in command.commands
-                    ]
+                    self._commands.append(
+                        {
+                            "name": f"{command.name} {cmd.name}",
+                            "brief": cmd.description or cmd.help or "...",
+                        }
+                    )
 
                 self._commands.append(
                     {

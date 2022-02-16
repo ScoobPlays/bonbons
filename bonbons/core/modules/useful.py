@@ -11,6 +11,8 @@ from disnake.ext.commands import Cog, Context, command, group, slash_command
 from utils.replies import REPLIES
 import re
 import io
+import zlib
+
 # TODO: Add typehints
 
 class SphinxObjectFileReader:
@@ -76,10 +78,7 @@ class RTFMView(View):
         pass
 
 
-class Useful(Cog):
-
-    """Commands that I think are useful to me."""
-
+class Useful(Cog, description="Commands that I think are useful to me."):
     def __init__(self, bot):
         self.bot = bot
         self.pypi_database = self.bot.mongo["discord"]["pypi"]
