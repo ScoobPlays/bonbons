@@ -151,7 +151,7 @@ class Levels(commands.Cog, description="A levelling category."):
     @commands.command(name="setlevel")
     @commands.cooldown(1, 20, commands.BucketType.user)
     @commands.guild_only()
-    async def setlevel(self, ctx: commands.Context, member: disnake.Member=None, level: int):
+    async def setlevel(self, ctx: commands.Context, member: disnake.Member, level: int):
         
         db = self.db[str(ctx.guild.id)]
 
