@@ -13,7 +13,7 @@ class Levels(commands.Cog, description="A levelling category."):
         self.bot = bot
         self.db = self.bot.mongo["levels"]
         self.levels = {}
-        self.base = 125
+        self._base = 125
         self.update_levels()
 
     @property
@@ -21,8 +21,10 @@ class Levels(commands.Cog, description="A levelling category."):
         return "⬆️"
 
     def update_levels(self) -> None:
-        for item in range(100):
-            self.levels[item] = self.base * item
+        for item in range(500):
+            self.levels[item] = self._base * item
+        setattr(self.bot, "_levels", self.levels)
+        return "Filled up levels."
 
     async def generate_rank_card(
         self, ctx: commands.Context, member: disnake.Member, data, bg=None
@@ -82,7 +84,7 @@ class Levels(commands.Cog, description="A levelling category."):
             )
             return await ctx.send(embed=embed)
 
-    async def generate_leaderboard(self, ctx):
+    async def generate_leaderboard(self, ctx: commands.Context) -> None:
 
         before = time.perf_counter()
         background = Editor(Canvas((1400, 1280), color="#23272A"))
@@ -131,11 +133,11 @@ class Levels(commands.Cog, description="A levelling category."):
 
             return await ctx.send(embed=embed)
 
-    @commands.command(aliases=["level"])
+    @commands.command(name="rank", aliases=["level"])
     @commands.cooldown(1, 20, commands.BucketType.user)
     @commands.guild_only()
     async def rank(self, ctx: commands.Context, member: disnake.Member = None):
-        """Shows your current level in the server."""
+        """Tells you your current level embedded inside an image."""
 
         member = member or ctx.author
 
@@ -143,8 +145,22 @@ class Levels(commands.Cog, description="A levelling category."):
 
         data = await db.find_one({"_id": member.id})
 
-        if data:
+        if data is not None:
             await self.generate_rank_card(ctx, member, data)
+
+    @commands.command(name="setlevel")
+    @commands.cooldown(1, 20, commands.BucketType.user)
+    @commands.guild_only()
+    async def setlevel(self, ctx: commands.Context, member: disnake.Member=None, level: int):
+        
+        db = self.db[str(ctx.guild.id)]
+
+        data = await db.find_one({"_id": member.id})
+
+        if data is not None:
+            await self.db.update_one(
+                {"_id": data["_id"]}, {"$set": {"level": level}}
+            )
 
     @commands.command(aliases=["lb"])
     @commands.cooldown(1, 20, commands.BucketType.user)
@@ -165,7 +181,7 @@ class Levels(commands.Cog, description="A levelling category."):
         db = self.db[str(message.guild.id)]
 
         data = await db.find_one({"_id": message.author.id})
-        xp = random.randint(10, 50)
+        xp = random.randint(10, 200)
 
         if data is not None:
 
