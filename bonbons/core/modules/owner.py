@@ -37,7 +37,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             **globals(),
         }
 
-        code = self.cleanup_code(code.replace(self.bot.http.token, "[token]"]))
+        code = self.cleanup_code(code.replace(self.bot.http.token, "[token]"))
         stdout = io.StringIO()
         try:
             with contextlib.redirect_stdout(stdout):
