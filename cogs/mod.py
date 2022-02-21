@@ -111,35 +111,12 @@ class Mod(commands.Cog, description="Moderation related commands."):
         """Change a users nickname"""
         await self.context_change_name(ctx, member, nickname)
 
-    @commands.slash_command(name="nickname")
-    @commands.guild_only()
-    @commands.has_permissions(manage_nicknames=True)
-    async def nickname_slash(
-        self,
-        inter: discord.ApplicationCommandInteraction,
-        member: discord.Member,
-        nickname: str,
-    ):
-        """Change a users nickname"""
-
-        await self.interaction_change_nickname(inter, member, nickname)
-
     @commands.command()
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
     async def purge(self, ctx: commands.Context, amount: int = 5):
         """Purges an amount of messages in a channel"""
         await ctx.channel.purge(limit=amount)
-
-    @commands.slash_command(name="purge")
-    @commands.guild_only()
-    @commands.has_permissions(manage_messages=True)
-    async def purge_slash(
-        self, inter: discord.ApplicationCommandInteraction, amount: int = 5
-    ):
-        """Purges an amount of messages in a channel"""
-        x = await inter.channel.purge(limit=amount)
-        await inter.response.send_message(f"Purged {len(x)} messages.", ephemeral=True)
 
     @commands.command()
     @commands.guild_only()

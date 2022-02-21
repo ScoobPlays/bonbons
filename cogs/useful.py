@@ -4,10 +4,10 @@ import re
 from datetime import datetime
 from typing import Dict
 
-from discord import ApplicationCommandInteraction, Color, Embed, Message
+from discord import Color, Embed, Message
 from discord.abc import Messageable
 from discord.ui import View, button
-from discord.ext.commands import Cog, Context, command, group, slash_command
+from discord.ext.commands import Cog, Context, command, group
 from utils.replies import REPLIES
 import re
 import io
@@ -81,7 +81,6 @@ class RTFMView(View):
 class Useful(Cog, description="Commands that I think are useful to me."):
     def __init__(self, bot):
         self.bot = bot
-        self.pypi_database = self.bot.mongo["discord"]["pypi"]
 
     @property
     def emoji(self) -> str:
@@ -262,17 +261,6 @@ class Useful(Cog, description="Commands that I think are useful to me."):
         """Retrieve's documentation about the discord library."""
         await self.do_rtfm(ctx, "discord", obj)
 
-    async def insert_into_db(self, obj):
-        data = await self.pypi_database.find_one({"name": obj})
-
-        if data is None:
-            await self.pypi_database.insert_one(
-                {"name": obj, "inserted_at": int(datetime.now().timestamp())}
-            )
-
-        if data is not None:
-            pass
-
     @command()
     async def pypi(self, ctx: Context, name: str):
 
@@ -294,48 +282,9 @@ class Useful(Cog, description="Commands that I think are useful to me."):
                         url="https://cdn.discordapp.com/emojis/766274397257334814.png"
                     )
                     await ctx.send(embed=embed)
-                    await self.insert_into_db(raw["info"]["name"])
 
                 else:
                     await ctx.send("A package with that name does not exist.")
-
-    @slash_command(name="pypi")
-    async def pypi_slash(
-        self, interaction: ApplicationCommandInteraction, package: str
-    ):
-        """Finds a package on PyPI."""
-        async with self.bot.session.get(
-            f"https://pypi.org/pypi/{package}/json"
-        ) as data:
-            if data.status == 200:
-                raw = await data.json()
-
-                embed = Embed(
-                    title=raw["info"]["name"],
-                    description=raw["info"]["summary"],
-                    url=raw["info"]["project_url"],
-                    color=Color.greyple(),
-                ).set_thumbnail(
-                    url="https://cdn.discordapp.com/emojis/766274397257334814.png"
-                )
-                await interaction.response.send_message(embed=embed)
-                await self.insert_into_db(raw["info"]["name"])
-
-            else:
-                await interaction.response.send_message(
-                    "A package with that name does not exist.", ephemeral=True
-                )
-
-    @pypi_slash.autocomplete(option_name="package")
-    async def pypi_slash_autocomp(
-        self, interaction: ApplicationCommandInteraction, package: str
-    ) -> str:
-        packages = []
-
-        async for package in self.pypi_database.find():
-            packages.append(package["name"])
-
-        return [pkg for pkg in packages if package.lower() in pkg.lower()]
 
 
 def setup(bot):
