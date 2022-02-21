@@ -77,31 +77,6 @@ class Mod(commands.Cog, description="Moderation related commands."):
             embed.timestamp = datetime.utcnow()
             await ctx.send(embed=embed)
 
-    async def interaction_change_nickname(
-        self,
-        inter: discord.ApplicationCommandInteraction,
-        member: discord.Member,
-        nickname: str,
-    ) -> str:
-        try:
-            await member.edit(nick=nickname)
-            embed = discord.Embed(
-                description=f"You have changed {member.mention}'s nick.",
-                color=discord.Color.green(),
-            )
-            embed.set_author(name=str(inter.author), icon_url=inter.author.display_avatar)
-            embed.timestamp = datetime.utcnow()
-            await inter.response.send_message(embed=embed)
-
-        except Exception:
-            embed = discord.Embed(
-                description=f"I can't change {member.mention}'s nick.",
-                color=discord.Color.red(),
-            )
-            embed.set_author(name=str(inter.author), icon_url=inter.author.display_avatar)
-            embed.timestamp = datetime.utcnow()
-            await inter.response.send_message(embed=embed)
-
     @commands.command(aliases=["nick"])
     @commands.guild_only()
     @commands.has_permissions(manage_nicknames=True)
