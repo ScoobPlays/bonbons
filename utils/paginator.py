@@ -1,19 +1,14 @@
-from typing import List
-
-from discord import (ButtonStyle, Color, Embed)
+from discord import ButtonStyle
 from discord.ext.commands import Context
 from discord.ui import Button, View, button
 
 __all__ = (
     "Paginator",
-    "MyPages",
-    "TagPages",
-    "TextPaginator"
 )
 
 class Paginator(View):
     def __init__(
-        self, ctx: Context, messages: List, *, embed: bool = False, timeout: int = 60
+        self, ctx: Context, messages: list, *, embed: bool = False, timeout: int = 60
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
