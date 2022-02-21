@@ -148,10 +148,6 @@ class Helpful(commands.Cog):
         async with ctx.typing():
             await self.run_code(ctx, lang, code)
 
-    @commands.message_command(name="Run Code")
-    async def _run(self, inter, message: discord.Message):
-        await self._run_code(inter, message.content.replace(".run", ""))
-
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         ctx = await self.bot.get_context(after)
