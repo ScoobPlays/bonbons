@@ -26,9 +26,9 @@ class Bonbons(Bot):
         self.invoked_commands = 0
         self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
 
-    def start(self) -> None:
+    async def start(self) -> None:
         self.setup()
-        super().start(os.environ["token"])
+        await super().start(os.environ["token"])
 
     def setup(self) -> None:
 
