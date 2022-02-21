@@ -1,0 +1,95 @@
+import contextlib
+import io
+import textwrap
+import traceback
+
+import discord
+from discord.ext import commands
+from utils.paginator import Paginator
+
+class TextPaginator:
+    def __init__(self, ctx: commands.Context, data):
+        self.data = data
+        self.ctx = ctx
+
+    async def start(self):
+        embeds = []
+
+        for index, result in enumerate(self.data):
+            embed = discord.Embed(
+                description=f"```py\n{result}\n```", color=discord.Color.blurple()
+            ).set_footer(text=f"Page {index+1}/{len(self.data)}")
+            embeds.append(embed)
+
+        view = Paginator(self.ctx, embeds, embed=True)
+
+        view.msg = await self.ctx.reply(embed=embeds[0], view=view)
+
+class Owner(commands.Cog, command_attrs=dict(hidden=True)):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    @staticmethod
+    def cleanup_code(content: str) -> str:
+        if content.startswith("```") and content.endswith("```"):
+            return "\n".join(content.split("\n")[1:-1])
+        return content.strip("` \n")
+
+    async def cog_check(self, ctx: commands.Context) -> int:
+        return ctx.author.id == 656073353215344650
+
+    @commands.command(name="eval", aliases=["e"])
+    async def _eval(self, ctx: commands.Context, *, code: str):
+
+        variables: dict = {
+            "ctx": ctx,
+            "bot": self.bot,
+            "discord": discord,
+            "discord": discord,
+            "_channel": ctx.channel,
+            "_author": ctx.author,
+            "_guild": ctx.guild,
+            "_message": ctx.message,
+            "nl": "\n",
+            **globals(),
+        }
+
+        code = self.cleanup_code(code.replace(self.bot.http.token, "[token]"))
+        stdout = io.StringIO()
+        try:
+            with contextlib.redirect_stdout(stdout):
+
+                exec(
+                    f'async def _execute_human():\n{textwrap.indent(code, "  ")}',
+                    variables,
+                )
+                obj = await variables["_execute_human"]()
+                result = str(obj)
+
+        except Exception as e:
+            result = "".join(traceback.format_exception(e, e, e.__traceback__))
+
+        if len(result) >= 4000:
+            paginator = TextPaginator(
+                ctx, [result[i : i + 4000] for i in range(0, len(result), 4000)]
+            )
+            return await paginator.start()
+
+        if result == "None":
+            return
+
+        embed = discord.Embed(
+            description=f"```py\n{result}\n```", color=discord.Color.blurple()
+        )
+        await ctx.reply(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+        context = await self.bot.get_context(after)
+                
+        if after.content.startswith((f'{context.prefix}e', f'{context.prefix}eval')):
+            await self.bot.process_commands(after)
+
+
+def setup(bot):
+    bot.add_cog(Owner(bot))
