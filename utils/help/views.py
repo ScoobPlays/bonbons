@@ -1,6 +1,6 @@
-from disnake import ButtonStyle, Color, Embed, MessageInteraction, SelectOption
-from disnake.ext.commands import Bot, Command, Context, Group
-from disnake.ui import Button, Select, View, button
+from discord import ButtonStyle, Color, Embed, SelectOption
+from discord.ext.commands import Bot, Command, Context, Group
+from discord.ui import Button, Select, View, button
 
 BUTTON_ROW = 1
 
@@ -18,7 +18,7 @@ class HelpMenuPaginator(View):
     async def on_timeout(self) -> None:
         await self.msg.edit(view=None)
 
-    async def interaction_check(self, inter: MessageInteraction) -> bool:
+    async def interaction_check(self, inter) -> bool:
         if inter.author.id != self.ctx.author.id:
             await inter.response.send_message(
                 f"You are not the owner of this message.",
@@ -27,7 +27,7 @@ class HelpMenuPaginator(View):
             return False
         return True
 
-    async def show_page(self, inter: MessageInteraction, page: int):
+    async def show_page(self, inter, page: int):
         if page >= len(self.messages):
             self.current_page = 0
         else:
@@ -41,22 +41,22 @@ class HelpMenuPaginator(View):
             await inter.edit_original_message(content=data, view=self)
 
     @button(label="<<", style=ButtonStyle.grey, row=BUTTON_ROW)
-    async def back_two(self, button: Button, inter: MessageInteraction):
+    async def back_two(self, button: Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
     @button(label="Back", style=ButtonStyle.blurple, row=BUTTON_ROW)
-    async def back_one(self, button: Button, inter: MessageInteraction):
+    async def back_one(self, button: Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
     @button(label="Next", style=ButtonStyle.blurple, row=BUTTON_ROW)
-    async def next_one(self, button: Button, inter: MessageInteraction):
+    async def next_one(self, button: Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
     @button(label="️>>", style=ButtonStyle.grey, row=BUTTON_ROW)
-    async def next_two(self, button: Button, inter: MessageInteraction):
+    async def next_two(self, button: Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
@@ -145,7 +145,7 @@ class HelpCommandDropdown(Select):
         description: str,
         data,
         per_page: int,
-        interaction: MessageInteraction,
+        interaction,
     ) -> None:
 
         embeds = []
@@ -185,7 +185,7 @@ class HelpCommandDropdown(Select):
 
         embeds = None
 
-    async def callback(self, interaction: MessageInteraction) -> None:
+    async def callback(self, interaction) -> None:
 
         await interaction.response.defer()
 
@@ -214,7 +214,7 @@ class HelpCommandMenu(View):
         self.embed = embed
         self.add_item(HelpCommandDropdown(self.ctx, self.bot, self.embed))
 
-    async def interaction_check(self, interaction: MessageInteraction) -> bool:
+    async def interaction_check(self, interaction) -> bool:
         if interaction.author.id != self.ctx.author.id:
             await interaction.response.send_message(
                 f"You are not the owner of this message.",
