@@ -38,7 +38,7 @@ class CustomHelpCommand(HelpCommand):
 
         embed = HelpEmbed(
             title="Bonbons Help Page",
-            description=f"Hello! I am bonbons, I was made by {self.context.bot.owner} around <t:1631859987:R>.",
+            description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.",
         )
         embed.add_field(name="How do I get help?", value=value)
 
