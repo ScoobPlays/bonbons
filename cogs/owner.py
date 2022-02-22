@@ -53,7 +53,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             **globals(),
         }
 
-        code = self.cleanup_code(code.replace(self.bot.http.token, "[token]"))
+        code = self.cleanup_code(code)
         stdout = io.StringIO()
         try:
             with contextlib.redirect_stdout(stdout):
@@ -63,7 +63,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
                     variables,
                 )
                 obj = await variables["_execute_human"]()
-                result = str(obj)
+                result = str(obj).replace(self.bot.http.token, "[token]")
 
         except Exception as e:
             result = "".join(traceback.format_exception(e, e, e.__traceback__))
