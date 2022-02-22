@@ -20,7 +20,7 @@ class Paginator(View):
         await self.msg.edit(view=None)
 
     async def interaction_check(self, inter) -> bool:
-        if inter.author.id != self.ctx.author.id:
+        if inter.user.id != self.ctx.author.id:
             await inter.response.send_message(
                 f"You are not the owner of this message.",
                 ephemeral=True,

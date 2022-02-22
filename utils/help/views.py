@@ -19,7 +19,7 @@ class HelpMenuPaginator(View):
         await self.msg.edit(view=None)
 
     async def interaction_check(self, inter) -> bool:
-        if inter.author.id != self.ctx.author.id:
+        if inter.user.id != self.ctx.author.id:
             await inter.response.send_message(
                 f"You are not the owner of this message.",
                 ephemeral=True,
@@ -215,7 +215,7 @@ class HelpCommandMenu(View):
         self.add_item(HelpCommandDropdown(self.ctx, self.bot, self.embed))
 
     async def interaction_check(self, interaction) -> bool:
-        if interaction.author.id != self.ctx.author.id:
+        if interaction.user.id != self.ctx.author.id:
             await interaction.response.send_message(
                 f"You are not the owner of this message.",
                 ephemeral=True,
