@@ -45,7 +45,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             "ctx": ctx,
             "bot": self.bot,
             "discord": discord,
-            "discord": discord,
             "_channel": ctx.channel,
             "_author": ctx.author,
             "_guild": ctx.guild,
