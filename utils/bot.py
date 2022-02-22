@@ -32,11 +32,10 @@ class Bonbons(Bot):
 
     def setup(self) -> None:
 
-        os.environ["JISHAKU_FORCE_PAGINATOR"] = "1"
-        os.environ["JISHAKU_PY_RES"] = "false"
-        os.environ["JISHAKU_EMBEDDED_JSK"] = "1"
-        os.environ["JISHAKU_EMBEDDED_JSK_COLOUR"] = "0x2F3136"
-        os.environ["JISHAKU_NO_UNDERSCORE"] = "1"
+        os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True" 
+        os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
+        os.environ["JISHAKU_HIDE"] = "True"
+
         self.load_extension("jishaku")
 
         for ext in os.listdir("./cogs"):
