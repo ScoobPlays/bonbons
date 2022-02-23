@@ -10,6 +10,7 @@ from discord.ext.commands import (Bot, CheckFailure, CommandNotFound,
 from motor import motor_asyncio
 
 from .help.help_command import CustomHelpCommand
+from tortoise import Tortoise
 
 class Bonbons(Bot):
     def __init__(self, **kwargs) -> None:
@@ -46,6 +47,12 @@ class Bonbons(Bot):
         if not hasattr(self, "session"):
             self.session = ClientSession(loop=self.loop)
 
+        await Tortoise.init(
+            db_url="sqlite://db.sqlite3",
+            modules={"models": ["utils.models"]}
+        )   
+        await Tortoise.generate_schemas()
+            
         print("Logged in.")
 
     async def get_prefix_from_db(self, bot: Bot, message: Message):
