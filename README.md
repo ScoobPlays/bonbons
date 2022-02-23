@@ -1,5 +1,5 @@
 ## bonbons
-A bot mainly for my discord server. It functions for other servers too!
+A bot mainly for my [Discord Server](https://discord.gg/cJsuVmk8Xq). It functions for other servers too!
 
 ## Features
 - General commands
@@ -31,3 +31,4 @@ python main.py
 
 ## Links 
 - [Github](https://github.com/sifte/bonbons/)
+- [My Discord Server](https://discord.gg/cJsuVmk8Xq)
