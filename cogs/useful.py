@@ -8,7 +8,7 @@ from discord import Color, Embed, Message
 from discord.abc import Messageable
 from discord.ui import View, button
 from discord.ext.commands import Cog, Context, command, group
-from utils.replies import REPLIES
+from utils.constants import REPLIES
 import re
 import io
 import zlib

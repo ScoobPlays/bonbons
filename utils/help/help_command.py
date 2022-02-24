@@ -7,11 +7,6 @@ from .views import HelpCommandMenu
 
 
 class CustomHelpCommand(HelpCommand):
-
-    """
-    A subclassed version of discord.py's `HelpCommand` class.
-    """
-
     def __init__(self):
         super().__init__(
             command_attrs={
@@ -29,11 +24,6 @@ class CustomHelpCommand(HelpCommand):
         return await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping):
-
-        """
-        Sends the base help command menu.
-        """
-
         value = "Click the dropdown and pick an option! Or...\n```\nhelp [command]\nhelp [category]\nhelp [group]\n```"
 
         embed = HelpEmbed(
@@ -50,11 +40,6 @@ class CustomHelpCommand(HelpCommand):
         )
 
     async def send_command_help(self, command: Command):
-
-        """
-        Sends help about a command.
-        """
-
         embed = HelpEmbed(title="Command Help")
 
         embed.description = (
@@ -97,10 +82,6 @@ class CustomHelpCommand(HelpCommand):
         view.msg = await self.send(embed=embeds[0], view=view)
 
     async def send_help_embed(self, title: str, description: str, _commands):
-
-        """
-        A helper method that extracts all of a category's commands, groups, then edits them to append them into a list for future usage.
-        """
 
         for command in _commands:
             if isinstance(command, Group):

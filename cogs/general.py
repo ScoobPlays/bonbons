@@ -14,6 +14,7 @@ from discord.ext.commands import (Cog, Context, command, group,
 from simpleeval import simple_eval
 from discord.ui import View, button
 from utils.paginator import Paginator
+from utils.bot import Bonbons
 
 class Calculator(View):
     def __init__(self):
@@ -154,7 +155,7 @@ class Calculator(View):
 
         await inter.edit_original_message(view=self)
 
-class General(Cog, description="General commands."):
+class Fun(Cog, description="Fun commands."):
     def __init__(self, bot):
         self.bot = bot
         self._snipe_cache = []
@@ -683,5 +684,5 @@ class General(Cog, description="General commands."):
             return await ctx.send("I could not evalute expression your expression(s).")
 
 
-def setup(bot):
-    bot.add_cog(General(bot))
+def setup(bot: Bonbons) -> None:
+    bot.add_cog(Fun(bot))

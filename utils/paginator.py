@@ -2,9 +2,7 @@ from discord import ButtonStyle
 from discord.ext.commands import Context
 from discord.ui import Button, View, button
 
-__all__ = (
-    "Paginator",
-)
+__all__ = ("Paginator",)
 
 class Paginator(View):
     def __init__(

@@ -48,7 +48,7 @@ class Tags(Cog):
 
     @property
     def emoji(self) -> str:
-        return "📰"
+        return "🏷️"
 
     async def prepare_embed(self, ctx: Context, data: dict) -> Embed:
 
