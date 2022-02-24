@@ -12,7 +12,8 @@ class Economy(Cog, description="Everyones favorite module!"):
         user = await UserModel.filter(id=member.id).first()
 
         if user is None:
-            await UserModel.create(id=member.id, balance=0, bank=0, bank_limit=1000)
+            user = await UserModel.create(id=member.id, balance=0, bank=0, bank_limit=1000)
+            return user
 
         return user
 
@@ -41,7 +42,7 @@ class Economy(Cog, description="Everyones favorite module!"):
             return await ctx.send("You don't have enough money to deposit that much.")
 
         if user.bank + amount > user.bank_limit:
-            return await ctx.send("You can't deposit that much in your bank.")
+            return await ctx.send("You can't deposit that much money.")
 
         user.bank += amount
         await user.save()
