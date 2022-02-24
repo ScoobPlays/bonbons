@@ -97,4 +97,5 @@ class Bonbons(Bot):
             return await ctx.reply("I cannot run this command.", mention_author=False)
 
         else:
+            print(error)
             await ctx.reply(error)

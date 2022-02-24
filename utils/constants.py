@@ -1,4 +1,4 @@
-__all__ = ("REPLIES")
+__all__ = ("REPLIES",)
 
 REPLIES = [
     "Noooooo!!",
