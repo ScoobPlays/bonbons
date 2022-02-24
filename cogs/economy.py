@@ -3,7 +3,7 @@ from utils.bot import Bonbons
 from utils.models import UserModel
 from discord import Embed, Color, Member
 
-class Economy(Cog):
+class Economy(Cog, description="Everyones favorite module!"):
     def __init__(self, bot: Bonbons):
         self.bot = bot
 
