@@ -1,11 +1,7 @@
 import random
-from typing import Optional
-
 import discord
 from discord.ext import commands
-from utils.replies import REPLIES
-
-facepalms = ("🤦‍♂️", "🤦‍♀️", "🤦")
+from utils.constants import REPLIES
 
 
 class Utilities(commands.Cog, description="Thread and complimenting utilities!"):
@@ -19,7 +15,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
 
     async def send_thank(
         self, ctx: commands.Context, member: discord.Member, reason: str
-    ):
+    ) -> None:
         if member == ctx.author:
             return await ctx.send(
                 embed=discord.Embed(
@@ -42,7 +38,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
         ctx: commands.Context,
         member: discord.Member = None,
         *,
-        reason: Optional[str],
+        reason: str=None,
     ):
 
         """

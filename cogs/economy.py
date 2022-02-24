@@ -7,8 +7,7 @@ class Economy(Cog, description="Everyones favorite module!"):
     def __init__(self, bot: Bonbons):
         self.bot = bot
 
-    @staticmethod
-    async def _get_user(member: Member):
+    async def _get_user(self, member: Member):
         user = await UserModel.filter(id=member.id).first()
 
         if user is None:
