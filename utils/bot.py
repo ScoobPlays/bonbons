@@ -40,7 +40,8 @@ class Bonbons(Bot):
         self.load_extension("jishaku")
 
         for ext in os.listdir("./cogs"):
-            self.load_extension(f"cogs.{ext.replace('.py', '')}")
+            if ext.endswith(".py"):
+                self.load_extension(f"cogs.{ext[:-3]}")
 
     async def on_ready(self) -> None:
 
