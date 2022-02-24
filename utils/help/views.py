@@ -74,13 +74,23 @@ def _get_options(bot: Bot):
         ]:
             continue
 
-        options.append(
-            SelectOption(
-                label=cog.qualified_name,
-                description=cog.description,
-                emoji=cog.emoji,
+        if hasattr(cog, "emoji"):
+            options.append(
+                SelectOption(
+                    label=cog.qualified_name,
+                    description=cog.description,
+                    emoji=cog.emoji,
+                )
             )
-        )
+        
+        else:
+            options.append(
+                SelectOption(
+                    label=cog.qualified_name,
+                    description=cog.description,
+                )
+            )
+
     options.append(
         SelectOption(
             label="Home", description="Go back to the main help page.", emoji="🏠"
