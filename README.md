@@ -1,6 +1,9 @@
 ## bonbons
 A bot mainly for my [Discord Server](https://discord.gg/cJsuVmk8Xq). It functions for other servers too!
 
+## Contributing
+If you want to contribute to this discord bot, please do so by making an issue/PR!
+
 ## Features
 - General commands
 - Informative commands
@@ -8,26 +11,6 @@ A bot mainly for my [Discord Server](https://discord.gg/cJsuVmk8Xq). It function
 - Levelling
 - Code Evaluation
 - Reminders  
-
-## Running
-1. Install the libraries needed in order for the bot to function. (See the `requirements.txt` file)
-2. Set four environmental variables:
-
-```yml
-mongo_token: 'mongo_url' # the url provided on mongodb
-token: 'token' # the bots token
-
-# OPTIONAL: this is for the define command
-
-x_host: 'host' # the rapid api host url 
-x_key: 'key' # the rapid api key
-```
-
-3. Run the bot:
-
-```bash
-python main.py
-```
 
 ## Links 
 - [Github](https://github.com/sifte/bonbons/)

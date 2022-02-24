@@ -29,8 +29,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @staticmethod
-    def cleanup_code(content: str) -> str:
+    def cleanup_code(self, content: str) -> str:
         if content.startswith("```") and content.endswith("```"):
             return "\n".join(content.split("\n")[1:-1])
         return content.strip("` \n")
@@ -39,9 +38,9 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         return ctx.author.id == 656073353215344650
 
     @commands.command(name="eval", aliases=["e"])
-    async def _eval(self, ctx: commands.Context, *, code: str):
+    async def _eval(self, ctx: commands.Context, *, code: str) -> None:
 
-        variables: dict = {
+        global_vars = {
             "ctx": ctx,
             "bot": self.bot,
             "discord": discord,
@@ -59,11 +58,11 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             with contextlib.redirect_stdout(stdout):
 
                 exec(
-                    f'async def _execute_human():\n{textwrap.indent(code, "  ")}',
-                    variables,
+                    f'async def _eval():\n{textwrap.indent(code, "  ")}',
+                    global_vars,
                 )
-                obj = await variables["_execute_human"]()
-                result = str(obj).replace(self.bot.http.token, "[token]")
+                obj = await global_vars["_eval"]()
+                result = str(obj).replace(self.bot.http.token, "[TOKEN]")
 
         except Exception as e:
             result = "".join(traceback.format_exception(e, e, e.__traceback__))
@@ -83,10 +82,14 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         await ctx.reply(embed=embed)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before: discord.Message, after: discord.Message):
+    async def on_message_edit(self, before: discord.Message, after: discord.Message) -> None:
+
         context = await self.bot.get_context(after)
-                
-        if after.content.startswith((f'{context.prefix}e', f'{context.prefix}eval')):
+        prefix = context.prefix
+
+        valid_messages = (f"{prefix}eval", f"{prefix}e", f"{prefix}jsk py")
+
+        if after.content.startswith(valid_messages):
             await self.bot.process_commands(after)
 
 
