@@ -25,8 +25,8 @@ class Economy(Cog, description="Everyones favorite module!"):
         user = await self._get_user(member)
         
         embed = Embed(title=f"{member.name}'s balance", color=Color.random())
-        embed.add_field(name="Balance", value=f"${user.balance:,}" if user.balance else "0")
-        embed.add_field(name="Bank", value=f"${user.bank:,}/{user.bank_limit:,}" if user.bank else "0")
+        embed.add_field(name="Balance", value=f"${user.balance:,}")
+        embed.add_field(name="Bank", value=f"${user.bank:,}/{user.bank_limit:,}")
 
         await ctx.send(embed=embed)
 
@@ -34,9 +34,7 @@ class Economy(Cog, description="Everyones favorite module!"):
     @commands.command(name="deposit", aliases=["dep"])
     async def deposit(self, ctx: Context, amount: int) -> None:
 
-        member = member or ctx.author
-
-        user = await self._get_user(member)
+        user = await self._get_user(ctx.author)
         
         if amount > user.balance:
             return await ctx.send("You don't have enough money to deposit that much.")
