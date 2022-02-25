@@ -1,8 +1,9 @@
+import re
 from datetime import timedelta
 
 import discord
-from discord.ext import tasks, commands
-import re
+from discord.ext import commands, tasks
+
 
 class TimeConverter(commands.Converter):
     async def convert(self, ctx: commands.Context, argument: str) -> float:
@@ -21,10 +22,12 @@ class TimeConverter(commands.Converter):
                 raise commands.BadArgument(f"{v} is not a number!")
         return time
 
+
 class Reminders(commands.Cog):
     """
     Reminders that remind you to do something in the future.
     """
+
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.check_for_reminders.start()
@@ -56,7 +59,9 @@ class Reminders(commands.Cog):
         return f"<t:{int(data.timestamp())}:F>"
 
     @commands.command()
-    async def remindme(self, ctx: commands.Context, time: TimeConverter, *, reminder: str):
+    async def remindme(
+        self, ctx: commands.Context, time: TimeConverter, *, reminder: str
+    ):
 
         parsed_time = self.parse_time(time, timestamp=False)
         reminder_time = self.parse_time(time, timestamp=True)

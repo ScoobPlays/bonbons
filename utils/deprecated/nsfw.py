@@ -7,7 +7,7 @@ BASE_URL = "https://api.waifu.im"
 class NSFW(Cog, description="NSFW related commands."):
     def __init__(self, bot: Bot):
         self.bot = bot
-    
+
     @property
     def emoji(self) -> str:
         return "🔞"
@@ -30,7 +30,7 @@ class NSFW(Cog, description="NSFW related commands."):
 
     async def _get_sfw_image(self, ctx: Context, type: str) -> discord.Embed:
         url = f"{BASE_URL}/random/?selected_type={type}/"
-        
+
         async with self.bot.session.get(url) as response:
             base = (await response.json())["images"][0]
 

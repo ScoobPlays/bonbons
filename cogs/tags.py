@@ -3,6 +3,7 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
+
 from utils.paginator import Paginator
 
 
@@ -34,6 +35,7 @@ class TagPages:
         view = Paginator(ctx, embeds, embed=True)
 
         view.msg = await ctx.send(embed=embeds[0], view=view)
+
 
 class Tags(commands.Cog):
 

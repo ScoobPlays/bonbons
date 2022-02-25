@@ -1,15 +1,16 @@
 import os
 from datetime import datetime
 
-from aiohttp import ClientSession
 import discord
+from aiohttp import ClientSession
 from discord.ext import commands
 from motor import motor_asyncio
-
-from .help.help_command import CustomHelpCommand
 from tortoise import Tortoise
 
-class Bonbons(commands,Bot):
+from .help.help_command import CustomHelpCommand
+
+
+class Bonbons(commands, Bot):
     def __init__(self, **kwargs) -> None:
         super().__init__(
             command_prefix=self._get_prefix,
@@ -30,7 +31,7 @@ class Bonbons(commands,Bot):
 
     def setup(self) -> None:
 
-        os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True" 
+        os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
         os.environ["JISHAKU_HIDE"] = "True"
 
@@ -46,14 +47,15 @@ class Bonbons(commands,Bot):
             self.session = ClientSession(loop=self.loop)
 
         await Tortoise.init(
-            db_url="sqlite://db.sqlite3",
-            modules={"models": ["utils.models"]}
-        )   
+            db_url="sqlite://db.sqlite3", modules={"models": ["utils.models"]}
+        )
         await Tortoise.generate_schemas()
-            
+
         print("Logged in.")
 
-    async def _get_prefix(self, bot: commands.Bot, message: discord.Message) -> commands.when_mentioned_or:
+    async def _get_prefix(
+        self, bot: commands.Bot, message: discord.Message
+    ) -> commands.when_mentioned_or:
 
         if isinstance(message.channel, discord.DMChannel):
             return commands.when_mentioned_or(".")(bot, message)
@@ -61,4 +63,4 @@ class Bonbons(commands,Bot):
         db = self.mongo["discord"]["prefixes"]
         prefix = await db.find_one({"_id": message.guild.id})
 
-        return commands.when_mentioned_or(prefix["prefix"])(bot, message)        
+        return commands.when_mentioned_or(prefix["prefix"])(bot, message)

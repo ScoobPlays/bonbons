@@ -9,7 +9,7 @@ from easy_pil import Canvas, Editor, Font, load_image_async
 
 
 class Levels(commands.Cog):
-    
+
     """
     A levelling category.
     """
@@ -157,15 +157,13 @@ class Levels(commands.Cog):
     @commands.cooldown(1, 20, commands.BucketType.user)
     @commands.guild_only()
     async def setlevel(self, ctx: commands.Context, member: discord.Member, level: int):
-        
+
         db = self.db[str(ctx.guild.id)]
 
         data = await db.find_one({"_id": member.id})
 
         if data is not None:
-            await self.db.update_one(
-                {"_id": data["_id"]}, {"$set": {"level": level}}
-            )
+            await self.db.update_one({"_id": data["_id"]}, {"$set": {"level": level}})
 
     @commands.command(aliases=["lb"])
     @commands.cooldown(1, 20, commands.BucketType.user)

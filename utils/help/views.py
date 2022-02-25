@@ -1,5 +1,4 @@
 import discord
-
 from discord.ext import commands
 
 BUTTON_ROW = 1
@@ -7,7 +6,12 @@ BUTTON_ROW = 1
 
 class HelpMenuPaginator(discord.ui.View):
     def __init__(
-        self, ctx: commands.Context, messages: list, *, embed: bool = False, timeout: int = 60
+        self,
+        ctx: commands.Context,
+        messages: list,
+        *,
+        embed: bool = False,
+        timeout: int = 60,
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
@@ -40,22 +44,30 @@ class HelpMenuPaginator(discord.ui.View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-    @discord.ui.discord.ui.button(abel="<<", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW)
+    @discord.ui.discord.ui.button(
+        abel="<<", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW
+    )
     async def back_two(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @discord.ui.discord.ui.button(abel="Back", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW)
+    @discord.ui.discord.ui.button(
+        abel="Back", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW
+    )
     async def back_one(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @discord.ui.discord.ui.button(abel="Next", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW)
+    @discord.ui.discord.ui.button(
+        abel="Next", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW
+    )
     async def next_one(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @discord.ui.discord.ui.button(abel="️>>", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW)
+    @discord.ui.discord.ui.button(
+        abel="️>>", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW
+    )
     async def next_two(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
@@ -96,7 +108,7 @@ class HelpCommandDropdown(discord.ui.Select):
                         emoji=cog.emoji,
                     )
                 )
-        
+
             else:
                 options.append(
                     discord.SelectOption(
@@ -176,11 +188,10 @@ class HelpCommandDropdown(discord.ui.Select):
 
         if self.ctx.author.id != interaction.user.id:
             view.msg = await interaction.response.send_message(
-            content=None, embed=embeds[0], view=view, ephemeral=True
+                content=None, embed=embeds[0], view=view, ephemeral=True
             )
             embeds = None
             return
-
 
         view.msg = await interaction.edit_original_message(
             content=None, embed=embeds[0], view=view

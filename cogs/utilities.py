@@ -1,6 +1,8 @@
 import random
+
 import discord
 from discord.ext import commands
+
 from utils.constants import REPLIES
 
 
@@ -46,7 +48,7 @@ class Utilities(commands.Cog):
         ctx: commands.Context,
         member: discord.Member = None,
         *,
-        reason: str=None,
+        reason: str = None,
     ) -> None:
 
         """
@@ -105,7 +107,9 @@ class Utilities(commands.Cog):
                 return
 
     @thank.command(name="stats")
-    async def thank_stats(self, ctx: commands.Context, member: discord.Member = None) -> None:
+    async def thank_stats(
+        self, ctx: commands.Context, member: discord.Member = None
+    ) -> None:
         """
         Display a member's stats.
         """

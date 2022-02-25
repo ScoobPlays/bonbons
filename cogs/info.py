@@ -18,7 +18,7 @@ class Information(commands.Cog):
         return "ℹ️"
 
     def created_at(self, value) -> int:
-        obj  = discord.Object(value)
+        obj = discord.Object(value)
         return f"<t:{int(obj.created_at.timestamp())}:F> (<t:{int(obj.created_at.timestamp())}:R>)"
 
     @commands.command()
@@ -220,7 +220,7 @@ class Information(commands.Cog):
         embed.description = f"**Role:** {role.mention}\n**ID:** {role.id}"
         embed.color = role.color
         embed.timestamp = datetime.utcnow()
-        
+
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
         embed.add_field(
             name="Role Created At",

@@ -5,9 +5,11 @@ import discord
 import googletrans
 from discord.ext import commands
 from pyston import File, PystonClient
+
 from utils.paginator import Paginator
 
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
+
 
 class MyPages:
     def __init__(self, data: list):
@@ -36,6 +38,7 @@ class MyPages:
         view = Paginator(ctx, embeds, embed=True)
 
         view.msg = await ctx.send(embed=embeds[0], view=view)
+
 
 class Helpful(commands.Cog):
 

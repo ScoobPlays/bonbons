@@ -5,7 +5,9 @@ import traceback
 
 import discord
 from discord.ext import commands
+
 from utils.paginator import Paginator
+
 
 class TextPaginator:
     def __init__(self, ctx: commands.Context, data):
@@ -24,6 +26,7 @@ class TextPaginator:
         view = Paginator(self.ctx, embeds, embed=True)
 
         view.msg = await self.ctx.reply(embed=embeds[0], view=view)
+
 
 class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
@@ -82,7 +85,9 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         await ctx.reply(embed=embed)
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before: discord.Message, after: discord.Message) -> None:
+    async def on_message_edit(
+        self, before: discord.Message, after: discord.Message
+    ) -> None:
 
         context = await self.bot.get_context(after)
         prefix = context.prefix

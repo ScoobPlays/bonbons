@@ -1,6 +1,6 @@
-from discord import (ChannelType, Color, Embed,
-                     Guild, Message, PartialEmoji)
-from discord.ext.commands import (Bot, Cog, Context, check, command)
+from discord import ChannelType, Color, Embed, Guild, Message, PartialEmoji
+from discord.ext.commands import Bot, Cog, Context, check, command
+
 
 class Bot(Cog, description="Commands related to me."):
     def __init__(self, bot: Bot):
@@ -10,7 +10,7 @@ class Bot(Cog, description="Commands related to me."):
 
     @property
     def emoji(self) -> str:
-        return PartialEmoji(name='pfp', id=942408031071793203)
+        return PartialEmoji(name="pfp", id=942408031071793203)
 
     @Cog.listener("on_message")
     async def prefix_ping(self, message: Message):
@@ -37,9 +37,7 @@ class Bot(Cog, description="Commands related to me."):
             )
 
         elif isinstance(error, DisabledCommand):
-            return await ctx.reply(
-                "This command has been disabled!"
-            )
+            return await ctx.reply("This command has been disabled!")
 
         elif isinstance(error, CommandOnCooldown):
             return await ctx.reply(

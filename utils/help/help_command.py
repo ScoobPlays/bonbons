@@ -1,5 +1,6 @@
-from discord.ext import commands
 import discord
+from discord.ext import commands
+
 from utils.paginator import Paginator
 
 from .ext import HelpEmbed
@@ -21,7 +22,7 @@ class CustomHelpCommand(commands.HelpCommand):
         return await self.get_destination().send(**kwargs)
 
     async def send_bot_help(self, mapping) -> None:
-        
+
         prefix = self.ctx.prefix
         value = f'Click the dropdown and pick an option! To get more help do...\n\n"{prefix}help [command]"\n{prefix}help [category]\n{prefix}help [group]\n'
 
@@ -108,7 +109,11 @@ class CustomHelpCommand(commands.HelpCommand):
         self.commands = []
 
     async def send_group_help(self, group: commands.Group) -> None:
-        return await self.send_help_embed("Group Help", group.description, group.commands)
+        return await self.send_help_embed(
+            "Group Help", group.description, group.commands
+        )
 
     async def send_cog_help(self, cog: commands.Group) -> None:
-        return await self.send_help_embed("Category Help", cog.description, cog.get_commands())
+        return await self.send_help_embed(
+            "Category Help", cog.description, cog.get_commands()
+        )

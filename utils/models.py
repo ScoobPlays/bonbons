@@ -3,6 +3,7 @@ from tortoise.models import Model
 
 __all__ = ("TagModel", "UserModel")
 
+
 class TagModel(Model):
     id = fields.IntField(pk=True)
     name = fields.TextField()
@@ -10,6 +11,7 @@ class TagModel(Model):
 
     def __str__(self):
         return self.content
+
 
 class UserModel(Model):
     id = fields.IntField(pk=True)

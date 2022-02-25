@@ -9,10 +9,12 @@ from typing import Optional
 import aiohttp
 import discord
 from discord.ext import commands
-from simpleeval import simple_eval
 from discord.ui import View, button
-from utils.paginator import Paginator
+from simpleeval import simple_eval
+
 from utils.bot import Bonbons
+from utils.paginator import Paginator
+
 
 class Calculator(discord.ui.View):
     def __init__(self):
@@ -82,9 +84,7 @@ class Calculator(discord.ui.View):
         new = data + str(9)
         await inter.edit_original_message(content=new)
 
-    @button(
-        label="+", style=discord.ButtonStyle.blurple, row=0, custom_id="calc:plus"
-    )
+    @button(label="+", style=discord.ButtonStyle.blurple, row=0, custom_id="calc:plus")
     async def plus(self, button, inter):
 
         if inter.message.content == self.string:
@@ -135,16 +135,12 @@ class Calculator(discord.ui.View):
         new = eval(inter.message.content)
         await inter.edit_original_message(content=new)
 
-    @button(
-        label="Clear", style=discord.ButtonStyle.red, row=3, custom_id="calc:clear"
-    )
+    @button(label="Clear", style=discord.ButtonStyle.red, row=3, custom_id="calc:clear")
     async def clear(self, button, inter):
         await inter.response.defer()
         await inter.edit_original_message(content=self.string)
 
-    @button(
-        label="Stop", style=discord.ButtonStyle.red, row=3, custom_id="calc:stop"
-    )
+    @button(label="Stop", style=discord.ButtonStyle.red, row=3, custom_id="calc:stop")
     async def stop(self, button, inter):
         await inter.response.defer()
 
@@ -153,10 +149,12 @@ class Calculator(discord.ui.View):
 
         await inter.edit_original_message(view=self)
 
+
 class Fun(commands.Cog):
     """
     Fun commands.
     """
+
     def __init__(self, bot):
         self.bot = bot
         self._snipe_cache = []
@@ -481,7 +479,9 @@ class Fun(commands.Cog):
                 if r.status == 200:
                     data = await r.json()
                     await ctx.send(
-                        embed=discord.Embed(color=discord.Color.blurple()).set_image(url=data["file"])
+                        embed=discord.Embed(color=discord.Color.blurple()).set_image(
+                            url=data["file"]
+                        )
                     )
 
     @commands.command(name="dog")
@@ -502,13 +502,11 @@ class Fun(commands.Cog):
     @commands.command(name="hug")
     @commands.guild_only()
     async def hug_cmd(self, ctx: commands.Context, member: discord.Member) -> None:
-            """Hug a user!"""
-            async with self.bot.session.get("https://some-random-api.ml/animu/hug") as r:
-                data = await r.json()
-                image = data["link"]
-                await ctx.send(
-                    f"{ctx.author.mention} hugged {member.mention}!!\n{image}"
-                )
+        """Hug a user!"""
+        async with self.bot.session.get("https://some-random-api.ml/animu/hug") as r:
+            data = await r.json()
+            image = data["link"]
+            await ctx.send(f"{ctx.author.mention} hugged {member.mention}!!\n{image}")
 
     async def get_urban_response(self, ctx: commands.Context, term: str):
 
@@ -533,7 +531,9 @@ class Fun(commands.Cog):
                         )
 
                     for name in definition:
-                        emb = discord.Embed(description=name, color=discord.Color.blurple())
+                        emb = discord.Embed(
+                            description=name, color=discord.Color.blurple()
+                        )
                         embeds.append(emb)
 
                     view = Paginator(ctx, embeds, embed=True)

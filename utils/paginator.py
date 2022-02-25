@@ -3,9 +3,15 @@ from discord.ext import commands
 
 __all__ = ("Paginator",)
 
+
 class Paginator(discord.ui.View):
     def __init__(
-        self, ctx: commands.Context, messages: list, *, embed: bool = False, timeout: int = 60
+        self,
+        ctx: commands.Context,
+        messages: list,
+        *,
+        embed: bool = False,
+        timeout: int = 60,
     ):
         super().__init__(timeout=timeout)
         self.messages = messages

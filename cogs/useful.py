@@ -1,13 +1,15 @@
+import io
 import os
 import random
 import re
+import zlib
 from typing import Dict
+
 import discord
 from discord.ext import commands
+
 from utils.constants import REPLIES
-import re
-import io
-import zlib
+
 
 class SphinxObjectFileReader:
     BUFSIZE = 16 * 1024
@@ -80,7 +82,9 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
     def emoji(self) -> str:
         return "🗯️"
 
-    async def send_error_message(self, ctx: commands.Context, message: discord.Message) -> None:
+    async def send_error_message(
+        self, ctx: commands.Context, message: discord.Message
+    ) -> None:
         embed = discord.Embed(
             title=random.choice(REPLIES),
             description=message,
@@ -88,13 +92,12 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
         )
         return await ctx.send(embed=embed)
 
-
     def finder(self, text, collection, *, key=None, lazy=True) -> list:
         suggestions = []
         text = str(text)
         pat = ".*?".join(map(re.escape, text))
         regex = re.compile(pat, flags=re.IGNORECASE)
-        
+
         for item in collection:
             to_search = key(item) if key else item
             r = regex.search(to_search)
