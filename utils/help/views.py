@@ -68,7 +68,7 @@ class HelpMenuPaginator(discord.ui.View):
     @discord.ui.button(
         label="️>>", style=discord.ButtonStyle.grey, row=BUTTON_ROW
     )
-    async def next_two(self, button: discord.u.ui.Button, inter):
+    async def next_two(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
