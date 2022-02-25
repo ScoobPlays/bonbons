@@ -43,7 +43,7 @@ class SphinxObjectFileReader:
                 pos = buf.find(b"\n")
 
 
-class RTFMView(discord.View):
+class RTFMView(discord.ui.View):
     def __init__(self, *, reference, embed, ctx, now, when):
         super().__init__()
         self.now = now
