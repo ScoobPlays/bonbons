@@ -1,21 +1,24 @@
-from discord import ChannelType, Color, Embed, Guild, Message, PartialEmoji
-from discord.ext.commands import Bot, Cog, Context, check, command
+import discord
+from discord.ext import commands
 
 
-class Bot(Cog, description="Commands related to me."):
-    def __init__(self, bot: Bot):
+class Bot(commands.Cog):
+    """
+    Commands related to me.
+    """
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = self.bot.mongo["discord"]["bot"]
         self.prefix = self.bot.mongo["discord"]["prefixes"]
 
     @property
     def emoji(self) -> str:
-        return PartialEmoji(name="pfp", id=942408031071793203)
+        return discord.PartialEmoji(name="pfp", id=942408031071793203)
 
-    @Cog.listener("on_message")
-    async def prefix_ping(self, message: Message):
+    @commands.Cog.listener("on_message")
+    async def prefix_ping(self, message: discord.Message) -> None:
 
-        if message.channel.type == ChannelType.private:
+        if message.channel.type == discord.ChannelType.private:
             return
 
         prefix = await self.prefix.find_one({"_id": message.guild.id})
@@ -26,37 +29,37 @@ class Bot(Cog, description="Commands related to me."):
                 mention_author=False,
             )
 
-    async def on_command_error(self, ctx: Context, error: Exception) -> None:
+    async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
 
-        if isinstance(error, CommandNotFound):
+        if isinstance(error, commands.CommandNotFound):
             return
 
-        if isinstance(error, MissingRequiredArgument):
+        if isinstance(error, commands.MissingRequiredArgument):
             return await ctx.reply(
                 f"```\n{ctx.command.name} {ctx.command.signature}\n```\nNot enough arguments passed.",
             )
 
-        elif isinstance(error, DisabledCommand):
+        elif isinstance(error, commands.DisabledCommand):
             return await ctx.reply("This command has been disabled!")
 
-        elif isinstance(error, CommandOnCooldown):
+        elif isinstance(error, commands.CommandOnCooldown):
             return await ctx.reply(
                 "You have already used this command earlier. Try again later.",
                 mention_author=False,
             )
 
-        elif isinstance(error, CheckFailure):
+        elif isinstance(error, commands.CheckFailure):
             return await ctx.reply("You cannot use this command!")
 
-        elif isinstance(error, Forbidden):
+        elif isinstance(error, discord.Forbidden):
             return await ctx.reply("I cannot run this command.")
 
         else:
             print(error)
             await ctx.reply(error)
 
-    @Cog.listener()
-    async def on_guild_join(self, guild: Guild):
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
         data = await self.prefix.find_one({"_id": guild.id})
 
         if data is None:
@@ -65,12 +68,12 @@ class Bot(Cog, description="Commands related to me."):
         if data is not None:
             pass
 
-    @command()
-    @check(
+    @commands.command()
+    @commands.check(
         lambda ctx: ctx.author.id == 534738044004335626
         or ctx.author.id == 656073353215344650
     )
-    async def prefix(self, ctx: Context, *, prefix: str):
+    async def prefix(self, ctx: commands.Context, *, prefix: str):
 
         """Sets a prefix for the server."""
 
@@ -85,21 +88,21 @@ class Bot(Cog, description="Commands related to me."):
         except Exception:
             msg = await ctx.send(f"Prefix was too long, but I changed it.")
 
-    @command(
+    @commands.command(
         aliases=[
             "uptime",
         ]
     )
-    async def info(self, ctx: Context):
+    async def info(self, ctx: commands.Context) -> None:
 
         """Tells you my information."""
 
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
 
-        embed = Embed(
+        embed = discord.Embed(
             title="Info",
-            color=Color.blurple(),
+            color=discord.olor.blurple(),
             description=f"{guilds:,} guilds, {users:,} users.",
         )
 
@@ -114,8 +117,9 @@ class Bot(Cog, description="Commands related to me."):
         )
         await ctx.send(embed=embed)
 
-    @command()
-    async def cleanup(self, ctx: Context, limit: int = 5):
+    @commands.command() # TODO: Steal R. Danny's cleanup command
+    @commands.is_owner()
+    async def cleanup(self, ctx: commands.Context, limit: int = 5) -> None:
 
         """Cleanup my messages."""
 
@@ -130,8 +134,8 @@ class Bot(Cog, description="Commands related to me."):
         await ctx.send(msg, delete_after=6)
         await ctx.message.add_reaction("✅")
 
-    @command(name="ping")
-    async def ping(self, ctx: Context) -> None:
+    @commands.command(name="ping")
+    async def ping(self, ctx: commands.Context) -> None:
 
         """Tells you my latency."""
 
