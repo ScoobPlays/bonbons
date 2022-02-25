@@ -54,12 +54,12 @@ class Paginator(discord.ui.View):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @discord.button(label="Next", style=discord.ButtonStyle.blurple)
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.blurple)
     async def next_one(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @discord.button(label="️>>", style=discord.ButtonStyle.grey)
+    @discord.ui.button(label="️>>", style=discord.ButtonStyle.grey)
     async def next_two(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
