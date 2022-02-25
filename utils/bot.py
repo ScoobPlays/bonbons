@@ -3,7 +3,7 @@ from datetime import datetime
 
 from aiohttp import ClientSession
 from discord import (AllowedMentions, DMChannel,
-                     Forbidden, Intents, Message)
+                     Forbidden, Intents, Message, User)
 from discord.ext.commands import (Bot, CheckFailure, CommandNotFound,
                                   CommandOnCooldown, Context, DisabledCommand,
                                   MissingRequiredArgument, when_mentioned_or)
@@ -56,19 +56,19 @@ class Bonbons(Bot):
             
         print("Logged in.")
 
-    async def get_prefix_from_db(self, bot: Bot, message: Message):
+    async def find_prefix(self, bot: Bot, message: Message) -> when_mentioned_or:
 
         if isinstance(message.channel, DMChannel):
             return when_mentioned_or(".")(bot, message)
 
         db = self.mongo["discord"]["prefixes"]
-
         prefix = await db.find_one({"_id": message.guild.id})
-
-        self._prefix_cache = prefix["prefix"]
 
         return when_mentioned_or(prefix["prefix"])(bot, message)
 
+    async def get_or_fetch_user(self, id: int) -> User:
+        
+      
     async def on_command_error(self, ctx: Context, error: Exception) -> None:
 
         if isinstance(error, CommandNotFound):
@@ -77,12 +77,11 @@ class Bonbons(Bot):
         if isinstance(error, MissingRequiredArgument):
             return await ctx.reply(
                 f"```\n{ctx.command.name} {ctx.command.signature}\n```\nNot enough arguments passed.",
-                mention_author=False,
             )
 
         elif isinstance(error, DisabledCommand):
             return await ctx.reply(
-                "This command has been disabled.", mention_author=False
+                "This command has been disabled!"
             )
 
         elif isinstance(error, CommandOnCooldown):
@@ -92,10 +91,10 @@ class Bonbons(Bot):
             )
 
         elif isinstance(error, CheckFailure):
-            return await ctx.reply("You cannot use this command.", mention_author=False)
+            return await ctx.reply("You cannot use this command!")
 
         elif isinstance(error, Forbidden):
-            return await ctx.reply("I cannot run this command.", mention_author=False)
+            return await ctx.reply("I cannot run this command.")
 
         else:
             print(error)
