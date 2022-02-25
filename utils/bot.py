@@ -10,7 +10,7 @@ from tortoise import Tortoise
 from .help.help_command import CustomHelpCommand
 
 
-class Bonbons(commands, Bot):
+class Bonbons(commands.Bot):
     def __init__(self, **kwargs) -> None:
         super().__init__(
             command_prefix=self._get_prefix,
