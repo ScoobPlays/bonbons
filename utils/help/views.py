@@ -45,30 +45,30 @@ class HelpMenuPaginator(discord.ui.View):
             await inter.edit_original_message(content=data, view=self)
 
     @discord.ui.button(
-        abel="<<", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW
+        abel="<<", style=discord.ButtonStyle.grey, row=BUTTON_ROW
     )
-    async def back_two(self, button: discord.ui.discord.ui.Button, inter):
+    async def back_two(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
     @discord.ui.button(
-        abel="Back", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW
+        abel="Back", style=discord.ButtonStyle.blurple, row=BUTTON_ROW
     )
-    async def back_one(self, button: discord.ui.discord.ui.Button, inter):
+    async def back_one(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
     @discord.ui.button(
-        abel="Next", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW
+        abel="Next", style=discord.ButtonStyle.blurple, row=BUTTON_ROW
     )
-    async def next_one(self, button: discord.ui.discord.ui.Button, inter):
+    async def next_one(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
     @discord.ui.button(
-        abel="️>>", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW
+        abel="️>>", style=discord.ButtonStyle.grey, row=BUTTON_ROW
     )
-    async def next_two(self, button: discord.ui.discord.ui.Button, inter):
+    async def next_two(self, button: discord.u.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
