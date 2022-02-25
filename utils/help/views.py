@@ -1,13 +1,13 @@
-from discord import ButtonStyle, Color, Embed, SelectOption
-from discord.ext.commands import Bot, Command, Context, Group
-from discord.ui import Button, Select, View, button
+import discord
+
+from discord.ext import commands
 
 BUTTON_ROW = 1
 
 
-class HelpMenuPaginator(View):
+class HelpMenuPaginator(discord.ui.View):
     def __init__(
-        self, ctx: Context, messages: list, *, embed: bool = False, timeout: int = 60
+        self, ctx: commands.Context, messages: list, *, embed: bool = False, timeout: int = 60
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
@@ -40,89 +40,82 @@ class HelpMenuPaginator(View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-    @button(label="<<", style=ButtonStyle.grey, row=BUTTON_ROW)
-    async def back_two(self, button: Button, inter):
+    @discord.ui.discord.ui.button(abel="<<", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW)
+    async def back_two(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @button(label="Back", style=ButtonStyle.blurple, row=BUTTON_ROW)
-    async def back_one(self, button: Button, inter):
+    @discord.ui.discord.ui.button(abel="Back", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW)
+    async def back_one(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @button(label="Next", style=ButtonStyle.blurple, row=BUTTON_ROW)
-    async def next_one(self, button: Button, inter):
+    @discord.ui.discord.ui.button(abel="Next", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW)
+    async def next_one(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @button(label="️>>", style=ButtonStyle.grey, row=BUTTON_ROW)
-    async def next_two(self, button: Button, inter):
+    @discord.ui.discord.ui.button(abel="️>>", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW)
+    async def next_two(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
 
-def _get_options(bot: Bot):
-    options = []
-
-    for cog in bot.cogs:
-
-        cog = bot.get_cog(cog)
-
-        if cog.qualified_name in [
-            "Jishaku",
-            "Owner",
-        ]:
-            continue
-
-        if hasattr(cog, "emoji"):
-            options.append(
-                SelectOption(
-                    label=cog.qualified_name,
-                    description=cog.description,
-                    emoji=cog.emoji,
-                )
-            )
-        
-        else:
-            options.append(
-                SelectOption(
-                    label=cog.qualified_name,
-                    description=cog.description,
-                )
-            )
-
-    options.append(
-        SelectOption(
-            label="Home", description="Go back to the main help page.", emoji="🏠"
-        )
-    )
-
-    return options
-
-
-class HelpCommandDropdown(Select):
-    def __init__(self, ctx: Context, bot: Bot, embed: Embed) -> None:
+class HelpCommandDropdown(discord.ui.Select):
+    def __init__(self, ctx: commands.Context, embed: discord.Embed) -> None:
         super().__init__(
             placeholder="Choose a category!",
             min_values=1,
             max_values=1,
-            options=_get_options(bot),
+            options=self.get_options(ctx),
             row=0,
         )
         self.ctx = ctx
-        self.bot = bot
         self.embed = embed
         self._commands = []
         self.embeds = []
 
+    def get_options(self):
+        options = []
+
+        for cog in self.ctx.bot.cogs:
+
+            cog = self.bot.get_cog(cog)
+
+            if cog.qualified_name in [
+                "Jishaku",
+                "Owner",
+            ]:
+                continue
+
+            if hasattr(cog, "emoji"):
+                options.append(
+                    discord.SelectOption(
+                        label=cog.qualified_name,
+                        description=cog.description,
+                        emoji=cog.emoji,
+                    )
+                )
+        
+            else:
+                options.append(
+                    discord.SelectOption(
+                        label=cog.qualified_name,
+                        description=cog.description,
+                    )
+                )
+
+        options.append(
+            discord.SelectOption(
+                label="Home", description="Go back to the main help page.", emoji="🏠"
+            )
+        )
+
+        return options
+
     async def _get_embed(self, title: str, description: str, _commands) -> list:
-
-        """
-        Extracts all of a category's commands, groups, then edits them to append them into a list for future usage.
-        """
-
         for command in _commands:
-            if isinstance(command, Group):
+            if isinstance(command, commands.Group):
                 for cmd in command.commands:
                     self._commands.append(
                         {
@@ -139,7 +132,7 @@ class HelpCommandDropdown(Select):
                 )
                 break
 
-            if isinstance(command, Command):
+            if isinstance(command, commands.Command):
                 self._commands.append(
                     {
                         "name": command.name,
@@ -161,10 +154,10 @@ class HelpCommandDropdown(Select):
         embeds = []
 
         for i in range(0, len(data), per_page):
-            embed = Embed(
+            embed = discord.Embed(
                 title=title,
                 description=description,
-                colour=Color.greyple(),
+                colour=discord.Color.greyple(),
             )
             for res in data[i : i + per_page]:
                 embed.add_field(
@@ -204,7 +197,7 @@ class HelpCommandDropdown(Select):
                 content=None, embed=self.embed
             )
 
-        cog = self.bot.get_cog(self.values[0])
+        cog = self.ctx.bot.get_cog(self.values[0])
 
         await self.paginate(
             "Category Help",
@@ -216,13 +209,12 @@ class HelpCommandDropdown(Select):
         self._commands = []
 
 
-class HelpCommandMenu(View):
-    def __init__(self, ctx: Context, bot: Bot, embed: Embed):
+class HelpCommandMenu(discord.ui.View):
+    def __init__(self, ctx: commands.Context, embed: discord.Embed) -> None:
         super().__init__(timeout=40)
         self.ctx = ctx
-        self.bot = bot
         self.embed = embed
-        self.add_item(HelpCommandDropdown(self.ctx, self.bot, self.embed))
+        self.add_item(HelpCommandDropdown(self.ctx, self.embed))
 
     async def interaction_check(self, interaction) -> bool:
         if interaction.user.id != self.ctx.author.id:
@@ -231,8 +223,7 @@ class HelpCommandMenu(View):
                 ephemeral=True,
             )
             return False
-
         return True
 
-    async def on_timeout(self):
+    async def on_timeout(self) -> None:
         await self.msg.edit(view=None)

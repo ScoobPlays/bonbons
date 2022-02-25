@@ -1,12 +1,11 @@
-from discord import ButtonStyle
-from discord.ext.commands import Context
-from discord.ui import Button, View, button
+import discord
+from discord.ext import commands
 
 __all__ = ("Paginator",)
 
-class Paginator(View):
+class Paginator(discord.ui.View):
     def __init__(
-        self, ctx: Context, messages: list, *, embed: bool = False, timeout: int = 60
+        self, ctx: commands.Context, messages: list, *, embed: bool = False, timeout: int = 60
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
@@ -39,22 +38,22 @@ class Paginator(View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-    @button(label="<<", style=ButtonStyle.grey)
-    async def back_two(self, button: Button, inter):
+    @discord.ui.button(label="<<", style=discord.ButtonStyle.grey)
+    async def back_two(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @button(label="Back", style=ButtonStyle.blurple)
-    async def back_one(self, button: Button, inter):
+    @discord.ui.button(label="Back", style=discord.ButtonStyle.blurple)
+    async def back_one(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @button(label="Next", style=ButtonStyle.blurple)
-    async def next_one(self, button: Button, inter):
+    @discord.button(label="Next", style=discord.ButtonStyle.blurple)
+    async def next_one(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @button(label="️>>", style=ButtonStyle.grey)
-    async def next_two(self, button: Button, inter):
+    @discord.button(label="️>>", style=discord.ButtonStyle.grey)
+    async def next_two(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)

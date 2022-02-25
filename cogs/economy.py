@@ -1,14 +1,12 @@
-from discord.ext.commands import Cog, Context
-from utils.bot import Bonbons
 from utils.models import UserModel
+import discord
 from discord.ext import commands
-from discord import Embed, Color, Member
 
-class Economy(Cog, description="Everyones favorite module!"):
-    def __init__(self, bot: Bonbons):
+class Economy(commands.Cog, description="Everyones favorite module!"):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def _get_user(self, member: Member) -> UserModel:
+    async def _get_user(self, member: discord.Member) -> UserModel:
         user = await UserModel.filter(id=member.id).first()
 
         if user is None:
@@ -18,13 +16,13 @@ class Economy(Cog, description="Everyones favorite module!"):
         return user
 
     @commands.command(name="balance", aliases=["bal", "cash"])
-    async def balance(self, ctx: Context, member: Member=None) -> None:
+    async def balance(self, ctx: commands.Context, member: discord.Member=None) -> None:
 
         member = member or ctx.author
 
         user = await self._get_user(member)
         
-        embed = Embed(title=f"{member.name}'s balance", color=Color.random())
+        embed = discord.Embed(title=f"{member.name}'s balance", color=discord.Color.random())
         embed.add_field(name="Balance", value=f"${user.balance:,}")
         embed.add_field(name="Bank", value=f"${user.bank:,}/{user.bank_limit:,}")
 
@@ -32,7 +30,7 @@ class Economy(Cog, description="Everyones favorite module!"):
 
 
     @commands.command(name="deposit", aliases=["dep"])
-    async def deposit(self, ctx: Context, amount: int) -> None:
+    async def deposit(self, ctx: commands.Context, amount: int) -> None:
 
         user = await self._get_user(ctx.author)
         
@@ -46,5 +44,5 @@ class Economy(Cog, description="Everyones favorite module!"):
         await user.save()
         await ctx.send(f"Deposited ${amount:,} to your bank.")
 
-def setup(bot: Bonbons) -> None:
+def setup(bot: commands.Bot) -> None:
     bot.add_cog(Economy(bot))

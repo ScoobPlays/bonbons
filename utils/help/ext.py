@@ -1,7 +1,6 @@
-from discord import Color, Embed
+import discord
 
-
-class HelpEmbed(Embed):
+class HelpEmbed(discord.Embed):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.color = Color.greyple()
+        self.color = discord.Color.greyple()

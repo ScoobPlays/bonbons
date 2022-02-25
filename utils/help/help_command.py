@@ -1,12 +1,12 @@
-from discord import Color, Embed
-from discord.ext.commands import Command, Group, HelpCommand
+from discord.ext import commands
+import discord
 from utils.paginator import Paginator
 
 from .ext import HelpEmbed
 from .views import HelpCommandMenu
 
 
-class CustomHelpCommand(HelpCommand):
+class CustomHelpCommand(commands.HelpCommand):
     def __init__(self):
         super().__init__(
             command_attrs={
@@ -14,17 +14,16 @@ class CustomHelpCommand(HelpCommand):
                 "help": "Shows help about a category, or a command.",
             }
         )
-        self._commands = []
-
-    @property
-    def ctx(self):
-        return self.context
+        self.commands = []
+        self.ctx = self.context
 
     async def send(self, **kwargs):
         return await self.get_destination().send(**kwargs)
 
-    async def send_bot_help(self, mapping):
-        value = "Click the dropdown and pick an option! Or...\n```\nhelp [command]\nhelp [category]\nhelp [group]\n```"
+    async def send_bot_help(self, mapping) -> None:
+        
+        prefix = self.ctx.prefix
+        value = f'Click the dropdown and pick an option! To get more help do...\n\n"{prefix}help [command]"\n{prefix}help [category]\n{prefix}help [group]\n'
 
         embed = HelpEmbed(
             title="Bonbons Help Page",
@@ -32,14 +31,14 @@ class CustomHelpCommand(HelpCommand):
         )
         embed.add_field(name="How do I get help?", value=value)
 
-        view = HelpCommandMenu(self.context, self.context.bot, embed)
+        view = HelpCommandMenu(self.context, embed)
 
         view.msg = await self.send(
             embed=embed,
             view=view,
         )
 
-    async def send_command_help(self, command: Command):
+    async def send_command_help(self, command: commands.Command) -> None:
         embed = HelpEmbed(title="Command Help")
 
         embed.description = (
@@ -49,21 +48,16 @@ class CustomHelpCommand(HelpCommand):
         if command.aliases:
             embed.add_field(name="Aliases", value=", ".join(command.aliases))
 
-        await self.send(embed=embed)
+        return await self.send(embed=embed)
 
-    async def paginate(self, title: str, desc: str, data, *, per_page: int):
-
-        """
-        A method that paginates through lists.
-        """
-
+    async def paginate(self, title: str, desc: str, data, *, per_page: int) -> None:
         embeds = []
 
         for i in range(0, len(data), per_page):
-            embed = Embed(
+            embed = discord.Embed(
                 title=title,
                 description=desc,
-                colour=Color.greyple(),
+                colour=discord.Color.greyple(),
             )
             for res in data[i : i + per_page]:
                 embed.add_field(
@@ -81,19 +75,19 @@ class CustomHelpCommand(HelpCommand):
 
         view.msg = await self.send(embed=embeds[0], view=view)
 
-    async def send_help_embed(self, title: str, description: str, _commands):
+    async def send_help_embed(self, title: str, description: str, _commands) -> None:
 
         for command in _commands:
-            if isinstance(command, Group):
+            if isinstance(command, commands.Group):
                 for cmd in command.commands:
-                    self._commands.append(
+                    self.commands.append(
                         {
                             "name": f"{command.name} {cmd.name}",
                             "brief": cmd.description or cmd.help or "...",
                         }
                     )
 
-                self._commands.append(
+                self.commands.append(
                     {
                         "name": command.name,
                         "brief": command.description or command.help or "...",
@@ -101,20 +95,20 @@ class CustomHelpCommand(HelpCommand):
                 )
                 break
 
-            if isinstance(command, Command):
-                self._commands.append(
+            if isinstance(command, commands.Command):
+                self.commands.append(
                     {
                         "name": command.name,
                         "brief": command.description or command.help or "...",
                     }
                 )
 
-        await self.paginate(title, description, self._commands, per_page=7)
+        await self.paginate(title, description, self.commands, per_page=7)
 
-        self._commands = []
+        self.commands = []
 
-    async def send_group_help(self, group: Group):
-        await self.send_help_embed("Group Help", group.description, group.commands)
+    async def send_group_help(self, group: commands.Group) -> None:
+        return await self.send_help_embed("Group Help", group.description, group.commands)
 
-    async def send_cog_help(self, cog: Group):
-        await self.send_help_embed("Category Help", cog.description, cog.get_commands())
+    async def send_cog_help(self, cog: commands.Group) -> None:
+        return await self.send_help_embed("Category Help", cog.description, cog.get_commands())

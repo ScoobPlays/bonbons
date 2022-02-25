@@ -4,14 +4,22 @@ from discord.ext import commands
 from utils.constants import REPLIES
 
 
-class Utilities(commands.Cog, description="Thread and complimenting utilities!"):
-    def __init__(self, bot):
+class Utilities(commands.Cog):
+
+    """
+    Thread and complimenting utilities!
+    """
+
+    def __init__(self, bot) -> None:
         self.bot = bot
         self.thank = self.bot.mongo["discord"]["thank"]
 
     @property
     def emoji(self) -> str:
         return "⚙️"
+
+    async def cog_check(self, ctx: commands.Context) -> bool:
+        return ctx.guild is not None
 
     async def send_thank(
         self, ctx: commands.Context, member: discord.Member, reason: str
@@ -39,7 +47,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
         member: discord.Member = None,
         *,
         reason: str=None,
-    ):
+    ) -> None:
 
         """
         Thank a member for something.
@@ -97,7 +105,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
                 return
 
     @thank.command(name="stats")
-    async def thank_stats(self, ctx: commands.Context, member: discord.Member = None):
+    async def thank_stats(self, ctx: commands.Context, member: discord.Member = None) -> None:
         """
         Display a member's stats.
         """
@@ -135,7 +143,7 @@ class Utilities(commands.Cog, description="Thread and complimenting utilities!")
             )
 
     @commands.group(invoke_without_command=True, case_insensitive=True)
-    async def thread(self, ctx: commands.Context):
+    async def thread(self, ctx: commands.Context) -> None:
         """The base command for thread."""
         await ctx.send_help("thread")
 

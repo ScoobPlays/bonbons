@@ -1,13 +1,11 @@
 from datetime import timedelta
-from typing import Dict
 
 import discord
-from discord.ext import tasks
-from discord.ext.commands import Bot, Cog, Context, command, Converter, BadArgument
+from discord.ext import tasks, commands
 import re
 
-class TimeConverter(Converter):
-    async def convert(self, ctx: Context, argument: str):
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx: commands.Context, argument: str) -> float:
         time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
         time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
         matches = time_regex.findall(argument.lower())
@@ -16,27 +14,28 @@ class TimeConverter(Converter):
             try:
                 time += time_dict[k] * float(v)
             except KeyError:
-                raise BadArgument(
+                raise commands.BadArgument(
                     f"{k} is an invalid time-key! h/m/s/d are valid!"
                 )
             except ValueError:
-                raise BadArgument(f"{v} is not a number!")
+                raise commands.BadArgument(f"{v} is not a number!")
         return time
 
-class Reminders(
-    Cog, description="Reminders that remind you to do something in the future."
-):
-    def __init__(self, bot: Bot):
+class Reminders(commands.Cog):
+    """
+    Reminders that remind you to do something in the future.
+    """
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.check_for_reminders.start()
         self.base = self.bot.mongo["reminders"]
-        self._channels: Dict = {}
+        self._channels: dict = {}
 
     @property
     def emoji(self) -> str:
         return "⏲️"
 
-    async def add_reminder(self, ctx: Context, time: int, reason: str):
+    async def add_reminder(self, ctx: commands.Context, time: int, reason: str) -> None:
         db = self.base[str(ctx.guild.id)]
 
         await db.insert_one(
@@ -48,8 +47,7 @@ class Reminders(
             }
         )
 
-    @staticmethod
-    def parse_time(time: int, *, timestamp: bool = False) -> str:
+    def parse_time(self, time: int, *, timestamp: bool = False) -> str:
         data = discord.utils.utcnow() + timedelta(seconds=time)
 
         if timestamp:
@@ -57,8 +55,8 @@ class Reminders(
 
         return f"<t:{int(data.timestamp())}:F>"
 
-    @command()
-    async def remindme(self, ctx: Context, time: TimeConverter, *, reminder: str):
+    @commands.command()
+    async def remindme(self, ctx: commands.Context, time: TimeConverter, *, reminder: str):
 
         parsed_time = self.parse_time(time, timestamp=False)
         reminder_time = self.parse_time(time, timestamp=True)
@@ -68,7 +66,7 @@ class Reminders(
         await self.add_reminder(ctx, reminder_time, reminder)
 
     @tasks.loop(seconds=10)
-    async def check_for_reminders(self):
+    async def check_for_reminders(self) -> None:
 
         await self.bot.wait_until_ready()
 
@@ -88,5 +86,5 @@ class Reminders(
                     await collection.delete_one({"author": result["author"]})
 
 
-def setup(bot: Bot):
+def setup(bot: commands.Bot):
     bot.add_cog(Reminders(bot))

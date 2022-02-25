@@ -26,6 +26,37 @@ class Bot(Cog, description="Commands related to me."):
                 mention_author=False,
             )
 
+    async def on_command_error(self, ctx: Context, error: Exception) -> None:
+
+        if isinstance(error, CommandNotFound):
+            return
+
+        if isinstance(error, MissingRequiredArgument):
+            return await ctx.reply(
+                f"```\n{ctx.command.name} {ctx.command.signature}\n```\nNot enough arguments passed.",
+            )
+
+        elif isinstance(error, DisabledCommand):
+            return await ctx.reply(
+                "This command has been disabled!"
+            )
+
+        elif isinstance(error, CommandOnCooldown):
+            return await ctx.reply(
+                "You have already used this command earlier. Try again later.",
+                mention_author=False,
+            )
+
+        elif isinstance(error, CheckFailure):
+            return await ctx.reply("You cannot use this command!")
+
+        elif isinstance(error, Forbidden):
+            return await ctx.reply("I cannot run this command.")
+
+        else:
+            print(error)
+            await ctx.reply(error)
+
     @Cog.listener()
     async def on_guild_join(self, guild: Guild):
         data = await self.prefix.find_one({"_id": guild.id})

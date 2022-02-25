@@ -4,16 +4,20 @@ import discord
 from discord.ext import commands
 
 
-class Information(commands.Cog, description="Information related commands."):
-    def __init__(self, bot):
+class Information(commands.Cog):
+
+    """
+    Information related commands.
+    """
+
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
     @property
     def emoji(self) -> str:
         return "ℹ️"
 
-    @staticmethod
-    def created_at(value) -> int:
+    def created_at(self, value) -> int:
         obj  = discord.Object(value)
         return f"<t:{int(obj.created_at.timestamp())}:F> (<t:{int(obj.created_at.timestamp())}:R>)"
 

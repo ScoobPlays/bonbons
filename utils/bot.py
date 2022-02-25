@@ -2,23 +2,20 @@ import os
 from datetime import datetime
 
 from aiohttp import ClientSession
-from discord import (AllowedMentions, DMChannel,
-                     Forbidden, Intents, Message, User)
-from discord.ext.commands import (Bot, CheckFailure, CommandNotFound,
-                                  CommandOnCooldown, Context, DisabledCommand,
-                                  MissingRequiredArgument, when_mentioned_or)
+import discord
+from discord.ext import commands
 from motor import motor_asyncio
 
 from .help.help_command import CustomHelpCommand
 from tortoise import Tortoise
 
-class Bonbons(Bot):
+class Bonbons(commands,Bot):
     def __init__(self, **kwargs) -> None:
         super().__init__(
-            command_prefix=self.get_prefix_from_db,
+            command_prefix=self._get_prefix,
             case_insensitive=True,
-            intents=Intents.all(),
-            allowed_mentions=AllowedMentions(everyone=False, roles=False),
+            intents=discord.Intents.all(),
+            allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             help_command=CustomHelpCommand(),
             strip_after_prefix=True,
             **kwargs,
@@ -56,46 +53,12 @@ class Bonbons(Bot):
             
         print("Logged in.")
 
-    async def find_prefix(self, bot: Bot, message: Message) -> when_mentioned_or:
+    async def _get_prefix(self, bot: commands.Bot, message: discord.Message) -> commands.when_mentioned_or:
 
-        if isinstance(message.channel, DMChannel):
-            return when_mentioned_or(".")(bot, message)
+        if isinstance(message.channel, discord.DMChannel):
+            return commands.when_mentioned_or(".")(bot, message)
 
         db = self.mongo["discord"]["prefixes"]
         prefix = await db.find_one({"_id": message.guild.id})
 
-        return when_mentioned_or(prefix["prefix"])(bot, message)
-
-    async def get_or_fetch_user(self, id: int) -> User:
-        
-      
-    async def on_command_error(self, ctx: Context, error: Exception) -> None:
-
-        if isinstance(error, CommandNotFound):
-            return
-
-        if isinstance(error, MissingRequiredArgument):
-            return await ctx.reply(
-                f"```\n{ctx.command.name} {ctx.command.signature}\n```\nNot enough arguments passed.",
-            )
-
-        elif isinstance(error, DisabledCommand):
-            return await ctx.reply(
-                "This command has been disabled!"
-            )
-
-        elif isinstance(error, CommandOnCooldown):
-            return await ctx.reply(
-                "You have already used this command earlier. Try again later.",
-                mention_author=False,
-            )
-
-        elif isinstance(error, CheckFailure):
-            return await ctx.reply("You cannot use this command!")
-
-        elif isinstance(error, Forbidden):
-            return await ctx.reply("I cannot run this command.")
-
-        else:
-            print(error)
-            await ctx.reply(error)
+        return commands.when_mentioned_or(prefix["prefix"])(bot, message)        

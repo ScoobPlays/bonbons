@@ -1,24 +1,18 @@
 import os
 import random
 import re
-from datetime import datetime
 from typing import Dict
-
-from discord import Color, Embed, Message
-from discord.abc import Messageable
-from discord.ui import View, button
-from discord.ext.commands import Cog, Context, command, group
+import discord
+from discord.ext import commands
 from utils.constants import REPLIES
 import re
 import io
 import zlib
 
-# TODO: Add typehints
-
 class SphinxObjectFileReader:
     BUFSIZE = 16 * 1024
 
-    def __init__(self, buffer):
+    def __init__(self, buffer: bytes):
         self.stream = io.BytesIO(buffer)
 
     def readline(self):
@@ -47,7 +41,7 @@ class SphinxObjectFileReader:
                 pos = buf.find(b"\n")
 
 
-class RTFMView(View):
+class RTFMView(discord.View):
     def __init__(self, *, reference, embed, ctx, now, when):
         super().__init__()
         self.now = now
@@ -68,17 +62,17 @@ class RTFMView(View):
         self._update_labels()
         await self.ctx.send(embed=self.embed, reference=self.reference, view=self)
 
-    @button(emoji="🗑️")
-    async def delete(self, button, inter):
+    @discord.ui.button(emoji="🗑️")
+    async def delete(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await inter.delete_original_message()
 
-    @button(label=f"...", disabled=True)
-    async def took_when(self, button, inter):
+    @discord.ui.button(label=f"...", disabled=True)
+    async def took_when(self, button: discord.ui.Button, inter):
         pass
 
 
-class Useful(Cog, description="Commands that I think are useful to me."):
+class Useful(commands.Cog, description="Commands that I think are useful to me."):
     def __init__(self, bot):
         self.bot = bot
 
@@ -86,18 +80,16 @@ class Useful(Cog, description="Commands that I think are useful to me."):
     def emoji(self) -> str:
         return "🗯️"
 
-    @staticmethod
-    async def send_error_message(ctx: Context, message: Message):
-        embed = Embed(
+    async def send_error_message(self, ctx: commands.Context, message: discord.Message) -> None:
+        embed = discord.Embed(
             title=random.choice(REPLIES),
             description=message,
-            color=Color.red(),
+            color=discord.Color.red(),
         )
-        await ctx.send(embed=embed)
+        return await ctx.send(embed=embed)
 
 
-    @staticmethod
-    def finder(text, collection, *, key=None, lazy=True):
+    def finder(self, text, collection, *, key=None, lazy=True) -> list:
         suggestions = []
         text = str(text)
         pat = ".*?".join(map(re.escape, text))
@@ -179,7 +171,7 @@ class Useful(Cog, description="Commands that I think are useful to me."):
 
         self._rtfm_cache = cache
 
-    async def do_rtfm(self, ctx: Context, key: str, obj: str):
+    async def do_rtfm(self, ctx: commands.Context, key: str, obj: str):
         import time
 
         now = time.perf_counter()
@@ -203,7 +195,7 @@ class Useful(Cog, description="Commands that I think are useful to me."):
 
         if key.startswith("master"):
             q = obj.lower()
-            for name in dir(Messageable):
+            for name in dir(discord.abc.Messageable):
                 if name[0] == "_":
                     continue
                 if q == name:
@@ -214,7 +206,7 @@ class Useful(Cog, description="Commands that I think are useful to me."):
 
         matches = self.finder(obj, cache, key=lambda t: t[0], lazy=False)[:8]
 
-        embed = Embed(colour=0x2F3136)
+        embed = discord.Embed(colour=0x2F3136)
         if len(matches) == 0:
             responses = (
                 "I looked far and wide but nothing was found.",
@@ -227,7 +219,7 @@ class Useful(Cog, description="Commands that I think are useful to me."):
         embed.description = "\n".join(f"[`{key}`]({url})" for key, url in matches)
         ref = ctx.message.reference
         reference = None
-        if ref and isinstance(ref.resolved, Message):
+        if ref and isinstance(ref.resolved, discord.Message):
             reference = ref.resolved.to_reference()
 
         done = time.perf_counter()
@@ -235,34 +227,34 @@ class Useful(Cog, description="Commands that I think are useful to me."):
         view._update_labels()
         await view.start(ctx)
 
-    @group(
+    @commands.group(
         name="rtfm",
         aliases=["rtfd"],
         invoke_without_command=True,
         case_insensitive=True,
     )
-    async def rtfm_group(self, ctx: Context, *, obj: str = None):
+    async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve documentation on python libraries. Defaults to `discord.py` if no sub-command was passed."""
 
         await self.do_rtfm(ctx, "discord.py", obj)
 
     @rtfm_group.command(name="python", aliases=["py"])
-    async def rtfm_python_cmd(self, ctx: Context, *, obj: str = None):
+    async def rtfm_python_cmd(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve's documentation about the python language."""
         await self.do_rtfm(ctx, "python", obj)
 
     @rtfm_group.command(name="nextcord", aliases=["nc"])
-    async def rtfm_nextcord(self, ctx: Context, *, obj: str = None):
+    async def rtfm_nextcord(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve's documentation about the nextcord library."""
         await self.do_rtfm(ctx, "nextcord", obj)
 
     @rtfm_group.command(name="discord")
-    async def rtfm_discord(self, ctx: Context, *, obj: str = None):
+    async def rtfm_discord(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve's documentation about the discord library."""
         await self.do_rtfm(ctx, "discord", obj)
 
-    @command()
-    async def pypi(self, ctx: Context, name: str):
+    @commands.command()
+    async def pypi(self, ctx: commands.Context, name: str):
 
         """Finds a package on PyPI."""
 
@@ -273,11 +265,11 @@ class Useful(Cog, description="Commands that I think are useful to me."):
                 if data.status == 200:
                     raw = await data.json()
 
-                    embed = Embed(
+                    embed = discord.Embed(
                         title=raw["info"]["name"],
                         description=raw["info"]["summary"],
                         url=raw["info"]["project_url"],
-                        color=Color.greyple(),
+                        color=discord.Color.greyple(),
                     ).set_thumbnail(
                         url="https://cdn.discordapp.com/emojis/766274397257334814.png"
                     )

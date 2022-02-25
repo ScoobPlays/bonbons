@@ -8,8 +8,13 @@ from discord.ext import commands
 from easy_pil import Canvas, Editor, Font, load_image_async
 
 
-class Levels(commands.Cog, description="A levelling category."):
-    def __init__(self, bot):
+class Levels(commands.Cog):
+    
+    """
+    A levelling category.
+    """
+
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.db = self.bot.mongo["levels"]
         self.levels = {}
@@ -23,8 +28,8 @@ class Levels(commands.Cog, description="A levelling category."):
     def update_levels(self) -> None:
         for item in range(500):
             self.levels[item] = self._base * item
+
         setattr(self.bot, "_levels", self.levels)
-        return "Filled up levels."
 
     async def generate_rank_card(
         self, ctx: commands.Context, member: discord.Member, data, bg=None

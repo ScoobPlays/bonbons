@@ -1,67 +1,67 @@
 import copy
 from datetime import datetime
 
-from discord import DMChannel, Embed, Message, Color
-from discord.ext.commands import Bot, Cog, Context, group, guild_only
+import discord
+from discord.ext import commands
 from utils.paginator import Paginator
 
 
 class TagPages:
-    def __init__(self, data):
+    def __init__(self, data: list):
         self.data = data
 
-    async def start(self, ctx: Context, *, per_page: int):
+    async def start(self, ctx: commands.Context, *, per_page: int) -> None:
         embeds = []
         index = 0
 
         for i in range(0, len(self.data), per_page):
-            embed = Embed(
+            embed = discord.Embed(
                 description="",
-                colour=Color.blurple(),
+                colour=discord.Color.blurple(),
             ).set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
             for result in self.data[i : i + per_page]:
-                index += 1
                 embed.description += (
-                    f"\n{index}. {result['name']} (ID: {result['_id']})"
+                    f"\n{index+1}. {result['name']} (ID: {result['_id']})"
                 )
 
             embeds.append(embed)
 
         for index, embed in enumerate(embeds):
-            index += 1
             embed.set_footer(
-                text=f"Page {index}/{len(embeds)} ({len(self.data)} results)"
+                text=f"Page {index+1}/{len(embeds)} ({len(self.data)} results)"
             )
 
         view = Paginator(ctx, embeds, embed=True)
 
         view.msg = await ctx.send(embed=embeds[0], view=view)
 
-class Tags(Cog):
+class Tags(commands.Cog):
 
     """Create, edit, delete and view tags!"""
 
-    def __init__(self, bot: Bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.base = self.bot.mongo["tags"]
-        self._tags_cache = []
 
     @property
     def emoji(self) -> str:
         return "🏷️"
 
-    async def prepare_embed(self, ctx: Context, data: dict) -> Embed:
+    async def cog_check(self, ctx: commands.Context) -> bool:
+        return ctx.guild is not None
+
+    async def prepare_embed(self, ctx: commands.Context, data: dict) -> discord.Embed:
 
         owner = self.bot.get_user(data["owner"]) or await self.bot.fetch_user(
             data["owner"]
         )
-        embed = Embed(title=data["name"])
+        embed = discord.Embed(title=data["name"])
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
         embed.add_field(name="Owner", value=owner.mention)
 
         return embed
 
-    async def get_tag(self, ctx: Context, name: str):
+    async def get_tag(self, ctx: commands.Context, name: str) -> None:
         db = self.base[str(ctx.guild.id)]
 
         tag = await db.find_one({"name": name.lower()})
@@ -72,16 +72,13 @@ class Tags(Cog):
         if tag is None:
             return await ctx.send("Tag not found.")
 
-    async def try_to_delete_tag(self, ctx: Context, name: str):
+    async def delete_tag(self, ctx: commands.Context, name: str) -> None:
         db = self.base[str(ctx.guild.id)]
 
         tag_name = await db.find_one({"name": name})
 
         if tag_name is not None:
-            if (
-                ctx.author.guild_permissions.manage_channels
-                or tag_name["owner"] == ctx.author.id
-            ):
+            if tag_name["owner"] == ctx.author.id:
                 return await db.delete_one({"name": name})
 
             return await ctx.send("You do not own this tag.")
@@ -89,7 +86,7 @@ class Tags(Cog):
         if tag_name is None:
             return await ctx.send("A tag with this name does not exist.")
 
-    async def edit_tag(self, ctx: Context, name: str, content: str):
+    async def edit_tag(self, ctx: commands.Context, name: str, content: str) -> None:
 
         db = self.base[str(ctx.guild.id)]
         tag_name = await db.find_one({"name": name})
@@ -107,7 +104,7 @@ class Tags(Cog):
             f"Tag successfully edited! Do {prefix[2]}tag {name} to view the tag."
         )
 
-    async def create_tag(self, ctx: Context, name: str, content: str):
+    async def create_tag(self, ctx: commands.Context, name: str, content: str) -> None:
 
         db = self.base[str(ctx.guild.id)]
         prefix = await self.bot.command_prefix(self.bot, ctx.message)
@@ -130,9 +127,8 @@ class Tags(Cog):
             f"Tag successfully created. Do {prefix[2]}tag {name} to view the tag."
         )
 
-    @group(name="tag", invoke_without_command=True, case_insensitive=True)
-    @guild_only()
-    async def tag(self, ctx: Context, tag: str = None):
+    @commands.group(name="tag", invoke_without_command=True, case_insensitive=True)
+    async def tag(self, ctx: commands.Context, tag: str = None) -> None:
 
         """Sends the help embed for the tag group, sends a tag's content if a valid tag name was passed."""
 
@@ -143,16 +139,14 @@ class Tags(Cog):
             await ctx.send_help("tag")
 
     @tag.command(name="create", aliases=["build"])
-    @guild_only()
-    async def create(self, ctx: Context, name: str, *, content: str):
+    async def create(self, ctx: commands.Context, name: str, *, content: str):
 
         """Creates a tag."""
 
         await self.create_tag(ctx, name, content)
 
     @tag.command(name="info", aliases=["information"])
-    @guild_only()
-    async def info(self, ctx: Context, *, name: str):
+    async def info(self, ctx: commands.Context, *, name: str) -> None:
 
         """Tells you information about a tag."""
 
@@ -168,16 +162,14 @@ class Tags(Cog):
             return await ctx.reply("Not a valid tag!")
 
     @tag.command(name="edit", aliases=["modify"])
-    @guild_only()
-    async def edit(self, ctx: Context, name: str, *, content: str):
+    async def edit(self, ctx: commands.Context, name: str, *, content: str) -> None:
 
         """Tries to edit a tag you own."""
 
         await self.edit_tag(ctx, name, content)
 
     @tag.command(aliases=["list"])
-    @guild_only()
-    async def all(self, ctx: Context):
+    async def all(self, ctx: commands.Context) -> None:
 
         """Tells you all the tags in the current server."""
 
@@ -189,17 +181,16 @@ class Tags(Cog):
         await view.start(ctx, per_page=20)
 
     @tag.command(aliases=["remove"])
-    @guild_only()
-    async def delete(self, ctx: Context, *, name: str):
+    async def delete(self, ctx: commands.Context, *, name: str) -> None:
 
         """Deletes a tag."""
 
         await self.try_to_delete_tag(ctx, name)
 
-    @Cog.listener("on_message")
-    async def send_tags(self, message: Message):
+    @commands.Cog.listener("on_message")
+    async def send_tags(self, message: discord.Message) -> None:
 
-        if isinstance(message.channel, DMChannel):
+        if isinstance(message.channel, discord.DMChannel):
             return await self.bot.process_commands(message)
 
         ctx = await self.bot.get_context(message)

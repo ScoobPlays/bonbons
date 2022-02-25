@@ -10,7 +10,7 @@ from utils.paginator import Paginator
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
 class MyPages:
-    def __init__(self, data):
+    def __init__(self, data: list):
         self.data = data
 
     async def start(self, ctx: commands.Context, *, per_page: int):
@@ -24,16 +24,14 @@ class MyPages:
                 colour=discord.Color.blurple(),
             )
             for user in self.data[i : i + per_page]:
-                index += 1
                 embed.description += (
-                    f"\n{index}. **{user['name']}**: {user['messages']: ,}"
+                    f"\n{index+1}. **{user['name']}**: {user['messages']: ,}"
                 )
 
             embeds.append(embed)
 
         for index, embed in enumerate(embeds):
-            index += 1
-            embed.set_footer(text=f"Page {index}/{len(embeds)}")
+            embed.set_footer(text=f"Page {index+1}/{len(embeds)}")
 
         view = Paginator(ctx, embeds, embed=True)
 
