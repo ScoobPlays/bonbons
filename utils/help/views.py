@@ -44,28 +44,28 @@ class HelpMenuPaginator(discord.ui.View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-    @discord.ui.discord.ui.button(
+    @discord.ui.button(
         abel="<<", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW
     )
     async def back_two(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @discord.ui.discord.ui.button(
+    @discord.ui.button(
         abel="Back", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW
     )
     async def back_one(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @discord.ui.discord.ui.button(
+    @discord.ui.button(
         abel="Next", style=discord.ui.ButtonStyle.blurple, row=BUTTON_ROW
     )
     async def next_one(self, button: discord.ui.discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @discord.ui.discord.ui.button(
+    @discord.ui.button(
         abel="️>>", style=discord.ui.ButtonStyle.grey, row=BUTTON_ROW
     )
     async def next_two(self, button: discord.ui.discord.ui.Button, inter):
