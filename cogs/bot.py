@@ -9,7 +9,7 @@ class Bot(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = self.bot.mongo["discord"]["bot"]
-        self.prefix = self.bot.mongo["discord"]["prefixes"]
+        self.prefixes = self.bot.mongo["discord"]["prefixes"]
 
     @property
     def emoji(self) -> str:
@@ -21,7 +21,7 @@ class Bot(commands.Cog):
         if message.channel.type == discord.ChannelType.private:
             return
 
-        prefix = await self.prefix.find_one({"_id": message.guild.id})
+        prefix = await self.prefixes.find_one({"_id": message.guild.id})
 
         if message.content in [f"<@!{self.bot.user.id}>", f"<@{self.bot.user.id}>"]:
             await message.reply(
@@ -59,25 +59,40 @@ class Bot(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        data = await self.prefix.find_one({"_id": guild.id})
+        data = await self.prefixes.find_one({"_id": guild.id})
 
         if data is None:
-            await self.prefix.insert_one({"_id": guild.id, "prefix": self.bot.default_prefix})
+            await self.prefixes.insert_one({"_id": guild.id, "prefix": self.bot.default_prefix})
 
         if data is not None:
             pass
+
+    @commands.command()
+    async def invite(self, ctx: commands.Context) -> None:
+
+        """Sends you my invite link!"""
+
+        invite = discord.ui.View()
+        invite.add_item(discord.ui.Button(label="Invite Me!", style=discord.ButtonStyle.url, url="https://discord.com/api/oauth2/authorize?client_id=888309915620372491&permissions=412387494464&scope=bot"))
+
+        try:
+            await ctx.author.send("Click the button below to invite me to your discord server!")
+            await ctx.message.add_reaction("✅")
+        except discord.Forbidden:
+            await ctx.message.add_reaction("❌")
+            return await ctx.send("Message failed to send. Are your DMs open?")
 
     @commands.command()
     @commands.check(
         lambda ctx: ctx.author.id == 534738044004335626
         or ctx.author.id == 656073353215344650
     )
-    async def prefix(self, ctx: commands.Context, *, prefix: str):
+    async def prefix(self, ctx: commands.Context, *, prefix: str) -> None:
 
         """Sets a prefix for the server."""
 
         try:
-            await self.prefix.update_one(
+            await self.prefixes.update_one(
                 {"_id": ctx.guild.id}, {"$set": {"prefix": prefix}}
             )
 
