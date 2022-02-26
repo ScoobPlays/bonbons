@@ -79,7 +79,7 @@ class HelpCommandDropdown(discord.ui.Select):
             placeholder="Choose a category!",
             min_values=1,
             max_values=1,
-            options=self.get_options(ctx),
+            options=self.get_options(),
             row=0,
         )
         self.ctx = ctx
