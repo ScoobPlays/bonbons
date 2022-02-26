@@ -16,7 +16,6 @@ class CustomHelpCommand(commands.HelpCommand):
             }
         )
         self.commands = []
-        self.ctx = self.context
 
     async def send(self, **kwargs):
         return await self.get_destination().send(**kwargs)
@@ -31,7 +30,7 @@ class CustomHelpCommand(commands.HelpCommand):
         )
         embed.add_field(name="How do I get help?", value=value)
 
-        view = HelpCommandMenu(self.context, embed)
+        view = HelpCommandMenu(self.context, self.context.bot, embed)
 
         view.msg = await self.send(
             embed=embed,

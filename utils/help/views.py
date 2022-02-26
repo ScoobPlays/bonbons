@@ -72,25 +72,10 @@ class HelpMenuPaginator(discord.ui.View):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
-
-class HelpCommandDropdown(discord.ui.Select):
-    def __init__(self, ctx: commands.Context, embed: discord.Embed) -> None:
-        super().__init__(
-            placeholder="Choose a category!",
-            min_values=1,
-            max_values=1,
-            options=self.get_options(),
-            row=0,
-        )
-        self.ctx = ctx
-        self.embed = embed
-        self._commands = []
-        self.embeds = []
-
-    def get_options(self):
+def get_options(bot: commands.Bot) -> list:
         options = []
 
-        for cog in self.ctx.bot.cogs:
+        for cog in bot.cogs:
 
             cog = self.bot.get_cog(cog)
 
@@ -124,6 +109,20 @@ class HelpCommandDropdown(discord.ui.Select):
         )
 
         return options
+
+class HelpCommandDropdown(discord.ui.Select):
+    def __init__(self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed) -> None:
+        super().__init__(
+            placeholder="Choose a category!",
+            min_values=1,
+            max_values=1,
+            options=get_options(bot),
+            row=0,
+        )
+        self.ctx = ctx
+        self.embed = embed
+        self._commands = []
+        self.embeds = []
 
     async def _get_embed(self, title: str, description: str, _commands) -> list:
         for command in _commands:
@@ -221,11 +220,9 @@ class HelpCommandDropdown(discord.ui.Select):
 
 
 class HelpCommandMenu(discord.ui.View):
-    def __init__(self, ctx: commands.Context, embed: discord.Embed) -> None:
-        super().__init__(timeout=40)
-        self.ctx = ctx
-        self.embed = embed
-        self.add_item(HelpCommandDropdown(self.ctx, self.embed))
+    def __init__(self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed) -> None:
+        super().__init__(timeout=40)       
+        self.add_item(HelpCommandDropdown(ctx, bot, embed))
 
     async def interaction_check(self, interaction) -> bool:
         if interaction.user.id != self.ctx.author.id:
