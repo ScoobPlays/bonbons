@@ -23,8 +23,7 @@ class CustomHelpCommand(commands.HelpCommand):
 
     async def send_bot_help(self, mapping) -> None:
 
-        prefix = self.ctx.prefix
-        value = f'Click the dropdown and pick an option! To get more help do...\n\n"{prefix}help [command]"\n{prefix}help [category]\n{prefix}help [group]\n'
+        value = 'Click the dropdown and pick an option! To get more help do...\n\n"help [command]"\nhelp [category]\nhelp [group]\n'
 
         embed = HelpEmbed(
             title="Bonbons Help Page",
