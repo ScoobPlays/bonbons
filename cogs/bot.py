@@ -28,6 +28,7 @@ class Bot(commands.Cog):
                 f'Boop! My prefix for this server is `{prefix["prefix"]}`',
             )
 
+    @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
 
         if isinstance(error, commands.CommandNotFound):
