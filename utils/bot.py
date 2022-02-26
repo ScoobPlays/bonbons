@@ -24,6 +24,8 @@ class Bonbons(commands.Bot):
         self.uptime = datetime.now().timestamp()
         self.invoked_commands = 0
         self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
+        self.default_prefix = "b"
+        self._prefixes = self.mongo["discord"]["prefixes"]
 
     async def start(self) -> None:
         self.setup()
@@ -58,9 +60,8 @@ class Bonbons(commands.Bot):
     ) -> commands.when_mentioned_or:
 
         if isinstance(message.channel, discord.DMChannel):
-            return commands.when_mentioned_or(".")(bot, message)
+            return commands.when_mentioned_or(self.default_prefix)(bot, message)
 
-        db = self.mongo["discord"]["prefixes"]
-        prefix = await db.find_one({"_id": message.guild.id})
+        prefix = await self._prefixes.find_one({"_id": message.guild.id})
 
         return commands.when_mentioned_or(prefix["prefix"])(bot, message)

@@ -26,7 +26,6 @@ class Bot(commands.Cog):
         if message.content in [f"<@!{self.bot.user.id}>", f"<@{self.bot.user.id}>"]:
             await message.reply(
                 f'Boop! My prefix for this server is `{prefix["prefix"]}`',
-                mention_author=False,
             )
 
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
@@ -63,7 +62,7 @@ class Bot(commands.Cog):
         data = await self.prefix.find_one({"_id": guild.id})
 
         if data is None:
-            await self.prefix.insert_one({"_id": guild.id, "prefix": "."})
+            await self.prefix.insert_one({"_id": guild.id, "prefix": self.bot.default_prefix})
 
         if data is not None:
             pass
