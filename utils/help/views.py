@@ -77,7 +77,7 @@ def get_options(bot: commands.Bot) -> list:
 
         for cog in bot.cogs:
 
-            cog = self.bot.get_cog(cog)
+            cog = bot.get_cog(cog)
 
             if cog.qualified_name in [
                 "Jishaku",
