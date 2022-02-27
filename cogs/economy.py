@@ -1,4 +1,3 @@
-from operator import contains
 import discord
 from discord.ext import commands
 from typing import Union
@@ -50,11 +49,13 @@ class Economy(commands.Cog, description='Economy.'):
     
         user = ctx.author
         data = await self._create_or_find_user(user)
-        print(data['last_daily'])
+        today = datetime.date.today()
+
+        new_daily = datetime.now(today.year, today.month, today.day, tzinfo=datetime.timezone.utc)
     
         if data['last_daily'] is None or data['last_daily'] < (ctx.message.created_at - datetime.timedelta(days=1)):
             data['bal'] += 100
-            data['last_daily'] = ctx.message.created_at
+            data['last_daily'] = new_daily
             await self.db.update_one({'_id': user.id}, {'$set': data})
             return await ctx.send(f'{user.mention} Here is your daily 💰!')
 
