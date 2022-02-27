@@ -15,7 +15,7 @@ class Economy(commands.Cog, description='Economy.'):
         self.bot = bot
         self.db = bot.mongo['discord']['economy']
 
-        with open('db/economy.json', 'r') as _shop:
+        with open('db/shop.jsonc', 'r') as _shop:
             self._shop = json.load(_shop)
     
     async def _create_or_find_user(self, user: User) -> dict:
