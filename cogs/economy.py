@@ -15,8 +15,8 @@ class Economy(commands.Cog, description='Economy.'):
         self.bot = bot
         self.db = bot.mongo['discord']['economy']
 
-        with open('./db/shop.jsonc', 'r') as _shop:
-            self._shop = json.load(_shop)
+     #   with open('cogs/db/shop.jsonc', 'r') as _shop:
+      #      self._shop = json.load(_shop)
     
     async def _create_or_find_user(self, user: User) -> dict:
         data = await self.db.find_one({'_id': user.id})
@@ -80,17 +80,17 @@ class Economy(commands.Cog, description='Economy.'):
         await self.db.update_one({'_id': user.id}, {'$inc': {'bal': coins}})
         await ctx.send(f'{user.mention} You worked and got {coins} 💰!')
 
-    @commands.command(name='shop')
-    async def shop(self, ctx: commands.Context) -> None:
-            
-        """Shows you the shop."""
+  #  @commands.command(name='shop')
+   # async def shop(self, ctx: commands.Context) -> None:
+    #        
+     #   """Shows you the shop."""
     
-        embed = discord.Embed(title="Shop", color=discord.Color.random(), description='')
-
-        for item in self._shop:
-            embed.description += f'\n**{item["name"]}** - `{item["price"]:,}` 💰\n{item["desc"]}'
-
-        await ctx.send(embed=embed)
+      #  embed = discord.Embed(title="Shop", color=discord.Color.random(), description='')
+#
+ #       for item in self._shop:
+  #          embed.description += f'\n**{item["name"]}** - `{item["price"]:,}` 💰\n{item["desc"]}'
+#
+ #       await ctx.send(embed=embed)
 
 def setup(bot: commands.Bot) -> None:
     bot.add_cog(Economy(bot))
