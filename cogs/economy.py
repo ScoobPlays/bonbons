@@ -21,7 +21,7 @@ class Economy(commands.Cog, description='Economy.'):
             payload = {
                 '_id': user.id,
                 'bal': 0,
-                'last_daily': None,
+                'next_daily': None,
             }
 
             await self.db.insert_one(payload)
