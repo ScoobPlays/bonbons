@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from typing import Union
-import datetime
+from datetime import timedelta, datetime
 import random
 
 User = Union[
@@ -49,13 +49,13 @@ class Economy(commands.Cog, description='Economy.'):
     
         user = ctx.author
         data = await self._create_or_find_user(user)
-        today = datetime.date.today()
-
-        new_daily = datetime.datetime(today.year, today.month, today.day, tzinfo=datetime.timezone.utc)
+        next_daily = (datetime.now() + timedelta(days=1)).timestamp()
     
-        if data['last_daily'] is None or data['last_daily'] < (ctx.message.created_at - datetime.timedelta(days=1)):
+        if data['next_daily'] is None or data['next_daily'] <= int(datetime.now().timestamp()):
+
             data['bal'] += 100
-            data['last_daily'] = new_daily
+            data['next_daily'] = int(next_daily)
+
             await self.db.update_one({'_id': user.id}, {'$set': data})
             return await ctx.send(f'{user.mention} Here is your daily 💰!')
 
