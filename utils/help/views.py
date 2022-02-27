@@ -223,6 +223,7 @@ class HelpCommandMenu(discord.ui.View):
     def __init__(self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed) -> None:
         super().__init__(timeout=40)       
         self.add_item(HelpCommandDropdown(ctx, bot, embed))
+        self.ctx = ctx
 
     async def interaction_check(self, interaction) -> bool:
         if interaction.user.id != self.ctx.author.id:
