@@ -51,7 +51,7 @@ class Economy(commands.Cog, description='Economy.'):
         data = await self._create_or_find_user(user)
         today = datetime.date.today()
 
-        new_daily = datetime.now(today.year, today.month, today.day, tzinfo=datetime.timezone.utc)
+        new_daily = datetime.datetime.now(today.year, today.month, today.day, tzinfo=datetime.timezone.utc)
     
         if data['last_daily'] is None or data['last_daily'] < (ctx.message.created_at - datetime.timedelta(days=1)):
             data['bal'] += 100
