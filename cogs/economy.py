@@ -1,3 +1,4 @@
+from operator import contains
 import discord
 from discord.ext import commands
 from typing import Union
@@ -59,18 +60,18 @@ class Economy(commands.Cog, description='Economy.'):
         await ctx.send(f'{user.mention} You already claimed your daily 💰!')
 
 
-    # Create a work command that will give someone a random amount of money if they work
 
     @commands.command(name='work')
     async def work(self, ctx: commands.Context) -> None:
 
         user = ctx.author
         data = await self._create_or_find_user(user)
+        coins = random.randint(25, 250)
 
-        data['bal'] += random.randint(25, 250)
+        data['bal'] += coins
 
-        await self.db.update_one({'_id': user.id}, {'$set': data})
-        await ctx.send(f'{user.mention} You worked and got {data["bal"]} 💰!')
+        await self.db.update_one({'_id': user.id}, {'$inc': {'bal': coins}})
+        await ctx.send(f'{user.mention} You worked and got {coins} 💰!')
 
 
 
