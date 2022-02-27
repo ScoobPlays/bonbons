@@ -3,6 +3,7 @@ from discord.ext import commands
 from typing import Union
 from datetime import timedelta, datetime
 import random
+import json
 
 User = Union[
     discord.Member,
@@ -13,6 +14,9 @@ class Economy(commands.Cog, description='Economy.'):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = bot.mongo['discord']['economy']
+
+        with open('db/economy.json', 'r') as _shop:
+            self._shop = json.load(_shop)
     
     async def _create_or_find_user(self, user: User) -> dict:
         data = await self.db.find_one({'_id': user.id})
@@ -38,14 +42,14 @@ class Economy(commands.Cog, description='Economy.'):
         data = await self._create_or_find_user(user)
 
         embed = discord.Embed(title=f'{user.display_name}\'s Account', color=discord.Color.random())
-        embed.add_field(name='Balance', value=f'{data["bal"]:,}')
+        embed.description = f'**Balance**: {data["bal"]:,}'
 
         await ctx.send(embed=embed)
 
     @commands.command(name='daily')
     async def daily(self, ctx: commands.Context) -> None:
             
-        """Gives you your daily money."""
+        """Gives you your daily $$$!"""
     
         user = ctx.author
         data = await self._create_or_find_user(user)
@@ -62,9 +66,10 @@ class Economy(commands.Cog, description='Economy.'):
         await ctx.send(f'{user.mention} You already claimed your daily 💰!')
 
 
-
     @commands.command(name='work')
     async def work(self, ctx: commands.Context) -> None:
+
+        """Work for some extra cash!"""
 
         user = ctx.author
         data = await self._create_or_find_user(user)
@@ -75,7 +80,17 @@ class Economy(commands.Cog, description='Economy.'):
         await self.db.update_one({'_id': user.id}, {'$inc': {'bal': coins}})
         await ctx.send(f'{user.mention} You worked and got {coins} 💰!')
 
+    @commands.command(name='shop')
+    async def shop(self, ctx: commands.Context) -> None:
+            
+        """Shows you the shop."""
+    
+        embed = discord.Embed(title="Shop", color=discord.Color.random(), description='')
 
+        for item in self._shop:
+            embed.description += f'\n**{item["name"]}** - `{item["price"]:,}` 💰\n{item["desc"]}'
+
+        await ctx.send(embed=embed)
 
 def setup(bot: commands.Bot) -> None:
     bot.add_cog(Economy(bot))
