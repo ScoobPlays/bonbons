@@ -7,3 +7,6 @@
 ## Actual Behavior
 
 ## Steps to Reproduce the Problem
+
+## Screenshots
+<!--Some screenshots of the bug-->
