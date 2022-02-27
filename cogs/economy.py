@@ -50,6 +50,7 @@ class Economy(commands.Cog, description='Economy.'):
     
         user = ctx.author
         data = await self._create_or_find_user(user)
+        print(data['last_daily'])
     
         if data['last_daily'] is None or data['last_daily'] < (ctx.message.created_at - datetime.timedelta(days=1)):
             data['bal'] += 100
