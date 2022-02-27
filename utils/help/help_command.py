@@ -22,7 +22,7 @@ class CustomHelpCommand(commands.HelpCommand):
 
     async def send_bot_help(self, mapping) -> None:
 
-        value = 'Click the dropdown and pick an option! To get more help do...\n\n"help [command]"\nhelp [category]\nhelp [group]\n'
+        value = 'Click the dropdown and pick an option! To get more help do...\n\n```\nhelp [command]"\nhelp [category]\nhelp [group]\n```'
 
         embed = HelpEmbed(
             title="Bonbons Help Page",
