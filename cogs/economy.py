@@ -1,55 +1,77 @@
 import discord
 from discord.ext import commands
+from typing import Union
+import datetime
+import random
 
-from utils.models import UserModel
+User = Union[
+    discord.Member,
+    discord.User,
+]
 
-
-class Economy(commands.Cog, description="Everyones favorite module!"):
+class Economy(commands.Cog, description='Economy.'):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.db = bot.mongo['discord']['economy']
+    
+    async def _create_or_find_user(self, user: User) -> dict:
+        data = await self.db.find_one({'_id': user.id})
 
-    async def _get_user(self, member: discord.Member) -> UserModel:
-        user = await UserModel.filter(id=member.id).first()
+        if data is None:
+            payload = {
+                '_id': user.id,
+                'bal': 0,
+                'last_daily': None,
+            }
 
-        if user is None:
-            user = await UserModel.create(
-                id=member.id, balance=0, bank=0, bank_limit=1000
-            )
-            return user
+            await self.db.insert_one(payload)
+            return payload
 
-        return user
+        return data
 
-    @commands.command(name="balance", aliases=["bal", "cash"])
-    async def balance(
-        self, ctx: commands.Context, member: discord.Member = None
-    ) -> None:
+    @commands.command(name='balance', aliases=['bal'])
+    async def balance(self, ctx: commands.Context, user: User = None) -> None:
 
-        member = member or ctx.author
+        """Tells you your balance."""
 
-        user = await self._get_user(member)
+        user = user or ctx.author
+        data = await self._create_or_find_user(user)
 
-        embed = discord.Embed(
-            title=f"{member.name}'s balance", color=discord.Color.random()
-        )
-        embed.add_field(name="Balance", value=f"${user.balance:,}")
-        embed.add_field(name="Bank", value=f"${user.bank:,}/{user.bank_limit:,}")
+        embed = discord.Embed(title=f'{user.display_name}\'s Account', color=discord.Color.random())
+        embed.add_field(name='Balance', value=f'{data["bal"]:,}')
 
         await ctx.send(embed=embed)
 
-    @commands.command(name="deposit", aliases=["dep"])
-    async def deposit(self, ctx: commands.Context, amount: int) -> None:
+    @commands.command(name='daily')
+    async def daily(self, ctx: commands.Context) -> None:
+            
+        """Gives you your daily money."""
+    
+        user = ctx.author
+        data = await self._create_or_find_user(user)
+    
+        if data['last_daily'] is None or data['last_daily'] < (ctx.message.created_at - datetime.timedelta(days=1)):
+            data['bal'] += 100
+            data['last_daily'] = ctx.message.created_at
+            await self.db.update_one({'_id': user.id}, {'$set': data})
+            return await ctx.send(f'{user.mention} Here is your daily 💰!')
 
-        user = await self._get_user(ctx.author)
+        await ctx.send(f'{user.mention} You already claimed your daily 💰!')
 
-        if amount > user.balance:
-            return await ctx.send("You don't have enough money to deposit that much.")
 
-        if user.bank + amount > user.bank_limit:
-            return await ctx.send("You can't deposit that much money.")
+    # Create a work command that will give someone a random amount of money if they work
 
-        user.bank += amount
-        await user.save()
-        await ctx.send(f"Deposited ${amount:,} to your bank.")
+    @commands.command(name='work')
+    async def work(self, ctx: commands.Context) -> None:
+
+        user = ctx.author
+        data = await self._create_or_find_user(user)
+
+        data['bal'] += random.randint(25, 250)
+
+        await self.db.update_one({'_id': user.id}, {'$set': data})
+        await ctx.send(f'{user.mention} You worked and got {data["bal"]} 💰!')
+
 
 
 def setup(bot: commands.Bot) -> None:

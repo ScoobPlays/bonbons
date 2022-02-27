@@ -4,8 +4,7 @@ from datetime import datetime
 import discord
 from aiohttp import ClientSession
 from discord.ext import commands
-from motor import motor_asyncio
-from tortoise import Tortoise
+from motor.motor_asyncio import AsyncIOMotorClient 
 
 from .help.help_command import CustomHelpCommand
 
@@ -23,7 +22,7 @@ class Bonbons(commands.Bot):
         )
         self.uptime = datetime.now().timestamp()
         self.invoked_commands = 0
-        self.mongo = motor_asyncio.AsyncIOMotorClient(os.environ.get("mongo_token"))
+        self.mongo = AsyncIOMotorClient(os.environ.get("mongo_token"))
         self.default_prefix = "b"
         self._prefixes = self.mongo["discord"]["prefixes"]
 
@@ -47,11 +46,6 @@ class Bonbons(commands.Bot):
 
         if not hasattr(self, "session"):
             self.session = ClientSession(loop=self.loop)
-
-        await Tortoise.init(
-            db_url="sqlite://db.sqlite3", modules={"models": ["utils.models"]}
-        )
-        await Tortoise.generate_schemas()
 
         print("Logged in.")
 
