@@ -30,9 +30,9 @@ class CustomHelpCommand(commands.HelpCommand):
         )
         embed.add_field(
             name="Support Server",
-            value="Not really a support server but you can join my (sift#0410) private discord server [here](https://discord.gg/cJsuVmk8Xq)",
+            value="Not really a support server but you can join my (sift#0410) private discord server [here](https://discord.gg/cJsuVmk8Xq).",
         )
-        embed.add_field(name="How do I get help?", value=value)
+        embed.add_field(name="How do I get help?", value=value, inline=False)
 
         view = HelpCommandMenu(self.context, self.context.bot, embed)
 

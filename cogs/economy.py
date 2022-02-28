@@ -117,11 +117,14 @@ class Economy(commands.Cog, description="Economy."):
 
         user = ctx.author
         data = await self._create_or_find_user(user)
-        item = self._shop[item]
+        item = self._shop.get(item.lower())
+
+        if item is None:
+            return await ctx.reply("That item doesn't exist.")
 
         if data["balance"] >= item["price"]:
             data["balance"] -= item["price"]
-            data["inventory"].append(item["name"])
+            data["inventory"].append(item["name"].lower())
 
             await self.db.update_one({"_id": user.id}, {"$set": data})
             return await ctx.reply(
@@ -244,7 +247,7 @@ class Economy(commands.Cog, description="Economy."):
         if item.lower() not in [res.lower() for res in data["inventory"]]:
             return await ctx.reply(f"You don't have that item!")
 
-        data["inventory"].remove(item)
+        data["inventory"].remove(item.lower())
 
         if item.lower() == "banknote":
             operation = (bank / 100) * 30
