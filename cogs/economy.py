@@ -1,3 +1,4 @@
+from operator import itemgetter
 import discord
 from discord.ext import commands
 from typing import Union
@@ -164,6 +165,66 @@ class Economy(commands.Cog, description='Economy.'):
     
         await self.db.update_one({'_id': user.id}, {'$set': data})
         await ctx.send(f'{user.mention} You deposited {amount:,} 💰 into your bank! Bank: {data["bank"]:,}')
+
+    @commands.command(name='withdraw', aliases=['wd'])
+    async def withdraw(self, ctx: commands.Context, amount: int) -> None:
+                
+            """Withdraw some money from your bank."""
+        
+            user = ctx.author
+            data = await self._create_or_find_user(user)
+        
+            if amount > data['bank']:
+                return await ctx.reply(f'You don\'t have enough 💰 in your bank to withdraw that!')
+        
+            data['bank'] -= amount
+            data['balance'] += amount
+        
+            await self.db.update_one({'_id': user.id}, {'$set': data})
+            await ctx.send(f'{user.mention} You withdrew {amount:,} 💰 from your bank! Balance: {data["balance"]:,}')
+
+    @commands.command(name='set')
+    @commands.is_owner()
+    async def set(self, ctx: commands.Context, user: discord.Member, amount: int) -> None:
+            
+            """Set someone's balance."""
+    
+            data = await self._create_or_find_user(user)
+            data['balance'] = amount
+            await self.db.update_one({'_id': user.id}, {'$set': data})
+            await ctx.reply(f'You set their balance to {amount:,} 💰!')
+
+    @commands.command(name='setbanklimit')
+    @commands.is_owner()
+    async def setbanklimit(self, ctx: commands.Context, user: discord.Member, amount: int) -> None:
+                
+                """Set someone's bank limit."""
+        
+                data = await self._create_or_find_user(user)
+                data['max_bank'] = amount
+                await self.db.update_one({'_id': user.id}, {'$set': data})
+                await ctx.reply(f'You set their bank limit to {amount:,} 💰!')
+
+    @commands.command(name='use')
+    async def use(self, ctx: commands.Context, item: str) -> None:
+                    
+            """Use an item."""
+            
+            user = ctx.author
+            data = await self._create_or_find_user(user)
+            bank = data['bank']
+            
+            if item not in data['inventory']:
+                return await ctx.reply(f'{user.mention} You don\'t have that item!')
+
+            data['inventory'].remove(item)
+
+            if item.lower() == 'banknote':
+                data['max_bank'] += ((bank/100)*30)
+                await self.db.update_one({'_id': user.id}, {'$set': data})
+                return await ctx.reply(f'You used a banknote! Bank: {data["balance"]:,}/{data["max_bank"]:,}')
+            
+            await ctx.reply('Unknown item.')
 
 def setup(bot: commands.Bot) -> None:
     bot.add_cog(Economy(bot))
