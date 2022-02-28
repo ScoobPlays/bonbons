@@ -85,11 +85,14 @@ class Economy(commands.Cog, description='Economy.'):
     async def shop(self, ctx: commands.Context) -> None:
             
         """Shows you the shop."""
-    
-        embed = discord.Embed(title="Shop", color=discord.Color.random(), description='')
 
-        for item in self._shop:
-            embed.description += f'\n**{item["name"]}** - {item["price"]:,} 💰\n{item["desc"]}'
+        embed = discord.Embed(title=f'Shop', color=discord.Color.random(), description='')
+        embed.set_thumbnail(url=self.bot.user.display_avatar)
+
+        for key in self._shop.keys():
+
+            base = self._shop[key]
+            embed.description += f'\n**{base["name"]}** -- {base["price"]:,} 💰\n{base["description"]}'
 
         await ctx.send(embed=embed)
 
@@ -107,7 +110,7 @@ class Economy(commands.Cog, description='Economy.'):
             data['inventory'].append(item['name'])
 
             await self.db.update_one({'_id': user.id}, {'$set': data})
-            return await ctx.send(f'{user.mention} You bought {item["name"]} for {item["price"]:,} 💰!')
+            return await ctx.send(f'{user.mention} You bought **{item["name"]}** for {item["price"]:,} 💰!')
 
         await ctx.send(f'{user.mention} You don\'t have enough 💰 to buy this item!')
 
@@ -119,6 +122,9 @@ class Economy(commands.Cog, description='Economy.'):
         
         user = ctx.author
         data = await self._create_or_find_user(user)
+
+        if len(data['inventory']) == 0:
+            return await ctx.send(f'{user.mention} You don\'t have any items!')
     
         embed = discord.Embed(title=f'{user.display_name}\'s Inventory', color=discord.Color.random())
         embed.description = '\n'.join(data['inventory']) # TODO: parse items if the user has multiple of the same item
