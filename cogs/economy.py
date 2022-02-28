@@ -145,7 +145,7 @@ class Economy(commands.Cog, description='Economy.'):
 
         await ctx.reply('Database reset!')
 
-    @commands.command(name='deposit')
+    @commands.command(name='deposit', aliases=['dep'])
     async def deposit(self, ctx: commands.Context, amount: int) -> None:
             
         """Deposit some money into your bank."""
@@ -163,7 +163,7 @@ class Economy(commands.Cog, description='Economy.'):
         data['bank'] += amount
     
         await self.db.update_one({'_id': user.id}, {'$set': data})
-        await ctx.send(f'{user.mention} You deposited {amount:,} 💰 into your bank!')
+        await ctx.send(f'{user.mention} You deposited {amount:,} 💰 into your bank! Bank: {data["bank"]:,}')
 
 def setup(bot: commands.Bot) -> None:
     bot.add_cog(Economy(bot))
