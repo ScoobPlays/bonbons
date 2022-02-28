@@ -128,7 +128,7 @@ class Bot(commands.Cog):
 
         embed = discord.Embed(
             title="Info",
-            color=discord.olor.blurple(),
+            color=discord.Color.blurple(),
             description=f"{guilds:,} guilds, {users:,} users.",
         )
 

@@ -250,7 +250,7 @@ class Economy(commands.Cog, description="Economy."):
             max_bank = int(data['max_bank']) + ((data['max_bank'] / 100) * 30)
 
             await self.db.update_one({"_id": user.id}, {"$set": {"inventory": data["inventory"]}})
-            await self.db.update_one({"_id": user.id}, {"$set": {"balance": max_bank}})
+            await self.db.update_one({"_id": user.id}, {"$set": {"max_bank": max_bank}})
 
             return await ctx.reply(
                 f'You used a banknote! Bank: {data["balance"]:,}/{int(max_bank):,}'
