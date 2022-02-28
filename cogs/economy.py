@@ -44,7 +44,7 @@ class Economy(commands.Cog, description='Economy.'):
         user = user or ctx.author
         data = await self._create_or_find_user(user)
 
-        embed = discord.Embed(title=f'{user.display_name}\'s Account', color=discord.Color.random())
+        embed = discord.Embed(title=f'{user.display_name}\'s Account', color=discord.Color.random(), description='')
         embed.description += f'**Balance**: {data["balance"]:,} 💰'
         embed.description += f'\n**Bank**: {data["bank"]:,}/{data["max_bank"]} 💰'
 
@@ -79,7 +79,7 @@ class Economy(commands.Cog, description='Economy.'):
         data = await self._create_or_find_user(user)
         coins = random.randint(25, 250)
 
-        data['bal'] += coins
+        data['balance'] += coins
 
         await self.db.update_one({'_id': user.id}, {'$inc': {'balance': coins}})
         await ctx.send(f'{user.mention} You worked and got {coins} 💰!')
