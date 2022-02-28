@@ -25,6 +25,8 @@ class Economy(commands.Cog, description='Economy.'):
             payload = {
                 '_id': user.id,
                 'balance': 0,
+                'bank': 0,
+                'max_bank': 1000,
                 'inventory': [],
                 'next_daily': None,
             }
@@ -43,7 +45,8 @@ class Economy(commands.Cog, description='Economy.'):
         data = await self._create_or_find_user(user)
 
         embed = discord.Embed(title=f'{user.display_name}\'s Account', color=discord.Color.random())
-        embed.description = f'**Balance**: {data["balance"]:,}'
+        embed.description += f'**Balance**: {data["balance"]:,} 💰'
+        embed.description += f'\n**Bank**: {data["bank"]:,}/{data["max_bank"]} 💰'
 
         await ctx.send(embed=embed)
 
@@ -62,9 +65,9 @@ class Economy(commands.Cog, description='Economy.'):
             data['next_daily'] = int(next_daily)
 
             await self.db.update_one({'_id': user.id}, {'$set': data})
-            return await ctx.send(f'{user.mention} Here is your daily 💰!')
+            return await ctx.reply(f'{user.mention} Here is your daily 💰!')
 
-        await ctx.send(f'{user.mention} You already claimed your daily 💰!')
+        await ctx.reply(f'{user.mention} You already claimed your daily 💰!')
 
 
     @commands.command(name='work')
@@ -110,9 +113,9 @@ class Economy(commands.Cog, description='Economy.'):
             data['inventory'].append(item['name'])
 
             await self.db.update_one({'_id': user.id}, {'$set': data})
-            return await ctx.send(f'{user.mention} You bought **{item["name"]}** for {item["price"]:,} 💰!')
+            return await ctx.reply(f'{user.mention} You bought **{item["name"]}** for {item["price"]:,} 💰!')
 
-        await ctx.send(f'{user.mention} You don\'t have enough 💰 to buy this item!')
+        await ctx.reply(f'{user.mention} You don\'t have enough 💰 to buy this item!')
 
 
     @commands.command(name='inventory', aliases=['inv'])
@@ -124,14 +127,43 @@ class Economy(commands.Cog, description='Economy.'):
         data = await self._create_or_find_user(user)
 
         if len(data['inventory']) == 0:
-            return await ctx.send(f'{user.mention} You don\'t have any items!')
+            return await ctx.reply(f'{user.mention} You don\'t have any items!')
     
         embed = discord.Embed(title=f'{user.display_name}\'s Inventory', color=discord.Color.random())
         embed.description = '\n'.join(data['inventory']) # TODO: parse items if the user has multiple of the same item
     
         await ctx.send(embed=embed)
 
+    @commands.command(name='reset')
+    @commands.is_owner()
+    async def reset(self, ctx: commands.Context) -> None:
 
+        """Resets the database."""
+        
+        async for document in self.db.find({}):
+            await self.db.delete_one({'_id': document['_id']})
+
+        await ctx.reply('Database reset!')
+
+    @commands.command(name='deposit')
+    async def deposit(self, ctx: commands.Context, amount: int) -> None:
+            
+        """Deposit some money into your bank."""
+    
+        user = ctx.author
+        data = await self._create_or_find_user(user)
+    
+        if amount > data['balance']:
+            return await ctx.reply(f'You don\'t have enough 💰 to deposit that!')
+
+        if amount > data['max_bank']:
+            return await ctx.reply(f'You can\'t deposit that much 💰 into your bank! (Max: {data["max_bank"]:,} 💰)')
+   
+        data['balance'] -= amount
+        data['bank'] += amount
+    
+        await self.db.update_one({'_id': user.id}, {'$set': data})
+        await ctx.send(f'{user.mention} You deposited {amount:,} 💰 into your bank!')
 
 def setup(bot: commands.Bot) -> None:
     bot.add_cog(Economy(bot))
