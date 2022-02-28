@@ -44,74 +44,70 @@ class HelpMenuPaginator(discord.ui.View):
         if not self.embed:
             await inter.edit_original_message(content=data, view=self)
 
-    @discord.ui.button(
-        label="<<", style=discord.ButtonStyle.grey, row=BUTTON_ROW
-    )
+    @discord.ui.button(label="<<", style=discord.ButtonStyle.grey, row=BUTTON_ROW)
     async def back_two(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
-    @discord.ui.button(
-        label="Back", style=discord.ButtonStyle.blurple, row=BUTTON_ROW
-    )
+    @discord.ui.button(label="Back", style=discord.ButtonStyle.blurple, row=BUTTON_ROW)
     async def back_one(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
-    @discord.ui.button(
-        label="Next", style=discord.ButtonStyle.blurple, row=BUTTON_ROW
-    )
+    @discord.ui.button(label="Next", style=discord.ButtonStyle.blurple, row=BUTTON_ROW)
     async def next_one(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
-    @discord.ui.button(
-        label="️>>", style=discord.ButtonStyle.grey, row=BUTTON_ROW
-    )
+    @discord.ui.button(label="️>>", style=discord.ButtonStyle.grey, row=BUTTON_ROW)
     async def next_two(self, button: discord.ui.Button, inter):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
 
+
 def get_options(bot: commands.Bot) -> list:
-        options = []
+    options = []
 
-        for cog in bot.cogs:
+    for cog in bot.cogs:
 
-            cog = bot.get_cog(cog)
+        cog = bot.get_cog(cog)
 
-            if cog.qualified_name in [
-                "Jishaku",
-                "Owner",
-            ]:
-                continue
+        if cog.qualified_name in [
+            "Jishaku",
+            "Owner",
+        ]:
+            continue
 
-            if hasattr(cog, "emoji"):
-                options.append(
-                    discord.SelectOption(
-                        label=cog.qualified_name,
-                        description=cog.description,
-                        emoji=cog.emoji,
-                    )
+        if hasattr(cog, "emoji"):
+            options.append(
+                discord.SelectOption(
+                    label=cog.qualified_name,
+                    description=cog.description,
+                    emoji=cog.emoji,
                 )
-
-            else:
-                options.append(
-                    discord.SelectOption(
-                        label=cog.qualified_name,
-                        description=cog.description,
-                    )
-                )
-
-        options.append(
-            discord.SelectOption(
-                label="Home", description="Go back to the main help page.", emoji="🏠"
             )
-        )
 
-        return options
+        else:
+            options.append(
+                discord.SelectOption(
+                    label=cog.qualified_name,
+                    description=cog.description,
+                )
+            )
+
+    options.append(
+        discord.SelectOption(
+            label="Home", description="Go back to the main help page.", emoji="🏠"
+        )
+    )
+
+    return options
+
 
 class HelpCommandDropdown(discord.ui.Select):
-    def __init__(self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed) -> None:
+    def __init__(
+        self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed
+    ) -> None:
         super().__init__(
             placeholder="Choose a category!",
             min_values=1,
@@ -220,8 +216,10 @@ class HelpCommandDropdown(discord.ui.Select):
 
 
 class HelpCommandMenu(discord.ui.View):
-    def __init__(self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed) -> None:
-        super().__init__(timeout=40)       
+    def __init__(
+        self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed
+    ) -> None:
+        super().__init__(timeout=40)
         self.add_item(HelpCommandDropdown(ctx, bot, embed))
         self.ctx = ctx
 

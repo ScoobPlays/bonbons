@@ -6,6 +6,7 @@ class Bot(commands.Cog):
     """
     Commands related to me.
     """
+
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = self.bot.mongo["discord"]["bot"]
@@ -63,7 +64,9 @@ class Bot(commands.Cog):
         data = await self.prefixes.find_one({"_id": guild.id})
 
         if data is None:
-            await self.prefixes.insert_one({"_id": guild.id, "prefix": self.bot.default_prefix})
+            await self.prefixes.insert_one(
+                {"_id": guild.id, "prefix": self.bot.default_prefix}
+            )
 
         if data is not None:
             pass
@@ -74,10 +77,18 @@ class Bot(commands.Cog):
         """Sends you my invite link!"""
 
         invite = discord.ui.View()
-        invite.add_item(discord.ui.Button(label="Invite Me!", style=discord.ButtonStyle.url, url="https://discord.com/api/oauth2/authorize?client_id=888309915620372491&permissions=412387494464&scope=bot"))
+        invite.add_item(
+            discord.ui.Button(
+                label="Invite Me!",
+                style=discord.ButtonStyle.url,
+                url="https://discord.com/api/oauth2/authorize?client_id=888309915620372491&permissions=412387494464&scope=bot",
+            )
+        )
 
         try:
-            await ctx.author.send("Click the button below to invite me to your discord server!")
+            await ctx.author.send(
+                "Click the button below to invite me to your discord server!"
+            )
             await ctx.message.add_reaction("✅")
         except discord.Forbidden:
             await ctx.message.add_reaction("❌")
@@ -132,7 +143,7 @@ class Bot(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command() # TODO: Steal R. Danny's cleanup command
+    @commands.command()  # TODO: Steal R. Danny's cleanup command
     @commands.is_owner()
     async def cleanup(self, ctx: commands.Context, limit: int = 5) -> None:
 

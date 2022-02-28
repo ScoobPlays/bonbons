@@ -4,7 +4,7 @@ from datetime import datetime
 import discord
 from aiohttp import ClientSession
 from discord.ext import commands
-from motor.motor_asyncio import AsyncIOMotorClient 
+from motor.motor_asyncio import AsyncIOMotorClient
 
 from .help.help_command import CustomHelpCommand
 
