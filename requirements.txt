@@ -1,4 +1,4 @@
-git+https://github.com/sifte/discord.py
+git+https://github.com/Rapptz/discord.py
 aiohttp
 motor
 jishaku
