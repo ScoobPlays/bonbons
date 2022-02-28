@@ -175,7 +175,7 @@ class Economy(commands.Cog, description="Economy."):
 
         if amount > data["max_bank"]:
             return await ctx.reply(
-                f'You can\'t deposit that much 💰 into your bank! (Max: {data["max_bank"]:,} 💰)'
+                f'You can\'t deposit that much 💰 into your bank! (Max: {int(data["max_bank"]):,} 💰)'
             )
 
         data["balance"] -= amount
@@ -183,7 +183,7 @@ class Economy(commands.Cog, description="Economy."):
 
         await self.db.update_one({"_id": user.id}, {"$set": data})
         await ctx.send(
-            f'{user.mention} You deposited {amount:,} 💰 into your bank! Bank: {data["bank"]:,}'
+            f'{user.mention} You deposited {amount:,} 💰 into your bank! Bank: {int(data["bank"]):,}/{int(data["max_bank"]):,} 💰'
         )
 
     @commands.command(name="withdraw", aliases=["wd"])
@@ -204,7 +204,7 @@ class Economy(commands.Cog, description="Economy."):
 
         await self.db.update_one({"_id": user.id}, {"$set": data})
         await ctx.send(
-            f'{user.mention} You withdrew {amount:,} 💰 from your bank! Balance: {data["balance"]:,}'
+            f'{user.mention} You withdrew {amount:,} 💰 from your bank! Balance: {int(data["balance"]):,}'
         )
 
     @commands.command(name="set")
@@ -253,7 +253,7 @@ class Economy(commands.Cog, description="Economy."):
             await self.db.update_one({"_id": user.id}, {"$set": {"max_bank": max_bank}})
 
             return await ctx.reply(
-                f'You used a banknote! Bank: {data["balance"]:,}/{int(max_bank):,}'
+                f'You used a banknote! Bank: {int(data["balance"]):,}/{int(max_bank):,} 💰'
             )
 
         await ctx.reply("Unknown item.")
