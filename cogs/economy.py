@@ -47,7 +47,7 @@ class Economy(commands.Cog, description='Economy.'):
 
         embed = discord.Embed(title=f'{user.display_name}\'s Account', color=discord.Color.random(), description='')
         embed.description += f'**Balance**: {data["balance"]:,} 💰'
-        embed.description += f'\n**Bank**: {data["bank"]:,}/{data["max_bank"]} 💰'
+        embed.description += f'\n**Bank**: {data["bank"]:,}/{int(data["max_bank"]):,} 💰'
 
         await ctx.send(embed=embed)
 
@@ -66,9 +66,9 @@ class Economy(commands.Cog, description='Economy.'):
             data['next_daily'] = int(next_daily)
 
             await self.db.update_one({'_id': user.id}, {'$set': data})
-            return await ctx.reply(f'{user.mention} Here is your daily 💰!')
+            return await ctx.reply(f'Here is your daily 100 💰!')
 
-        await ctx.reply(f'{user.mention} You already claimed your daily 💰!')
+        await ctx.reply(f'You already claimed your daily 💰!')
 
 
     @commands.command(name='work')
@@ -114,9 +114,9 @@ class Economy(commands.Cog, description='Economy.'):
             data['inventory'].append(item['name'])
 
             await self.db.update_one({'_id': user.id}, {'$set': data})
-            return await ctx.reply(f'{user.mention} You bought **{item["name"]}** for {item["price"]:,} 💰!')
+            return await ctx.reply(f'You bought **{item["name"]}** for {item["price"]:,} 💰!')
 
-        await ctx.reply(f'{user.mention} You don\'t have enough 💰 to buy this item!')
+        await ctx.reply(f'You don\'t have enough 💰 to buy this item!')
 
 
     @commands.command(name='inventory', aliases=['inv'])
@@ -128,7 +128,7 @@ class Economy(commands.Cog, description='Economy.'):
         data = await self._create_or_find_user(user)
 
         if len(data['inventory']) == 0:
-            return await ctx.reply(f'{user.mention} You don\'t have any items!')
+            return await ctx.reply(f'You don\'t have any items!')
     
         embed = discord.Embed(title=f'{user.display_name}\'s Inventory', color=discord.Color.random())
         embed.description = '\n'.join(data['inventory']) # TODO: parse items if the user has multiple of the same item
@@ -214,15 +214,15 @@ class Economy(commands.Cog, description='Economy.'):
             data = await self._create_or_find_user(user)
             bank = data['bank']
             
-            if item not in data['inventory']:
-                return await ctx.reply(f'{user.mention} You don\'t have that item!')
+            if item.lower() not in [res.lower() for res in data['inventory']]:
+                return await ctx.reply(f'You don\'t have that item!')
 
             data['inventory'].remove(item)
 
             if item.lower() == 'banknote':
-                data['max_bank'] += ((bank/100)*30)
-                await self.db.update_one({'_id': user.id}, {'$set': data})
-                return await ctx.reply(f'You used a banknote! Bank: {data["balance"]:,}/{data["max_bank"]:,}')
+                operation = ((bank/100)*30)
+                await self.db.update_one({'_id': user.id}, {'$inc': {'max_bank': operation}})
+                return await ctx.reply(f'You used a banknote! Bank: {data["balance"]:,}/{int(data["max_bank"]+operation):,}')
             
             await ctx.reply('Unknown item.')
 

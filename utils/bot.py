@@ -23,6 +23,7 @@ class Bonbons(commands.Bot):
         self.uptime = datetime.now().timestamp()
         self.invoked_commands = 0
         self.mongo = AsyncIOMotorClient(os.environ.get("mongo_token"))
+        self.economy = self.mongo["discord"]["economy"]
         self.default_prefix = "b"
         self._prefixes = self.mongo["discord"]["prefixes"]
 
