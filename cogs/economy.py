@@ -69,10 +69,8 @@ class Economy(commands.Cog, description="Economy."):
             datetime.now().timestamp()
         ):
 
-            data["balance"] += 100
-            data["next_daily"] = int(next_daily)
-
-            await self.db.update_one({"_id": user.id}, {"$set": data})
+            await self.db.update_one({"_id": user.id}, {"$inc": {"balance": 100}})
+            await self.db.update_one({"_id": user.id}, {"$set": {"next_daily": int(next_daily)}})
             return await ctx.reply(f"Here is your daily 100 💰!")
 
         await ctx.reply(f"You already claimed your daily 💰!")
@@ -219,7 +217,7 @@ class Economy(commands.Cog, description="Economy."):
 
         data = await self._create_or_find_user(user)
         data["balance"] = amount
-        await self.db.update_one({"_id": user.id}, {"$set": data})
+        await self.db.update_one({"_id": user.id}, {"$set": {'balance': amount}})
         await ctx.reply(f"You set their balance to {amount:,} 💰!")
 
     @commands.command(name="setbanklimit")
@@ -232,7 +230,7 @@ class Economy(commands.Cog, description="Economy."):
 
         data = await self._create_or_find_user(user)
         data["max_bank"] = amount
-        await self.db.update_one({"_id": user.id}, {"$set": data})
+        await self.db.update_one({"_id": user.id}, {"$set": {"max_bank": amount}})
         await ctx.reply(f"You set their bank limit to {amount:,} 💰!")
 
     @commands.command(name="use")
@@ -242,7 +240,6 @@ class Economy(commands.Cog, description="Economy."):
 
         user = ctx.author
         data = await self._create_or_find_user(user)
-        bank = data["bank"]
 
         if item.lower() not in [res.lower() for res in data["inventory"]]:
             return await ctx.reply(f"You don't have that item!")
@@ -250,12 +247,13 @@ class Economy(commands.Cog, description="Economy."):
         data["inventory"].remove(item.lower())
 
         if item.lower() == "banknote":
-            operation = (bank / 100) * 30
-            await self.db.update_one(
-                {"_id": user.id}, {"$inc": {"max_bank": operation}}
-            )
+            max_bank = int(data['max_bank']) + ((data['max_bank'] / 100) * 30)
+
+            await self.db.update_one({"_id": user.id}, {"$set": {"inventory": data["inventory"]}})
+            await self.db.update_one({"_id": user.id}, {"$set": {"balance": max_bank}})
+
             return await ctx.reply(
-                f'You used a banknote! Bank: {data["balance"]:,}/{int(data["max_bank"]+operation):,}'
+                f'You used a banknote! Bank: {data["balance"]:,}/{int(max_bank):,}'
             )
 
         await ctx.reply("Unknown item.")
