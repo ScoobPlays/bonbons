@@ -109,7 +109,7 @@ class HelpCommandDropdown(discord.ui.Select):
         self, ctx: commands.Context, bot: commands.Bot, embed: discord.Embed
     ) -> None:
         super().__init__(
-            placeholder="Choose a category!",
+            placeholder="Select a category..",
             min_values=1,
             max_values=1,
             options=get_options(bot),

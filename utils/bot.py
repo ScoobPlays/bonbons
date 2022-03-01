@@ -32,7 +32,6 @@ class Bonbons(commands.Bot):
         await super().start(os.environ["token"])
 
     def setup(self) -> None:
-
         os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
         os.environ["JISHAKU_HIDE"] = "True"
@@ -58,5 +57,7 @@ class Bonbons(commands.Bot):
             return commands.when_mentioned_or(self.default_prefix)(bot, message)
 
         prefix = await self._prefixes.find_one({"_id": message.guild.id})
+        
+        setattr(self.help_command.context, "prefix", prefix["prefix"])
 
         return commands.when_mentioned_or(prefix["prefix"])(bot, message)
