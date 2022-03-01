@@ -5,6 +5,7 @@ from datetime import timedelta, datetime
 import random
 import json
 from random import choice
+import typing as t
 
 User = Union[
     discord.Member,
@@ -72,14 +73,17 @@ class Economy(commands.Cog, description="Economy."):
 
         user = user or ctx.author
         data = await self._create_or_find_user(user)
+        balance = f'{int(data["balance"]):,}'
+        bank = f'{int(data["bank"]):,}'
+        max_bank = f'{int(data["max_bank"]):,}'
 
         embed = discord.Embed(
             title=f"{user.display_name}'s Account",
             color=discord.Color.random(),
             description="",
         )
-        embed.description += f'**Balance**: {data["balance"]:,} 💰'
-        embed.description += f'\n**Bank**: {data["bank"]:,}/{int(data["max_bank"]):,} 💰'
+        embed.description += f'**Balance**: {balance} 💰'
+        embed.description += f'\n**Bank**: {bank}/{max_bank} 💰'
 
         await ctx.send(embed=embed)
 
@@ -98,7 +102,7 @@ class Economy(commands.Cog, description="Economy."):
 
             await self.db.update_one({"_id": user.id}, {"$inc": {"balance": 100}})
             await self.db.update_one({"_id": user.id}, {"$set": {"next_daily": int(next_daily)}})
-            return await ctx.reply(f"Here is your daily 100 💰!")
+            return await ctx.reply(f"Here is your daily 200 💰!")
 
         await ctx.reply(f"You already claimed your daily 💰!")
 
@@ -165,6 +169,7 @@ class Economy(commands.Cog, description="Economy."):
 
         user = ctx.author
         data = await self._create_or_find_user(user)
+        inventory = {}
 
         if len(data["inventory"]) == 0:
             return await ctx.reply(f"You don't have any items!")
@@ -172,10 +177,16 @@ class Economy(commands.Cog, description="Economy."):
         embed = discord.Embed(
             title=f"{user.display_name}'s Inventory", color=discord.Color.random()
         )
-        embed.description = "\n".join(
-            data["inventory"]
-        )  # TODO: parse items if the user has multiple of the same item
+    
+        for item in data["inventory"]:
+            if item not in inventory:
+                inventory[item] = 1
+            else:
+                inventory[item] += 1
 
+        embed.description = "\n".join(
+            f'` - ` **{item}** x{inventory[item]}' for item in inventory.keys()
+        ) 
         await ctx.send(embed=embed)
 
     @commands.command(name="reset")
@@ -190,27 +201,42 @@ class Economy(commands.Cog, description="Economy."):
         await ctx.reply("Database reset!")
 
     @commands.command(name="deposit", aliases=["dep"])
-    async def deposit(self, ctx: commands.Context, amount: int) -> None:
+    async def deposit(self, ctx: commands.Context, amount: t.Union[int, str]) -> None:
 
         """Deposit some money into your bank."""
 
         user = ctx.author
         data = await self._create_or_find_user(user)
 
+
+        if isinstance(amount, str):
+            if amount == "all":
+                amount = data["balance"]
+
+                if amount + data["bank"] > data["max_bank"]:
+                    maths = data["balance"] - data["max_bank"]
+                    amount = data["balance"] - maths - data["bank"]
+
+            else:
+                return await ctx.reply("Please enter a valid amount.")
+
         if amount > data["balance"]:
             return await ctx.reply(f"You don't have enough 💰 to deposit that!")
 
         if amount > data["max_bank"]:
             return await ctx.reply(
-                f'You can\'t deposit that much 💰 into your bank! (Max: {int(data["max_bank"]):,} 💰)'
+                f'You can\'t deposit that much 💰 into your bank!'
             )
+
+        elif amount < 0:
+            return await ctx.reply(f"You can't deposit a negative amount!")
 
         data["balance"] -= amount
         data["bank"] += amount
 
         await self.db.update_one({"_id": user.id}, {"$set": data})
-        await ctx.send(
-            f'{user.mention} You deposited {amount:,} 💰 into your bank! Bank: {int(data["bank"]):,}/{int(data["max_bank"]):,} 💰'
+        await ctx.reply(
+            f'Successfully deposited {amount:,} 💰 into your bank!'
         )
 
     @commands.command(name="withdraw", aliases=["wd"])
@@ -280,7 +306,7 @@ class Economy(commands.Cog, description="Economy."):
             await self.db.update_one({"_id": user.id}, {"$set": {"max_bank": max_bank}})
 
             return await ctx.reply(
-                f'You used a banknote! Bank: {int(data["balance"]):,}/{int(max_bank):,} 💰'
+                f'You used a banknote and increased your banklimit size by 30%!'
             )
 
         await ctx.reply("Unknown item.")
