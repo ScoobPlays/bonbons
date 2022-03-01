@@ -1,24 +1,51 @@
-from operator import itemgetter
 import discord
 from discord.ext import commands
 from typing import Union
 from datetime import timedelta, datetime
 import random
 import json
+from random import choice
 
 User = Union[
     discord.Member,
     discord.User,
 ]
 
+JOBS = (
+    "Farmer",
+    "Miner",
+    "Lumberjack",
+    "Blacksmith",
+    "Carpenter",
+    "Hunter",
+    "Fisher",
+    "Cook",
+    "Accountant",
+    "Banker",
+    "Merchant",
+    "Tax Collector",
+    "Police Officer",
+    "Firefighter",
+    "Doctor",
+    "Lawyer",
+    "Teacher",
+    "Soldier",
+    "Criminal",
+    "Soldier",
+    "Nurse"
+
+)
 
 class Economy(commands.Cog, description="Economy."):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = bot.mongo["discord"]["economy"]
-
         with open("utils/database/shop.jsonc", "r") as _shop:
             self._shop = json.load(_shop)
+
+    @property
+    def emoji(self) -> str:
+        return "💰"
 
     async def _create_or_find_user(self, user: User) -> dict:
         data = await self.db.find_one({"_id": user.id})
@@ -87,7 +114,7 @@ class Economy(commands.Cog, description="Economy."):
         data["balance"] += coins
 
         await self.db.update_one({"_id": user.id}, {"$inc": {"balance": coins}})
-        await ctx.send(f"{user.mention} You worked and got {coins} 💰!")
+        await ctx.reply(f"You worked as a {choice(JOBS)} and earned {coins} 💰!")
 
     @commands.command(name="shop")
     async def shop(self, ctx: commands.Context) -> None:
