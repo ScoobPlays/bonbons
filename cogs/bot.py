@@ -3,18 +3,19 @@ from discord.ext import commands
 
 
 class Bot(commands.Cog):
+
     """
     Commands related to me.
     """
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.db = self.bot.mongo["discord"]["bot"]
         self.prefixes = self.bot.mongo["discord"]["prefixes"]
 
     @property
     def emoji(self) -> str:
-        return discord.PartialEmoji(name="pfp", id=942408031071793203)
+        return "🤖"
 
     @commands.Cog.listener("on_message")
     async def prefix_ping(self, message: discord.Message) -> None:
