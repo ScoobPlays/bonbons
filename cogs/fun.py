@@ -634,6 +634,21 @@ class Fun(commands.Cog):
         except:
             return await ctx.send("I could not evalute expression your expression(s).")
 
+    @commands.command(name="meme")
+    async def meme(self, ctx: commands.Context) -> None:
+        """
+        Sends a random meme.
+        """
+
+        if self.bot.memes == []:
+            return await ctx.reply("Memes have not yet been cached. Please wait a couple of seconds.")
+        
+        meme = random.choice(self.bot.memes)
+
+        embed = discord.Embed(title=meme.title, color=discord.Color.random())
+        embed.set_image(url=meme.url)
+
+        await ctx.send(embed=embed)
 
 def setup(bot: Bonbons) -> None:
     bot.add_cog(Fun(bot))

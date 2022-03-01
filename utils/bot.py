@@ -5,6 +5,7 @@ import discord
 from aiohttp import ClientSession
 from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient
+from asyncpraw import Reddit
 
 from .help.help_command import CustomHelpCommand
 
@@ -25,13 +26,21 @@ class Bonbons(commands.Bot):
         self.mongo = AsyncIOMotorClient(os.environ.get("mongo_token"))
         self.economy = self.mongo["discord"]["economy"]
         self.default_prefix = "b"
+        self.reddit = Reddit(
+            client_id="Afm7Vjl071XabpFmf_zHWQ",
+            client_secret="Lwr071ALLSLtZd0wkK4szSsPrd6l5Q",
+            user_agent="bonbons"
+            )
         self._prefixes = self.mongo["discord"]["prefixes"]
+        self.memes = []
 
     async def start(self) -> None:
-        self.setup()
+        await self.setup()
         await super().start(os.environ["token"])
 
-    def setup(self) -> None:
+    async def setup(self) -> None:
+
+        await self._cache_memes()
         os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
         os.environ["JISHAKU_HIDE"] = "True"
@@ -61,3 +70,15 @@ class Bonbons(commands.Bot):
         setattr(self.help_command.context, "prefix", prefix["prefix"])
 
         return commands.when_mentioned_or(prefix["prefix"])(bot, message)
+
+    async def _cache_memes(self) -> None:
+
+        subreddit = await self.reddit.subreddit("memes")
+
+        async for submission in subreddit.hot(limit=500):
+            if submission.url.startswith('https://i.redd.it/'):
+                self.memes.append(submission)
+
+        async for submission in subreddit.top(limit=500):
+            if submission.url.startswith('https://i.redd.it/'):
+                self.memes.append(submission)
