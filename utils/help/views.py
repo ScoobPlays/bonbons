@@ -159,7 +159,7 @@ class HelpCommandDropdown(discord.ui.Select):
     ) -> None:
 
         embeds = []
-        prefix = ctx.prefix
+        prefix = self.ctx.prefix
 
         for i in range(0, len(data), per_page):
             embed = discord.Embed(
