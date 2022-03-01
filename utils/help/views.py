@@ -159,6 +159,7 @@ class HelpCommandDropdown(discord.ui.Select):
     ) -> None:
 
         embeds = []
+        prefix = ctx.prefix
 
         for i in range(0, len(data), per_page):
             embed = discord.Embed(
@@ -176,7 +177,8 @@ class HelpCommandDropdown(discord.ui.Select):
             embeds.append(embed)
 
         for index, embed in enumerate(embeds):
-            embed.set_footer(text=f"Page {index+1}/{len(embeds)}")
+            embed.title += f" Page {index+1}/{len(embeds)}"
+            embed.set_footer(text=f"Use {prefix}help [command] for more info on a command.")
 
         view = HelpMenuPaginator(self.ctx, embeds, timeout=60, embed=True)
         view.add_item(self)
