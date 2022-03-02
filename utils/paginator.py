@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-__all__ = ["Paginator"]
+__all__ = ("Paginator",)
 
 
 class Paginator(discord.ui.View):
