@@ -85,7 +85,7 @@ class Levels(commands.Cog):
             buffer.seek(0)
 
             embed = discord.Embed(color=discord.Color.blurple())
-            embed.set_image(url="attachment://image.png")
+            embed.set_image(url="attachment://rank_card.png")
             return await ctx.send(file=discord.File(buffer, "rank_card.png"), embed=embed)
 
     async def _generate_leaderboard(self, ctx: commands.Context) -> None:
@@ -132,7 +132,7 @@ class Levels(commands.Cog):
                 color=discord.Color.blurple(),
                 timestamp=datetime.utcnow(),
             )
-            embed.set_image(url="attachment://image.png")
+            embed.set_image(url="attachment://leaderboard.png")
             embed.set_footer(text=f"Took{done: .2f}s")
 
             return await ctx.send(file=discord.File(buffer, "leaderboard.png"), embed=embed)
