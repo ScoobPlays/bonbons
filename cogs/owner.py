@@ -84,19 +84,29 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         )
         await ctx.reply(embed=embed)
 
-    @commands.Cog.listener()
-    async def on_message_edit(
+    @commands.Cog.listener('on_message_edit')
+    async def _re_invoke_owner_commands(
         self, before: discord.Message, after: discord.Message
     ) -> None:
 
         context = await self.bot.get_context(after)
         prefix = context.prefix
 
-        valid_messages = (f"{prefix}eval", f"{prefix}e", f"{prefix}jsk py")
+        valid_messages = (f'{prefix}eval', f'{prefix}e', f{prefix}jsk py')
 
         if after.content.startswith(valid_messages):
             await self.bot.process_commands(after)
 
+    @commands.Cog.listener('on_message')
+    async def _re_invoke_commands(self, message: discord.Message):
+        ctx = await self.bot.get_context(message)
 
+        if not message.content.startswith(ctx.prefix):
+            command = message.content.split()[0].lower()
+            cmd = self.bot.get_command(command)
+                          
+            if command.lower() in self.bot.commands:
+                await cmd.invoke(ctx)
+                          
 def setup(bot):
     bot.add_cog(Owner(bot))
