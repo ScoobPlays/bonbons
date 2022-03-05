@@ -79,7 +79,7 @@ class Modal:
         component = {
             'type': 4,
             'custom_id': custom_id,
-            'style': style,
+            'style': style.value if hasattr(style, 'value') else 1,
             'label': label,
             'required': str(required),
         }
