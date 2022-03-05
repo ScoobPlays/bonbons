@@ -4,7 +4,6 @@ from .enums import InputStyle
 from typing import Union, List
 import asyncio
 
-
 class TextInput:
     def __init__(self, payload: dict):
         self.type = payload['type']
@@ -18,8 +17,8 @@ class TextInput:
         self.placeholder = payload.get('placeholder')
 
 class Modal:
-    def __init__(self, bot: Bonbons, title: str = 'Title', options: List[TextInput] = None):
-        self.bot = bot
+    def __init__(self, title: str = 'Title', options: List[TextInput] = None):
+        self.bot = Bonbons()
         self.title = title
         self.custom_id = secrets.token_urlsafe(16)
         self.payload = {
@@ -35,6 +34,7 @@ class Modal:
 
     def add_option(
         self,
+        *,
         style: Union[int, InputStyle]=InputStyle.short,
         label: str=None,
         custom_id: int=secrets.token_urlsafe(16),
