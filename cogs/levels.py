@@ -31,7 +31,7 @@ class Levels(commands.Cog):
 
         setattr(self.bot, "_levels", self.levels)
 
-    async def generate_rank_card(
+    async def _generate_rank_card(
         self, ctx: commands.Context, member: discord.Member, data, bg=None
     ) -> None:
         next_level_xp = self.levels[int(data["level"]) + 1]
@@ -80,16 +80,15 @@ class Levels(commands.Cog):
             color="white",
         )
 
-        with io.BytesIO() as img:
-            background.save(img, "PNG")
-            img.seek(0)
+        with io.BytesIO() as buffer:
+            background.save(buffer, "PNG")
+            buffer.seek(0)
 
-            embed = discord.Embed(color=discord.Color.blurple()).set_image(
-                file=discord.File(fp=img, filename="rank.png")
-            )
-            return await ctx.send(embed=embed)
+            embed = discord.Embed(color=discord.Color.blurple())
+            embed.set_image(url="attachment://rank_card.png")
+            return await ctx.send(file=discord.File(buffer, "rank_card.png"), embed=embed)
 
-    async def generate_leaderboard(self, ctx: commands.Context) -> None:
+    async def _generate_leaderboard(self, ctx: commands.Context) -> None:
 
         before = time.perf_counter()
         background = Editor(Canvas((1400, 1280), color="#23272A"))
@@ -121,9 +120,9 @@ class Levels(commands.Cog):
             paste_size += 128
             text_size += 130
 
-        with io.BytesIO() as img:
-            background.save(img, "PNG")
-            img.seek(0)
+        with io.BytesIO() as buffer:
+            background.save(buffer, "PNG")
+            buffer.seek(0)
 
             done = time.perf_counter() - before
 
@@ -133,14 +132,13 @@ class Levels(commands.Cog):
                 color=discord.Color.blurple(),
                 timestamp=datetime.utcnow(),
             )
-            embed.set_image(file=discord.File(fp=img, filename="leaderboard.png"))
+            embed.set_image(url="attachment://leaderboard.png")
             embed.set_footer(text=f"Took{done: .2f}s")
 
-            return await ctx.send(embed=embed)
+            return await ctx.send(file=discord.File(buffer, "leaderboard.png"), embed=embed)
 
     @commands.command(name="rank", aliases=["level"])
     @commands.cooldown(1, 20, commands.BucketType.user)
-    @commands.guild_only()
     async def rank(self, ctx: commands.Context, member: discord.Member = None):
         """Tells you your current level embedded inside an image."""
 
@@ -151,11 +149,12 @@ class Levels(commands.Cog):
         data = await db.find_one({"_id": member.id})
 
         if data is not None:
-            await self.generate_rank_card(ctx, member, data)
+            return await self._generate_rank_card(ctx, member, data)
 
+        await ctx.reply("You have no XP somehow. Send some more messages into the chat and try again..")
+        
     @commands.command(name="setlevel")
     @commands.cooldown(1, 20, commands.BucketType.user)
-    @commands.guild_only()
     async def setlevel(self, ctx: commands.Context, member: discord.Member, level: int):
 
         db = self.db[str(ctx.guild.id)]
@@ -167,10 +166,9 @@ class Levels(commands.Cog):
 
     @commands.command(aliases=["lb"])
     @commands.cooldown(1, 20, commands.BucketType.user)
-    @commands.guild_only()
     async def leaderboard(self, ctx: commands.Context):
         """Shows the level leaderboard for the current server."""
-        await self.generate_leaderboard(ctx)
+        await self._generate_leaderboard(ctx)
 
     @commands.Cog.listener("on_message")
     async def update_xp(self, message: discord.Message):
