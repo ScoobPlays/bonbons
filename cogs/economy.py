@@ -41,7 +41,7 @@ class Economy(commands.Cog, description="Economy."):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.db = bot.mongo["discord"]["economy"]
-        with open("utils/database/shop.jsonc", "r") as _shop:
+        with open("utils/db/shop.jsonc", "r") as _shop:
             self._shop = json.load(_shop)
 
     @property

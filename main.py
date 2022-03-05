@@ -1,5 +1,4 @@
 import asyncio
-import os
 
 from utils.bot import Bonbons
 
