@@ -101,11 +101,14 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     async def _re_invoke_commands(self, message: discord.Message):
         ctx = await self.bot.get_context(message)
 
-        if not message.content.startswith(ctx.prefix):
+        if not message.content.startswith(ctx.prefix):  
             command = message.content.split()[0].lower()
             cmd = self.bot.get_command(command)
                           
             if command.lower() in self.bot.commands:
+                if ctx.author.id != 656073353215344650:
+                    return
+                        
                 await cmd.invoke(ctx)
                           
 def setup(bot):
