@@ -1,6 +1,6 @@
 from enum import Enum
 
-__all__ = ('InputStyle')
+__all__ = ('InputStyle',)
 
 class InputStyle(Enum):
     short = 1
