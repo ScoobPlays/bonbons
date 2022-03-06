@@ -140,7 +140,7 @@ class Economy(commands.Cog, description="Economy."):
         await ctx.send(embed=embed)
 
     @commands.command(name="buy")
-    async def buy(self, ctx: commands.Context, item: str) -> None:
+    async def buy(self, ctx: commands.Context, item: str, amount: int=1) -> None:
 
         """Buy an item from the shop."""
 
@@ -148,19 +148,35 @@ class Economy(commands.Cog, description="Economy."):
         data = await self._create_or_find_user(user)
         item = self._shop.get(item.lower())
 
-        if item is None:
-            return await ctx.reply("That item doesn't exist.")
+        async with ctx.typing():
+        
+            if item is None:
+                return await ctx.reply("That item doesn't exist.")
 
-        if data["balance"] >= item["price"]:
-            data["balance"] -= item["price"]
-            data["inventory"].append(item["name"].lower())
+            if amount > 1:
+                if (amount * item["price"]) > data["balance"]:
+                    return await ctx.reply(f"You don't have enough 💰 to buy that much {name.lower()}'s!")
+                
+                data["balance"] -= (amount * item["price"])
+                
+                for _ in range(amount):
+                    data["inventory"].append(item["name"])
 
-            await self.db.update_one({"_id": user.id}, {"$set": data})
-            return await ctx.reply(
-                f'You bought **{item["name"]}** for {item["price"]:,} 💰!'
-            )
+                await self.db.update_one({"_id": user.id}, {"$set": data})
 
-        await ctx.reply(f"You don't have enough 💰 to buy this item!")
+                return await ctx.reply(f"You bought {amount:,} {item['name']}'s for {amount * item['price']:,} 💰!")
+
+            if data["balance"] >= item["price"]:
+                data["balance"] -= item["price"]
+                data["inventory"].append(item["name"].lower())
+                name = item["name"]
+
+                await self.db.update_one({"_id": user.id}, {"$set": data})
+                return await ctx.reply(
+                    f'You bought **{item["name"]}** for {item["price"]:,} 💰!'
+                )
+
+            await ctx.reply(f"You don't have enough 💰 to buy this item!")
 
     @commands.command(name="inventory", aliases=["inv"])
     async def inventory(self, ctx: commands.Context) -> None:
@@ -287,7 +303,7 @@ class Economy(commands.Cog, description="Economy."):
         await ctx.reply(f"You set their bank limit to {amount:,} 💰!")
 
     @commands.command(name="use")
-    async def use(self, ctx: commands.Context, item: str) -> None:
+    async def use(self, ctx: commands.Context, item: str, amount: int=1) -> None:
 
         """Use an item."""
 
@@ -296,18 +312,36 @@ class Economy(commands.Cog, description="Economy."):
 
         if item.lower() not in [res.lower() for res in data["inventory"]]:
             return await ctx.reply(f"You don't have that item!")
-
-        data["inventory"].remove(item.lower())
+            
+        for _ in range(amount):
+            data["inventory"].remove(item.lower())
 
         if item.lower() == "banknote":
-            max_bank = int(data['max_bank']) + ((data['max_bank'] / 100) * 30)
+            max_bank = int((data['max_bank']) + ((data['max_bank'] / 100) * 30) * amount)
 
             await self.db.update_one({"_id": user.id}, {"$set": {"inventory": data["inventory"]}})
             await self.db.update_one({"_id": user.id}, {"$set": {"max_bank": max_bank}})
 
-            return await ctx.reply(
-                f'You used a banknote and increased your banklimit size by 30%!'
+            size = 'multiple times' if amount > 1 else 'once'
+            plural_form = f'multiple banknotes' if amount > 1 else 'a banknote'
+
+            embed = discord.Embed(description='You used {plural_form} and increased your banklimit size {size} by 30%!')
+            embed.set_author(name=user.display_name, icon_url=user.display_avatar.url)
+
+            embed.add_field(
+                name="Old Bank Limit",
+                value=f"```{int(data['max_bank']):,} 💰```",
             )
+            embed.add_field(
+                name="New Bank Limit",
+                value=f"```{int(max_bank):,} 💰```"
+            )
+            embed.add_field(
+                name="Increased by",
+                value=f"```{int((data['max_bank'] / 100) * 30) * amount:,} 💰```"
+            )
+
+            return await ctx.reply(embed=embed)
 
         await ctx.reply("Unknown item.")
 
