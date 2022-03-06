@@ -155,7 +155,7 @@ class Economy(commands.Cog, description="Economy."):
 
             if amount > 1:
                 if (amount * item["price"]) > data["balance"]:
-                    return await ctx.reply(f"You don't have enough 💰 to buy that much {name.lower()}'s!")
+                    return await ctx.reply(f"You don't have enough 💰 to buy that much {item.lower()}'s!")
                 
                 data["balance"] -= (amount * item["price"])
                 
@@ -169,7 +169,6 @@ class Economy(commands.Cog, description="Economy."):
             if data["balance"] >= item["price"]:
                 data["balance"] -= item["price"]
                 data["inventory"].append(item["name"].lower())
-                name = item["name"]
 
                 await self.db.update_one({"_id": user.id}, {"$set": data})
                 return await ctx.reply(
