@@ -189,23 +189,24 @@ class Economy(commands.Cog, description="Economy."):
         data = await self._create_or_find_user(user)
         inventory = {}
 
-        if len(data["inventory"]) == 0:
-            return await ctx.reply(f"You don't have any items!")
+        async with ctx.typing():
+            if len(data["inventory"]) == 0:
+                return await ctx.reply(f"You don't have any items!")
 
-        embed = discord.Embed(
-            title=f"{user.display_name}'s Inventory", color=discord.Color.random()
-        )
+            embed = discord.Embed(
+                title=f"{user.display_name}'s Inventory", color=discord.Color.random()
+            )
     
-        for item in data["inventory"]:
-            if item not in inventory:
-                inventory[item] = 1
-            else:
-                inventory[item] += 1
+            for item in data["inventory"]:
+                if item not in inventory:
+                    inventory[item] = 1
+                else:
+                    inventory[item] += 1
 
-        embed.description = "\n".join(
-            f'` - ` **{item}** x{inventory[item]}' for item in inventory.keys()
-        ) 
-        await ctx.send(embed=embed)
+            embed.description = "\n".join(
+                f'` - ` **{item}** x{inventory[item]}' for item in inventory.keys()
+            ) 
+            await ctx.send(embed=embed)
 
     @commands.command(name="reset")
     @commands.is_owner()
@@ -226,36 +227,36 @@ class Economy(commands.Cog, description="Economy."):
         user = ctx.author
         data = await self._create_or_find_user(user)
 
+        async with ctx.typing():
+            if isinstance(amount, str):
+                if amount == "all":
+                    amount = data["balance"]
 
-        if isinstance(amount, str):
-            if amount == "all":
-                amount = data["balance"]
+                    if amount + data["bank"] > data["max_bank"]:
+                        maths = data["balance"] - data["max_bank"]
+                        amount = data["balance"] - maths - data["bank"]
 
-                if amount + data["bank"] > data["max_bank"]:
-                    maths = data["balance"] - data["max_bank"]
-                    amount = data["balance"] - maths - data["bank"]
+                else:
+                    return await ctx.reply("Please enter a valid amount.")
 
-            else:
-                return await ctx.reply("Please enter a valid amount.")
+            if amount > data["balance"]:
+                return await ctx.reply(f"You don't have enough 💰 to deposit that!")
 
-        if amount > data["balance"]:
-            return await ctx.reply(f"You don't have enough 💰 to deposit that!")
+            if amount > data["max_bank"]:
+                return await ctx.reply(
+                    f'You can\'t deposit that much 💰 into your bank!'
+                )
 
-        if amount > data["max_bank"]:
-            return await ctx.reply(
-                f'You can\'t deposit that much 💰 into your bank!'
+            elif amount < 0:
+                return await ctx.reply(f"You can't deposit a negative amount!")
+
+            data["balance"] -= amount
+            data["bank"] += amount
+
+            await self.db.update_one({"_id": user.id}, {"$set": data})
+            await ctx.reply(
+                f'Successfully deposited {amount:,} 💰 into your bank!'
             )
-
-        elif amount < 0:
-            return await ctx.reply(f"You can't deposit a negative amount!")
-
-        data["balance"] -= amount
-        data["bank"] += amount
-
-        await self.db.update_one({"_id": user.id}, {"$set": data})
-        await ctx.reply(
-            f'Successfully deposited {amount:,} 💰 into your bank!'
-        )
 
     @commands.command(name="withdraw", aliases=["wd"])
     async def withdraw(self, ctx: commands.Context, amount: int) -> None:
@@ -318,34 +319,35 @@ class Economy(commands.Cog, description="Economy."):
         for _ in range(amount):
             data["inventory"].remove(item.lower())
 
-        if item.lower() == "banknote":
-            max_bank = int((data['max_bank']) + ((data['max_bank'] / 100) * 30) * amount)
+        async with ctx.typing():
+            if item.lower() == "banknote":
+                max_bank = int((data['max_bank']) + ((data['max_bank'] / 100) * 30) * amount)
 
-            await self.db.update_one({"_id": user.id}, {"$set": {"inventory": data["inventory"]}})
-            await self.db.update_one({"_id": user.id}, {"$set": {"max_bank": max_bank}})
+                await self.db.update_one({"_id": user.id}, {"$set": {"inventory": data["inventory"]}})
+                await self.db.update_one({"_id": user.id}, {"$set": {"max_bank": max_bank}})
 
-            size = 'multiple times' if amount > 1 else 'once'
-            plural_form = f'multiple banknotes' if amount > 1 else 'a banknote'
+                size = 'multiple times' if amount > 1 else 'once'
+                plural_form = f'multiple banknotes' if amount > 1 else 'a banknote'
 
-            embed = discord.Embed(description='You used {plural_form} and increased your banklimit size {size} by 30%!')
-            embed.set_author(name=user.display_name, icon_url=user.display_avatar.url)
+                embed = discord.Embed(description='You used {plural_form} and increased your banklimit size {size} by 30%!')
+                embed.set_author(name=user.display_name, icon_url=user.display_avatar.url)
 
-            embed.add_field(
-                name="Old Bank Limit",
-                value=f"```{int(data['max_bank']):,} 💰```",
-            )
-            embed.add_field(
-                name="New Bank Limit",
-                value=f"```{int(max_bank):,} 💰```"
-            )
-            embed.add_field(
-                name="Increased by",
-                value=f"```{int((data['max_bank'] / 100) * 30) * amount:,} 💰```"
-            )
+                embed.add_field(
+                    name="Old Bank Limit",
+                    value=f"```{int(data['max_bank']):,} 💰```",
+                )
+                embed.add_field(
+                    name="New Bank Limit",
+                    value=f"```{int(max_bank):,} 💰```"
+                )
+                embed.add_field(
+                    name="Increased by",
+                    value=f"```{int((data['max_bank'] / 100) * 30) * amount:,} 💰```"
+                )
 
-            return await ctx.reply(embed=embed)
+                return await ctx.reply(embed=embed)
 
-        await ctx.reply("Unknown item.")
+            await ctx.reply("Unknown item.")
 
 
 def setup(bot: commands.Bot) -> None:
