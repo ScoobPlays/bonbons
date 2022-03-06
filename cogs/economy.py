@@ -157,7 +157,7 @@ class Economy(commands.Cog, description="Economy."):
                 if (amount * item["price"]) > data["balance"]:
                     return await ctx.reply(f"You don't have enough 💰 to buy that much {item['name'].lower()}'s!")
 
-                if amount >= 10000:
+                if amount >= 10001:
                     return await ctx.reply("You cannot buy that many items at once!")
                 
                 data["balance"] -= (amount * item["price"])
@@ -329,7 +329,7 @@ class Economy(commands.Cog, description="Economy."):
                 size = 'multiple times' if amount > 1 else 'once'
                 plural_form = f'multiple banknotes' if amount > 1 else 'a banknote'
 
-                embed = discord.Embed(description='You used {plural_form} and increased your banklimit size {size} by 30%!')
+                embed = discord.Embed(description=f'You used {plural_form} and increased your banklimit size {size} by 30%!', color=discord.Color.random())
                 embed.set_author(name=user.display_name, icon_url=user.display_avatar.url)
 
                 embed.add_field(
