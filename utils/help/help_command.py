@@ -114,7 +114,7 @@ class CustomHelpCommand(commands.HelpCommand):
         description = command.description or command.help or "..."
 
         embed.description = (
-            f"```\n{self.get_command_signature(command)}\n```\n\n{description}"
+            f"```\n{self.get_command_signature(command)}\n```{description}"
         )
 
         if command.aliases:
