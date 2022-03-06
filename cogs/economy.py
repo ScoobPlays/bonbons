@@ -155,7 +155,7 @@ class Economy(commands.Cog, description="Economy."):
 
             if amount > 1:
                 if (amount * item["price"]) > data["balance"]:
-                    return await ctx.reply(f"You don't have enough 💰 to buy that much {item.lower()}'s!")
+                    return await ctx.reply(f"You don't have enough 💰 to buy that much {item['name'].lower()}'s!")
                 
                 data["balance"] -= (amount * item["price"])
                 
