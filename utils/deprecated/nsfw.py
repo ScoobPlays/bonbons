@@ -12,8 +12,7 @@ class NSFW(Cog, description="NSFW related commands."):
     def emoji(self) -> str:
         return "🔞"
 
-    @staticmethod
-    async def _get_nsfw_image(ctx: Context, type: str) -> discord.Embed:
+    async def _get_nsfw_image(self, ctx: Context, type: str) -> discord.Embed:
         url = f"{BASE_URL}/random/?selected_tags={type}&nsfw=true"
 
         async with self.bot.session.get(url) as response:
@@ -29,8 +28,7 @@ class NSFW(Cog, description="NSFW related commands."):
             
             return embed
         
-    @staticmethod
-    async def _get_sfw_image(ctx: Context, type: str) -> discord.Embed:
+    async def _get_sfw_image(self, ctx: Context, type: str) -> discord.Embed:
         url = f"{BASE_URL}/random/?selected_tags={type}/"
 
         async with self.bot.session.get(url) as response:
