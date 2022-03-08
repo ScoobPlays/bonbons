@@ -12,37 +12,39 @@ class NSFW(Cog, description="NSFW related commands."):
     def emoji(self) -> str:
         return "🔞"
 
-    async def _get_nsfw_image(self, ctx: Context, type: str) -> discord.Embed:
-        url = f"{BASE_URL}/random/?selected_type={type}/"
+    @staticmethod
+    async def _get_nsfw_image(ctx: Context, type: str) -> discord.Embed:
+        url = f"{BASE_URL}/random/?selected_tags={type}&nsfw=true"
 
         async with self.bot.session.get(url) as response:
-            base = (await response.json())["images"][0]
+            data = (await response.json())["images"][0]
 
-            return (
-                discord.Embed(color=discord.Color.blurple())
-                .set_author(
-                    name=str(ctx.author),
-                    icon_url=ctx.author.display_avatar,
-                    url=base["source"],
-                )
-                .set_image(url=base["url"])
+            embed = discord.Embed(color=discord.Color.blurple())
+            embed.set_author(
+                name=str(ctx.author),
+                 icon_url=ctx.author.display_avatar,
+                 url=data["source"],
             )
-
-    async def _get_sfw_image(self, ctx: Context, type: str) -> discord.Embed:
-        url = f"{BASE_URL}/random/?selected_type={type}/"
+            embed.set_image(url=data["url"])
+            
+            return embed
+        
+    @staticmethod
+    async def _get_sfw_image(ctx: Context, type: str) -> discord.Embed:
+        url = f"{BASE_URL}/random/?selected_tags={type}/"
 
         async with self.bot.session.get(url) as response:
-            base = (await response.json())["images"][0]
+            data = (await response.json())["images"][0]
 
-            return (
-                discord.Embed(color=discord.Color.blurple())
-                .set_author(
-                    name=str(ctx.author),
-                    icon_url=ctx.author.display_avatar,
-                    url=base["source"],
-                )
-                .set_image(url=base["url"])
+            embed = discord.Embed(color=discord.Color.blurple())
+            embed.set_author(
+                name=str(ctx.author),
+                 icon_url=ctx.author.display_avatar,
+                 url=data["source"],
             )
+            embed.set_image(url=data["url"])
+            
+            return embed
 
     @group(name="nsfw", invoke_without_command=True, case_insensitive=True)
     @is_nsfw()
