@@ -29,7 +29,7 @@ class NSFW(Cog, description="NSFW related commands."):
             return embed
         
     async def _get_sfw_image(self, ctx: Context, type: str) -> discord.Embed:
-        url = f"{BASE_URL}/random/?selected_tags={type}/"
+        url = f"{BASE_URL}/random/?selected_tags={type}"
 
         async with self.bot.session.get(url) as response:
             data = (await response.json())["images"][0]
