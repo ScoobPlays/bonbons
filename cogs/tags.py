@@ -195,7 +195,7 @@ class Tags(commands.Cog):
         if isinstance(message.channel, discord.DMChannel):
             return await self.bot.process_commands(message)
 
-        ctx = await self.bot.get_context(message)
+        ctx = await self.bot.get_context(message=message)
 
         db = self.bot.mongo["tags"][str(ctx.guild.id)]
 
@@ -208,7 +208,7 @@ class Tags(commands.Cog):
             msg = copy.copy(message)
 
             if ctx.prefix:
-                new_content = msg.content[len(ctx.prefix) :]
+                new_content = msg.content[len(ctx.prefix):]
 
                 if await db.find_one({"name": new_content}) is None:
                     return await self.bot.process_commands(msg)
