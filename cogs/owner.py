@@ -44,7 +44,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     async def cog_check(self, ctx: commands.Context) -> bool:
         return ctx.author.id == 656073353215344650
 
-    @commands.command(name="eval", aliases=("e"))
+    @commands.command(name="eval", aliases=("e",))
     async def _eval(self, ctx: commands.Context, *, code: str) -> None:
 
         global_vars = {
