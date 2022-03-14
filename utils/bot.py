@@ -21,10 +21,10 @@ class Bonbons(commands.Bot):
             strip_after_prefix=True,
             **kwargs,
         )
-        self.uptime = datetime.now().timestamp()
+        self._uptime = discord.utils.utcnow().timestamp()
         self.invoked_commands = 0
-        self.mongo = AsyncIOMotorClient(os.environ.get("mongo_token"))
-        self.economy = self.mongo["discord"]["economy"]
+        self._mongo = AsyncIOMotorClient(os.environ.get("mongo_token"))
+        self._economy = self.mongo["discord"]["economy"]
         self.default_prefix = "b"
         self.reddit = Reddit(
             client_id="Afm7Vjl071XabpFmf_zHWQ",
@@ -34,11 +34,18 @@ class Bonbons(commands.Bot):
         self._prefixes = self.mongo["discord"]["prefixes"]
         self.memes = []
 
+    @property
+    def uptime(self) -> int:
+        return int(self._uptime) or discord.utils.utcnow()
+
+    @property
+    def mongo(self) -> AsyncIOMotorClient:
+        return self._mongo or None
+
     async def start(self) -> None:
-        await self.setup()
         await super().start(os.environ["token"])
 
-    async def setup(self) -> None:
+    async def setup_hook(self) -> None:
 
         await self._cache_memes()
         os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
