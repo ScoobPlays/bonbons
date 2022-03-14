@@ -12,20 +12,21 @@ CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
 
 class MyPages:
+
+    __slots__ = ("data")
+
     def __init__(self, data: list):
         self.data = data
 
     async def start(self, ctx: commands.Context, *, per_page: int):
         embeds = []
-        index = 0
 
         for i in range(0, len(self.data), per_page):
             embed = discord.Embed(
                 title="Global Message Leaderboard",
                 description="",
-                colour=discord.Color.blurple(),
             )
-            for user in self.data[i : i + per_page]:
+            for index, user in enumerate(self.data[i : i + per_page]):
                 embed.description += (
                     f"\n{index+1}. **{user['name']}**: {user['messages']: ,}"
                 )
@@ -56,7 +57,7 @@ class Helpful(commands.Cog):
     def emoji(self) -> str:
         return "😄"
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_command")
     async def on_command(self, ctx: commands.Context):
         tag = await self.bot_database.find_one({"_id": self.bot.user.id})
 
@@ -65,8 +66,6 @@ class Helpful(commands.Cog):
         self.bot.invoked_commands = tag["uses"] + 1
 
     async def run_code(self, ctx: commands.Context, lang: str, code: str) -> None:
-        matches = CODE_REGEX.findall(code)
-
         try:
             lang = lang.split("```")[1]
             code = code.split("```")[0]
@@ -93,8 +92,7 @@ class Helpful(commands.Cog):
                 )
                 return
 
-        except Exception as e:
-            print(e)
+        except Exception:
             output = await self.pysclient.execute(lang, [File(code)])
 
             if (
@@ -118,30 +116,6 @@ class Helpful(commands.Cog):
                 )
                 return
 
-    async def _run_code(self, inter, code: str):
-
-        matches = CODE_REGEX.findall(str(code))
-        print(matches)
-        print(code)
-        language = matches[0][1]
-        code = matches[0][2]
-
-        output = await self.pysclient.execute(str(language), [File(code)])
-
-        if output.raw_json["run"]["stdout"] == "" and output.raw_json["run"]["stderr"]:
-            return await inter.response.send_message(
-                content=f"{inter.author.mention} :warning: Your {language} job has completed with return code 1.\n\n```\n{output}\n```"
-            )
-
-        if output.raw_json["run"]["stdout"] == "":
-            return await inter.response.send_message(
-                content=f"{inter.author.mention} :warning: Your {language} job has completed with return code 0.\n\n```\n[No output]\n```"
-            )
-
-        else:
-            return await inter.response.send_message(
-                content=f"{inter.author.mention} :white_check_mark: Your {language} job has completed with return code 0.\n\n```\n{output}\n```"
-            )
 
     @commands.command(name="run", aliases=["runl"])
     async def run(self, ctx: commands.Context, lang, *, code: str):
@@ -149,7 +123,7 @@ class Helpful(commands.Cog):
         async with ctx.typing():
             await self.run_code(ctx, lang, code)
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_message_edit")
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         ctx = await self.bot.get_context(after)
         cmd = self.bot.get_command(after.content.lower().replace(str(ctx.prefix), ""))
@@ -183,9 +157,9 @@ class Helpful(commands.Cog):
         """Says whatever you want for you."""
         await ctx.send(text)
 
-    @commands.command()
+    @commands.command("mlb")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def mlb(self, ctx):
+    async def mlb(self, ctx: commands.Context):
 
         """Gives you the global message leaderboard."""
 
@@ -229,11 +203,11 @@ class Helpful(commands.Cog):
                 )
                 return
 
-    @commands.command(hidden=True)
+    @commands.command()
     async def translate(
         self, ctx: commands.Context, *, message: commands.clean_content = None
     ):
-        """Translates a message to using google translate."""
+        """Translates a message using google translate."""
 
         if message is None:
             ref = ctx.message.reference
@@ -257,5 +231,5 @@ class Helpful(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(Helpful(bot))
+async def setup(bot):
+    await bot.add_cog(Helpful(bot))

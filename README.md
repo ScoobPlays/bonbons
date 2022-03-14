@@ -1,5 +1,5 @@
 ## bonbons
-A bot mainly for my [Discord Server](https://discord.gg/cJsuVmk8Xq). 
+A discord bot I made.
 
 ## Contributing
 You can do so by making an issue or a pull request.

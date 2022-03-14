@@ -5,7 +5,6 @@ from datetime import timedelta, datetime
 import random
 import json
 from random import choice
-import typing as t
 
 User = Union[
     discord.Member,
@@ -220,7 +219,7 @@ class Economy(commands.Cog, description="Economy."):
         await ctx.reply("Database reset!")
 
     @commands.command(name="deposit", aliases=["dep"])
-    async def deposit(self, ctx: commands.Context, amount: t.Union[int, str]) -> None:
+    async def deposit(self, ctx: commands.Context, amount: Union[int, str]) -> None:
 
         """Deposit some money into your bank."""
 
@@ -350,5 +349,5 @@ class Economy(commands.Cog, description="Economy."):
             await ctx.reply("Unknown item.")
 
 
-def setup(bot: commands.Bot) -> None:
-    bot.add_cog(Economy(bot))
+async def setup(bot: commands.Bot) -> None:
+    await bot.add_cog(Economy(bot))

@@ -10,9 +10,12 @@ from utils.paginator import Paginator
 
 
 class TextPaginator:
-    def __init__(self, ctx: commands.Context, data):
-        self.data = data
+
+    __slots__ = ('data', 'ctx')
+
+    def __init__(self, ctx: commands.Context, data: list):
         self.ctx = ctx
+        self.data = data
 
     async def start(self):
         embeds = []
@@ -32,15 +35,16 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    def cleanup_code(self, content: str) -> str:
+    @staticmethod
+    def cleanup_code(content: str) -> str:
         if content.startswith("```") and content.endswith("```"):
             return "\n".join(content.split("\n")[1:-1])
         return content.strip("` \n")
 
-    async def cog_check(self, ctx: commands.Context) -> int:
+    async def cog_check(self, ctx: commands.Context) -> bool:
         return ctx.author.id == 656073353215344650
 
-    @commands.command(name="eval", aliases=["e"])
+    @commands.command(name="eval", aliases=("e"))
     async def _eval(self, ctx: commands.Context, *, code: str) -> None:
 
         global_vars = {
@@ -84,7 +88,7 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         )
         await ctx.reply(embed=embed)
 
-    @commands.Cog.listener('on_message_edit')
+    @commands.Cog.listener("on_message_edit")
     async def _re_invoke_owner_commands(
         self, before: discord.Message, after: discord.Message
     ) -> None:
@@ -92,11 +96,11 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         context = await self.bot.get_context(after)
         prefix = context.prefix
 
-        valid_messages = (f'{prefix}eval', f'{prefix}e', f'{prefix}jsk py')
+        valid_messages = (f"{prefix}eval", f"{prefix}e", f"{prefix}jsk py")
 
         if after.content.startswith(valid_messages):
             await self.bot.process_commands(after)
 
                           
-def setup(bot):
-    bot.add_cog(Owner(bot))
+async def setup(bot):
+    await bot.add_cog(Owner(bot))

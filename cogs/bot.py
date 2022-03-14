@@ -18,7 +18,7 @@ class Bot(commands.Cog):
         return "🤖"
 
     @commands.Cog.listener("on_message")
-    async def prefix_ping(self, message: discord.Message) -> None:
+    async def on_message(self, message: discord.Message) -> None:
 
         if message.channel.type == discord.ChannelType.private:
             return
@@ -30,7 +30,7 @@ class Bot(commands.Cog):
                 f'Boop! My prefix for this server is `{prefix["prefix"]}`',
             )
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_command_error")
     async def on_command_error(self, ctx: commands.Context, error: Exception) -> None:
 
         if isinstance(error, commands.CommandNotFound):
@@ -60,7 +60,7 @@ class Bot(commands.Cog):
             print(error)
             await ctx.reply(error)
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_guild_join")
     async def on_guild_join(self, guild: discord.Guild):
         data = await self.prefixes.find_one({"_id": guild.id})
 
@@ -72,7 +72,7 @@ class Bot(commands.Cog):
         if data is not None:
             pass
 
-    @commands.command()
+    @commands.command(name="invite")
     async def invite(self, ctx: commands.Context) -> None:
 
         """Sends you my invite link!"""
@@ -95,7 +95,7 @@ class Bot(commands.Cog):
             await ctx.message.add_reaction("❌")
             return await ctx.send("Message failed to send. Are your DMs open?")
 
-    @commands.command()
+    @commands.command(name="prefix")
     @commands.check(
         lambda ctx: ctx.author.id == 534738044004335626
         or ctx.author.id == 656073353215344650
@@ -110,10 +110,10 @@ class Bot(commands.Cog):
             )
 
             await ctx.send(
-                f'I have changed the current server\'s prefix to "{prefix}".'
+                f'New prefix set to: "{prefix}".'
             )
-        except Exception:
-            msg = await ctx.send(f"Prefix was too long, but I changed it.")
+        except discord.Forbidden:
+            await ctx.message.add_reaction("\U00002705")
 
     @commands.command(
         aliases=[
@@ -126,16 +126,17 @@ class Bot(commands.Cog):
 
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
+        commands = f"**{self.bot.invoked_commands}** commands have been invoked." if self.bot.invoked_commands is not None else "N/A"
 
         embed = discord.Embed(
             title="Info",
             color=discord.Color.blurple(),
-            description=f"{guilds:,} guilds, {users:,} users.",
+            description=f"I can see {guilds:,} guilds, {users:,} users.",
         )
 
         embed.add_field(
             name="Commands",
-            value=f"**{self.bot.invoked_commands}** commands have been invoked.",
+            value=commands,
         )
         embed.add_field(
             name="Uptime",
@@ -144,22 +145,6 @@ class Bot(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()  # TODO: Steal R. Danny's cleanup command
-    @commands.is_owner()
-    async def cleanup(self, ctx: commands.Context, limit: int = 5) -> None:
-
-        """Cleanup my messages."""
-
-        messages = await ctx.channel.purge(
-            limit=limit, check=lambda m: m.author.id == self.bot.user.id
-        )
-
-        msg = (
-            f'Deleted {len(messages)} {"messages." if len(messages)>1 else "message."}'
-        )
-
-        await ctx.send(msg, delete_after=6)
-        await ctx.message.add_reaction("✅")
 
     @commands.command(name="ping")
     async def ping(self, ctx: commands.Context) -> None:
@@ -171,5 +156,5 @@ class Bot(commands.Cog):
         await ctx.reply(latency, mention_author=False)
 
 
-def setup(bot: Bot):
-    bot.add_cog(Bot(bot))
+async def setup(bot: Bot):
+    await bot.add_cog(Bot(bot))

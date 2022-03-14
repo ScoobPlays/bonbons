@@ -4,6 +4,7 @@ import random
 import re
 import zlib
 from typing import Dict
+import time
 
 import discord
 from discord.ext import commands
@@ -44,33 +45,41 @@ class SphinxObjectFileReader:
 
 
 class RTFMView(discord.ui.View):
-    def __init__(self, *, reference, embed, ctx, now, when):
+    def __init__(
+        self,
+        reference: discord.MessageReference,
+        embed: discord.Embed,
+        ctx: commands.Context,
+        now: float,
+        when: float,
+        ):
         super().__init__()
+        self.reference = reference
+        self.embed = embed
+        self.ctx = ctx
         self.now = now
         self.when = when
-        self.ctx = ctx
-        self.embed = embed
-        self.reference = reference
 
-    async def interaction_check(self, inter):
-        if inter.author.id != self.ctx.author.id:
+    async def interaction_check(self, interaction: discord.Interaction):
+        if interaction.user.id != self.ctx.author.id:
             return False
         return True
 
     def _update_labels(self):
         self.took_when.label = f"Took{self.now-self.when: .3f}"
 
-    async def start(self, ctx):
+    async def start(self, ctx: commands.Context):
         self._update_labels()
         await self.ctx.send(embed=self.embed, reference=self.reference, view=self)
 
     @discord.ui.button(emoji="🗑️")
-    async def delete(self, button: discord.ui.Button, inter):
-        await inter.response.defer()
-        await inter.delete_original_message()
+    async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.defer()
+
+        await interaction.delete_original_message()
 
     @discord.ui.button(label=f"...", disabled=True)
-    async def took_when(self, button: discord.ui.Button, inter):
+    async def took_when(self, button: discord.ui.Button, interaction: discord.Interaction):
         pass
 
 
@@ -82,8 +91,9 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
     def emoji(self) -> str:
         return "🗯️"
 
+    @staticmethod
     async def send_error_message(
-        self, ctx: commands.Context, message: discord.Message
+        ctx: commands.Context, message: discord.Message
     ) -> None:
         embed = discord.Embed(
             title=random.choice(REPLIES),
@@ -92,7 +102,8 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
         )
         return await ctx.send(embed=embed)
 
-    def finder(self, text, collection, *, key=None, lazy=True) -> list:
+    @staticmethod
+    def finder(text, collection, *, key=None, lazy=True) -> list:
         suggestions = []
         text = str(text)
         pat = ".*?".join(map(re.escape, text))
@@ -175,8 +186,6 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
         self._rtfm_cache = cache
 
     async def do_rtfm(self, ctx: commands.Context, key: str, obj: str):
-        import time
-
         now = time.perf_counter()
 
         page_types = {
@@ -232,7 +241,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
 
     @commands.group(
         name="rtfm",
-        aliases=["rtfd"],
+        aliases=("rtfd", "docs", "d", "doc"),
         invoke_without_command=True,
         case_insensitive=True,
     )
@@ -256,7 +265,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
         """Retrieve's documentation about the discord library."""
         await self.do_rtfm(ctx, "discord", obj)
 
-    @commands.command()
+    @commands.command(name="pypi")
     async def pypi(self, ctx: commands.Context, name: str):
 
         """Finds a package on PyPI."""
@@ -282,5 +291,5 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
                     await ctx.send("A package with that name does not exist.")
 
 
-def setup(bot):
-    bot.add_cog(Useful(bot))
+async def setup(bot):
+    await bot.add_cog(Useful(bot))

@@ -17,11 +17,12 @@ class Information(commands.Cog):
     def emoji(self) -> str:
         return "ℹ️"
 
-    def created_at(self, value) -> int:
+    @staticmethod
+    def created_at(value: id) -> int:
         obj = discord.Object(value)
-        return f"<t:{int(obj.created_at.timestamp())}:F> (<t:{int(obj.created_at.timestamp())}:R>)"
+        return f"{discord.utils.format_dt(obj.created_at, 'F')} ({discord.utils.format_dt(obj.created_at, 'R')})"
 
-    @commands.command()
+    @commands.command(name="snowflake")
     async def snowflake(self, ctx: commands.Context, id: int) -> None:
 
         """Tells you a snowflake's creation date."""
@@ -43,7 +44,7 @@ class Information(commands.Cog):
         else:
             return
 
-    @commands.command(aliases=("av",))
+    @commands.command(name="avatar", aliases=("av",))
     @commands.guild_only()
     async def avatar(
         self, ctx: commands.Context, *, member: discord.Member = None
@@ -76,12 +77,12 @@ class Information(commands.Cog):
         )
         embed.add_field(
             name="Server Created At",
-            value=f"<t:{int(ctx.guild.created_at.timestamp())}:F> (<t:{int(ctx.guild.created_at.timestamp())}:R>)",
+            value=f"{discord.utils.format_dt(ctx.guild.created_at, 'F')} ({discord.utils.format_dt(ctx.guild.created_at, 'R')})",
             inline=False,
         )
         embed.add_field(
             name="Information",
-            value=f"• Members: {str(ctx.guild.member_count)}\n• Channels: {len(ctx.guild.channels)}\n• Emojis: {len(ctx.guild.emojis)}",
+            value=f"• Members: {len(ctx.guild.members)}\n• Channels: {len(ctx.guild.channels)}\n• Emojis: {len(ctx.guild.emojis)}",
         )
 
         if len(str(ctx.guild.roles)) >= 1000:
@@ -103,23 +104,9 @@ class Information(commands.Cog):
         embed.set_thumbnail(url=ctx.guild.icon.url)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="whois", aliases=("userinfo", "u"))
     @commands.guild_only()
-    async def membercount(self, ctx: commands.Context) -> None:
-
-        """
-        Tells you the amount of members in this server.
-        """
-
-        embed = discord.Embed(
-            description=f"There are {ctx.guild.member_count} members in **{ctx.guild.name}**.",
-            color=discord.Color.blurple(),
-        )
-        await ctx.send(embed=embed)
-
-    @commands.command()
-    @commands.guild_only()
-    async def whois(self, ctx: commands.Context, member: discord.Member = None) -> None:
+    async def whois(self, ctx: commands.Context, *, member: discord.Member = None) -> None:
 
         """
         Tells you information about a member.
@@ -156,7 +143,7 @@ class Information(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="spotify")
     @commands.guild_only()
     async def spotify(
         self, ctx: commands.Context, member: discord.Member = None
@@ -188,7 +175,7 @@ class Information(commands.Cog):
         if not member.activity:
             await ctx.send("Member does not have a spotify activity.")
 
-    @commands.command()
+    @commands.command(name="roleinfo")
     @commands.guild_only()
     async def roleinfo(self, ctx: commands.Context, role: discord.Role = None) -> None:
 
@@ -234,7 +221,7 @@ class Information(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(name="channelinfo")
     @commands.guild_only()
     async def channelinfo(self, ctx, channel: discord.abc.GuildChannel = None):
 
@@ -263,5 +250,5 @@ class Information(commands.Cog):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
-    bot.add_cog(Information(bot))
+async def setup(bot):
+    await bot.add_cog(Information(bot))

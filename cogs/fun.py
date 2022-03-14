@@ -165,13 +165,15 @@ class Fun(commands.Cog):
     def emoji(self) -> str:
         return "🙌"
 
-    def base64_encode(self, text: str):
+    @staticmethod
+    def base64_encode(text: str):
         message_bytes = text.encode("ascii")
         base64_bytes = base64.b64encode(message_bytes)
         message = base64_bytes.decode("ascii")
         return message
 
-    def base64_decode(self, text: str):
+    @staticmethod
+    def base64_decode(text: str):
         b64msg = text.encode("ascii")
         message_bytes = base64.b64decode(b64msg)
         message = message_bytes.decode("ascii")
@@ -191,7 +193,7 @@ class Fun(commands.Cog):
 
         await ctx.send_help("base64")
 
-    @base64_group.command()
+    @base64_group.command(name="encode")
     async def encode(self, ctx: commands.Context, *, string: str) -> None:
 
         """
@@ -203,11 +205,11 @@ class Fun(commands.Cog):
         except Exception:
             return await ctx.send(f"Could not encode string.")
 
-    @base64_group.command()
+    @base64_group.command(name="decode")
     async def decode(self, ctx: commands.Context, *, string: str) -> None:
 
         """
-        Decodes a base64 string
+        Decodes a base64 string.
         """
 
         try:
@@ -216,7 +218,7 @@ class Fun(commands.Cog):
         except Exception:
             return await ctx.send(f"Could not decode string.")
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_message_delete")
     async def on_message_delete(self, message: discord.Message) -> None:
 
         if message.author.bot:
@@ -235,7 +237,7 @@ class Fun(commands.Cog):
             }
         )
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_message_edit")
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
 
         if after.author.bot:
@@ -251,7 +253,7 @@ class Fun(commands.Cog):
             }
         )
 
-    @commands.Cog.listener()
+    @commands.Cog.listener("on_message")
     async def on_message(self, message: discord.Message) -> None:
 
         if not isinstance(message.channel, discord.TextChannel):
@@ -308,13 +310,13 @@ class Fun(commands.Cog):
                 else:
                     break
 
-    @commands.command()
+    @commands.command(name="editsnipe")
     async def editsnipe(self, ctx: commands.Context, id: int = None):
 
         """Tells you most recently edited message."""
 
         if len(self._edit_cache) == 0:
-            return await ctx.send("There currently are no recently edited messages.")
+            return await ctx.send("There are no recently edited messages.")
 
         try:
             message = self._edit_cache[id]
@@ -335,14 +337,16 @@ class Fun(commands.Cog):
             )
             return await ctx.send(embed=embed)
 
-    @commands.command()
+        return await ctx.reply("There are no recently edited messages in this channel.")
+
+    @commands.command(name="snipe")
     async def snipe(self, ctx: commands.Context, id: int = None):
 
         """Tells you the most recently deleted message."""
 
         if len(self._snipe_cache) == 0:
-            return await ctx.send(
-                "No message was deleted, or the message was not in my cache."
+            return await ctx.reply(
+                "There are no recently deleted messages."
             )
 
         try:
@@ -355,7 +359,6 @@ class Fun(commands.Cog):
             embed = discord.Embed(
                 description=message["content"],
                 timestamp=message["timestamp"],
-                color=discord.Color.blurple(),
             )
             embed.set_footer(text=f"Message deleted at")
             embed.set_author(
@@ -363,8 +366,12 @@ class Fun(commands.Cog):
                 icon_url=message["msg"].author.display_avatar.url,
             )
             return await ctx.send(embed=embed)
+        
+        return await ctx.reply("There are no recently deleted messages in this channel.")
+        
 
-    @commands.command()
+
+    @commands.command(name="joke")
     async def joke(self, ctx: commands.Context) -> None:
 
         """Tells you a random joke!"""
@@ -543,15 +550,15 @@ class Fun(commands.Cog):
                     )
                 except IndexError:
                     return await ctx.send(
-                        "Well, there were no definitions for that word. Maybe you can go and make one for it?"
+                        "I couldn't find any definitions for that word."
                     )
 
-    @commands.command()
+    @commands.command(name="define")
     async def define(self, ctx: commands.Context, term: str):
         """Show's a meaning of a word."""
         await self.get_urban_response(ctx, term)
 
-    @commands.command()
+    @commands.command(name="afk")
     async def afk(self, ctx: commands.Context, *, reason: Optional[str] = None):
         """Become AFK."""
 
@@ -591,7 +598,7 @@ class Fun(commands.Cog):
         else:
             return
 
-    @commands.command()
+    @commands.command(name="choose")
     async def choose(self, ctx: commands.Context, *args) -> None:
 
         """Chooses between multiple choices."""
@@ -608,7 +615,8 @@ class Fun(commands.Cog):
         view = Calculator()
         await ctx.send("Click a button!", view=view)
 
-    def parse_expressions(self, expressions: str) -> str:
+    @staticmethod
+    def parse_expressions(expressions: str) -> str:
         return expressions.replace("^", "**")
 
     @commands.command(name="calc")
@@ -650,5 +658,5 @@ class Fun(commands.Cog):
 
         await ctx.send(embed=embed)
 
-def setup(bot: Bonbons) -> None:
-    bot.add_cog(Fun(bot))
+async def setup(bot: Bonbons) -> None:
+    await bot.add_cog(Fun(bot))

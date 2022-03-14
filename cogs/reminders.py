@@ -38,6 +38,15 @@ class Reminders(commands.Cog):
     def emoji(self) -> str:
         return "⏲️"
 
+    @staticmethod
+    def parse_time(time: int, *, timestamp: bool = False) -> str:
+        data = discord.utils.utcnow() + timedelta(seconds=time)
+
+        if timestamp:
+            return int(data.timestamp())
+
+        return f"<t:{int(data.timestamp())}:F>"
+
     async def add_reminder(self, ctx: commands.Context, time: int, reason: str) -> None:
         db = self.base[str(ctx.guild.id)]
 
@@ -50,16 +59,8 @@ class Reminders(commands.Cog):
             }
         )
 
-    def parse_time(self, time: int, *, timestamp: bool = False) -> str:
-        data = discord.utils.utcnow() + timedelta(seconds=time)
-
-        if timestamp:
-            return int(data.timestamp())
-
-        return f"<t:{int(data.timestamp())}:F>"
-
-    @commands.command()
-    async def remindme(
+    @commands.command(name="remind", aliases=("r"))
+    async def remind(
         self, ctx: commands.Context, time: TimeConverter, *, reminder: str
     ):
 
@@ -91,5 +92,5 @@ class Reminders(commands.Cog):
                     await collection.delete_one({"author": result["author"]})
 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Reminders(bot))
+async def setup(bot: commands.Bot):
+    await bot.add_cog(Reminders(bot))

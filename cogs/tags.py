@@ -8,24 +8,24 @@ from utils.paginator import Paginator
 
 
 class TagPages:
+
+    __slots__ = ('data',)
+
     def __init__(self, data: list):
         self.data = data
 
     async def start(self, ctx: commands.Context, *, per_page: int) -> None:
         embeds = []
-        index = 0
 
         for i in range(0, len(self.data), per_page):
             embed = discord.Embed(
                 description="",
-                colour=discord.Color.blurple(),
+                colour=discord.Color.greyple(),
             ).set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
-            
-            index += 1
-            
-            for result in self.data[i : i + per_page]:
+                        
+            for index, result in enumerate(self.data[i : i + per_page]):
                 embed.description += (
-                    f"\n{index}. {result['name']} (ID: {result['_id']})"
+                    f"\n{index+1}. {result['name']} (ID: {result['_id']})"
                 )
 
             embeds.append(embed)
@@ -62,7 +62,7 @@ class Tags(commands.Cog):
         )
         embed = discord.Embed(title=data["name"])
         embed.set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
-        embed.add_field(name="Owner", value=owner.mention)
+        embed.add_field(name="Owner", value=f"{owner.mention} ({owner.name}")
 
         return embed
 
@@ -143,15 +143,15 @@ class Tags(commands.Cog):
         if tag is None:
             await ctx.send_help("tag")
 
-    @tag.command(name="create", aliases=["build"])
-    async def create(self, ctx: commands.Context, name: str, *, content: str):
+    @tag.command(name="create", aliases=("new"))
+    async def create(self, ctx: commands.Context, name: str, *, content: str) -> None:
 
         """Creates a tag."""
 
         await self.create_tag(ctx, name, content)
 
-    @tag.command(name="info", aliases=["information"])
-    async def info(self, ctx: commands.Context, *, name: str) -> None:
+    @tag.command(name="information", aliases=("info"))
+    async def information(self, ctx: commands.Context, *, name: str) -> None:
 
         """Tells you information about a tag."""
 
@@ -166,14 +166,14 @@ class Tags(commands.Cog):
         if tag_info is None:
             return await ctx.reply("Not a valid tag!")
 
-    @tag.command(name="edit", aliases=["modify"])
+    @tag.command(name="edit")
     async def edit(self, ctx: commands.Context, name: str, *, content: str) -> None:
 
         """Tries to edit a tag you own."""
 
         await self.edit_tag(ctx, name, content)
 
-    @tag.command(aliases=["list"])
+    @tag.command(aliases=("list"))
     async def all(self, ctx: commands.Context) -> None:
 
         """Tells you all the tags in the current server."""
@@ -185,7 +185,7 @@ class Tags(commands.Cog):
 
         await view.start(ctx, per_page=20)
 
-    @tag.command(aliases=["remove"])
+    @tag.command(name="delete", aliases=("remove"))
     async def delete(self, ctx: commands.Context, *, name: str) -> None:
 
         """Deletes a tag."""
@@ -221,5 +221,5 @@ class Tags(commands.Cog):
                 await self.bot.process_commands(msg)
 
 
-def setup(bot):
-    bot.add_cog(Tags(bot))
+async def setup(bot):
+    await bot.add_cog(Tags(bot))
