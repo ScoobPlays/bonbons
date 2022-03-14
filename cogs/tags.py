@@ -20,9 +20,12 @@ class TagPages:
                 description="",
                 colour=discord.Color.blurple(),
             ).set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
+            
+            index += 1
+            
             for result in self.data[i : i + per_page]:
                 embed.description += (
-                    f"\n{index+1}. {result['name']} (ID: {result['_id']})"
+                    f"\n{index}. {result['name']} (ID: {result['_id']})"
                 )
 
             embeds.append(embed)
@@ -195,7 +198,7 @@ class Tags(commands.Cog):
         if isinstance(message.channel, discord.DMChannel):
             return await self.bot.process_commands(message)
 
-        ctx = await self.bot.get_context(message)
+        ctx = await self.bot.get_context(message=message)
 
         db = self.bot.mongo["tags"][str(ctx.guild.id)]
 
@@ -208,7 +211,7 @@ class Tags(commands.Cog):
             msg = copy.copy(message)
 
             if ctx.prefix:
-                new_content = msg.content[len(ctx.prefix) :]
+                new_content = msg.content[len(ctx.prefix):]
 
                 if await db.find_one({"name": new_content}) is None:
                     return await self.bot.process_commands(msg)
