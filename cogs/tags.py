@@ -143,14 +143,14 @@ class Tags(commands.Cog):
         if tag is None:
             await ctx.send_help("tag")
 
-    @tag.command(name="create", aliases=("new"))
+    @tag.command(name="create", aliases=("new",))
     async def create(self, ctx: commands.Context, name: str, *, content: str) -> None:
 
         """Creates a tag."""
 
         await self.create_tag(ctx, name, content)
 
-    @tag.command(name="information", aliases=("info"))
+    @tag.command(name="information", aliases=("info",))
     async def information(self, ctx: commands.Context, *, name: str) -> None:
 
         """Tells you information about a tag."""
@@ -173,7 +173,7 @@ class Tags(commands.Cog):
 
         await self.edit_tag(ctx, name, content)
 
-    @tag.command(aliases=("list"))
+    @tag.command(aliases=("list",))
     async def all(self, ctx: commands.Context) -> None:
 
         """Tells you all the tags in the current server."""
@@ -185,7 +185,7 @@ class Tags(commands.Cog):
 
         await view.start(ctx, per_page=20)
 
-    @tag.command(name="delete", aliases=("remove"))
+    @tag.command(name="delete", aliases=("remove",))
     async def delete(self, ctx: commands.Context, *, name: str) -> None:
 
         """Deletes a tag."""
