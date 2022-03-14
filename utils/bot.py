@@ -56,7 +56,7 @@ class Bonbons(commands.Bot):
 
         for ext in os.listdir("./cogs"):
             if ext.endswith(".py"):
-                self.load_extension(f"cogs.{ext[:-3]}")
+                await self.load_extension(f"cogs.{ext[:-3]}")
 
     async def on_ready(self) -> None:
 
