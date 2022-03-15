@@ -52,7 +52,7 @@ class Bonbons(commands.Bot):
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
         os.environ["JISHAKU_HIDE"] = "True"
 
-        self.load_extension("jishaku")
+        await self.load_extension("jishaku")
 
         for ext in os.listdir("./cogs"):
             if ext.endswith(".py"):
