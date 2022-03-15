@@ -291,5 +291,5 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
                     await ctx.send("A package with that name does not exist.")
 
 
-async def setup(bot):
+async def setup(bot: commands.Bot):
     await bot.add_cog(Useful(bot))
