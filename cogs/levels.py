@@ -137,7 +137,7 @@ class Levels(commands.Cog):
 
             return await ctx.send(file=discord.File(buffer, "leaderboard.png"), embed=embed)
 
-    @commands.command(name="rank", aliases=("level"))
+    @commands.command(name="rank", aliases=("level",))
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def rank(self, ctx: commands.Context, member: discord.Member = None):
         """Tells you your current level embedded inside an image."""
@@ -164,7 +164,7 @@ class Levels(commands.Cog):
         if data is not None:
             await self.db.update_one({"_id": data["_id"]}, {"$set": {"level": level}})
 
-    @commands.command(name="leaderboard", aliases=("lb"))
+    @commands.command(name="leaderboard", aliases=("lb",))
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def leaderboard(self, ctx: commands.Context):
         """Shows the level leaderboard for the current server."""
