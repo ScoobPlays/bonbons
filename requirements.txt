@@ -1,7 +1,7 @@
 git+https://github.com/Rapptz/discord.py
 aiohttp
 motor
-jishaku
+git+https://github.com/Gorialis/jishaku
 easy_pil
 dnspython
 aiopyston
