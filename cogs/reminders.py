@@ -59,7 +59,7 @@ class Reminders(commands.Cog):
             }
         )
 
-    @commands.command(name="remind", aliases=("r"))
+    @commands.command(name="remind", aliases=("r",))
     async def remind(
         self, ctx: commands.Context, time: TimeConverter, *, reminder: str
     ):

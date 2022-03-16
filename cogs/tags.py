@@ -173,7 +173,7 @@ class Tags(commands.Cog):
 
         await self.edit_tag(ctx, name, content)
 
-    @tag.command(aliases=("list",))
+    @tag.command(name="all", aliases=("list",))
     async def all(self, ctx: commands.Context) -> None:
 
         """Tells you all the tags in the current server."""

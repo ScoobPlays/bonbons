@@ -117,9 +117,9 @@ class Helpful(commands.Cog):
                 return
 
 
-    @commands.command(name="run", aliases=["runl"])
+    @commands.command(name="run")
     async def run(self, ctx: commands.Context, lang, *, code: str):
-        """Runs code."""
+        """Run some code."""
         async with ctx.typing():
             await self.run_code(ctx, lang, code)
 

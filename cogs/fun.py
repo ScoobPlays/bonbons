@@ -181,7 +181,7 @@ class Fun(commands.Cog):
 
     @commands.group(
         name="base64",
-        aliases=["b64"],
+        aliases=("b64",),
         invoke_without_command=True,
         case_insensitive=True,
     )
@@ -605,7 +605,7 @@ class Fun(commands.Cog):
 
         await ctx.send(random.choice(args))
 
-    @commands.command(name="bcalc", aliases=["bcalculator"])
+    @commands.command(name="bcalc", aliases=("bcalculator",))
     async def button_calculator(self, ctx: commands.Context) -> None:
 
         """

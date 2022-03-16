@@ -65,7 +65,7 @@ class Economy(commands.Cog, description="Economy."):
 
         return data
 
-    @commands.command(name="balance", aliases=["bal"])
+    @commands.command(name="balance", aliases=("bal",))
     async def balance(self, ctx: commands.Context, user: User = None) -> None:
 
         """Tells you your balance."""
@@ -179,7 +179,7 @@ class Economy(commands.Cog, description="Economy."):
 
             await ctx.reply(f"You don't have enough 💰 to buy this item!")
 
-    @commands.command(name="inventory", aliases=["inv"])
+    @commands.command(name="inventory", aliases=("inv",))
     async def inventory(self, ctx: commands.Context) -> None:
 
         """Shows you your inventory."""
@@ -218,7 +218,7 @@ class Economy(commands.Cog, description="Economy."):
 
         await ctx.reply("Database reset!")
 
-    @commands.command(name="deposit", aliases=["dep"])
+    @commands.command(name="deposit", aliases=("dep",))
     async def deposit(self, ctx: commands.Context, amount: Union[int, str]) -> None:
 
         """Deposit some money into your bank."""
@@ -257,7 +257,7 @@ class Economy(commands.Cog, description="Economy."):
                 f'Successfully deposited {amount:,} 💰 into your bank!'
             )
 
-    @commands.command(name="withdraw", aliases=["wd"])
+    @commands.command(name="withdraw", aliases=("with",))
     async def withdraw(self, ctx: commands.Context, amount: int) -> None:
 
         """Withdraw some money from your bank."""

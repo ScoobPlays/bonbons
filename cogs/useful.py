@@ -250,19 +250,19 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
 
         await self.do_rtfm(ctx, "discord.py", obj)
 
-    @rtfm_group.command(name="python", aliases=["py"])
+    @rtfm_group.command(name="python", aliases=("py",))
     async def rtfm_python_cmd(self, ctx: commands.Context, *, obj: str = None):
-        """Retrieve's documentation about the python language."""
+        """Retrieve's documentation on the python language."""
         await self.do_rtfm(ctx, "python", obj)
 
-    @rtfm_group.command(name="nextcord", aliases=["nc"])
+    @rtfm_group.command(name="nextcord", aliases=("nc",))
     async def rtfm_nextcord(self, ctx: commands.Context, *, obj: str = None):
-        """Retrieve's documentation about the nextcord library."""
+        """Retrieve's documentation on nextcord"""
         await self.do_rtfm(ctx, "nextcord", obj)
 
     @rtfm_group.command(name="discord")
     async def rtfm_discord(self, ctx: commands.Context, *, obj: str = None):
-        """Retrieve's documentation about the discord library."""
+        """Retrieve's documentation on discord.py."""
         await self.do_rtfm(ctx, "discord", obj)
 
     @commands.command(name="pypi")

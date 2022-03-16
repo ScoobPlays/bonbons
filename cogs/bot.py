@@ -116,9 +116,9 @@ class Bot(commands.Cog):
             await ctx.message.add_reaction("\U00002705")
 
     @commands.command(
-        aliases=[
+        aliases=(
             "uptime",
-        ]
+        )
     )
     async def info(self, ctx: commands.Context) -> None:
 
