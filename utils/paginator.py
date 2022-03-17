@@ -3,7 +3,6 @@ from discord.ext import commands
 
 __all__ = ("Paginator",)
 
-
 class Paginator(discord.ui.View):
     def __init__(
         self,
