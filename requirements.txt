@@ -1,11 +1,6 @@
 git+https://github.com/Rapptz/discord.py
-aiohttp
-motor
 git+https://github.com/Gorialis/jishaku
-easy_pil
-dnspython
+aiohttp
 aiopyston
 googletrans==4.0.0rc1
 simpleeval
-asyncpraw
-pynacl

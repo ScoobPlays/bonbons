@@ -3,7 +3,6 @@ import os
 import discord
 from aiohttp import ClientSession
 from discord.ext import commands
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from .help.help_command import CustomHelpCommand
 
@@ -17,7 +16,7 @@ EXTENSIONS = (
 class Bonbons(commands.Bot):
     def __init__(self, **kwargs) -> None:
         super().__init__(
-            command_prefix=self._get_prefix,
+            command_prefix="b!",
             case_insensitive=True,
             intents=discord.Intents.all(),
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
@@ -26,19 +25,10 @@ class Bonbons(commands.Bot):
             **kwargs,
         )
         self._uptime = discord.utils.utcnow().timestamp()
-        self.invoked_commands = 0
-        self._mongo = AsyncIOMotorClient(os.environ.get("mongo_token"))
-        self._economy = self.mongo["discord"]["economy"]
-        self.default_prefix = "b"
-        self._prefixes = self.mongo["discord"]["prefixes"]
 
     @property
     def uptime(self) -> int:
         return int(self._uptime) or discord.utils.utcnow()
-
-    @property
-    def mongo(self) -> AsyncIOMotorClient:
-        return self._mongo or None
 
     async def start(self) -> None:
         await super().start(os.environ["token"])
@@ -63,17 +53,3 @@ class Bonbons(commands.Bot):
             self.session = ClientSession(loop=self.loop)
 
         print("Logged in.")
-
-    async def _get_prefix(
-        self, bot: commands.Bot, message: discord.Message
-    ) -> commands.when_mentioned_or:
-
-        if isinstance(message.channel, discord.DMChannel):
-            return commands.when_mentioned_or(self.default_prefix)(bot, message)
-
-        prefix = await self._prefixes.find_one({"_id": message.guild.id})
-        
-        setattr(self.help_command.context, "prefix", prefix["prefix"])
-
-        return commands.when_mentioned_or(prefix["prefix"])(bot, message)
-

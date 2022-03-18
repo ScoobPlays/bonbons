@@ -349,7 +349,7 @@ class Fun(commands.Cog):
 
                     for name in definition:
                         emb = discord.Embed(
-                            description=name, color=discord.Color.blurple()
+                            description=name, color=discord.Color.random()
                         )
                         embeds.append(emb)
 
