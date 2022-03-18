@@ -288,7 +288,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
                     await ctx.send(embed=embed)
 
                 else:
-                    await ctx.send("A package with that name does not exist.")
+                    await ctx.reply("A package with that name does not exist!")
 
 
 async def setup(bot: commands.Bot):

@@ -5,7 +5,7 @@ from utils.bot import Bonbons
 
 bot = Bonbons()
 
-class TextGenerator:#  credit: swas.py
+class TextGenerator: #  credit: swas.py
     def __init__(self, depth=1) -> None:
         self.map = {}
         self.depth = depth

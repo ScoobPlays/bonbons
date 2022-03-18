@@ -48,9 +48,7 @@ class Helpful(commands.Cog):
     def __init__(self, bot):
         self.pysclient = PystonClient()
         self.bot = bot
-        self.bot_database = self.bot.mongo["discord"]["bot"]
         self._run_cache = {}
-        self.message_database = self.bot.mongo["discord"]["messages"]
         self.translator = googletrans.Translator()
 
     @property
@@ -154,56 +152,11 @@ class Helpful(commands.Cog):
 
     @commands.command(name="say")
     async def say(self, ctx: commands.Context, *, text: str):
-        """Says whatever you want for you."""
+        """Says whatever you want for you :D"""
         await ctx.send(text)
 
-    @commands.command("mlb")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def mlb(self, ctx: commands.Context):
 
-        """Gives you the global message leaderboard."""
-
-        db = await self.message_database.find().sort("messages", -1).to_list(100000)
-
-        view = MyPages(db)
-        await view.start(ctx, per_page=10)
-
-    @commands.Cog.listener("on_message")
-    async def message_increment(self, message: discord.Message):
-
-        if message.author.bot:
-            return
-
-        data = await self.message_database.find_one({"_id": message.author.id})
-
-        if data is None:
-            await self.message_database.insert_one(
-                {"_id": message.author.id, "messages": 1, "name": str(message.author)}
-            )
-
-        if data is not None:
-            await self.message_database.update_one(
-                {"_id": message.author.id}, {"$inc": {"messages": 1}}
-            )
-            await self.message_database.update_one(
-                {"_id": message.author.id}, {"$set": {"name": str(message.author)}}
-            )
-
-    @commands.Cog.listener("on_message")
-    async def github_link(self, message: discord.Message):
-        if str(message.channel.type) != "text":
-            return
-        if message.guild.id != 926115595307614249:
-            return
-
-        for text in message.content.split():
-            if text.startswith("##"):
-                await message.channel.send(
-                    f"https://github.com/CaedenPH/Jarvide/pull/{text.replace('##', '')}"
-                )
-                return
-
-    @commands.command()
+    @commands.command(name="translate")
     async def translate(
         self, ctx: commands.Context, *, message: commands.clean_content = None
     ):

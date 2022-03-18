@@ -1,153 +1,16 @@
 import base64
-import json
 import os
 import random
 from datetime import datetime
 from io import BytesIO
-from typing import Optional
 
 import aiohttp
 import discord
 from discord.ext import commands
-from discord.ui import View, button
 from simpleeval import simple_eval
 
 from utils.bot import Bonbons
 from utils.paginator import Paginator
-
-
-class Calculator(discord.ui.View):
-    def __init__(self):
-        super().__init__()
-        self.string = "Click a button!"
-
-    @button(label="1", custom_id="calc:one")
-    async def calc_one(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(1)
-        await inter.edit_original_message(content=new)
-
-    @button(label="2", custom_id="calc:two")
-    async def calc_two(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(2)
-        await inter.edit_original_message(content=new)
-
-    @button(label="3", custom_id="calc:three")
-    async def calc_three(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(3)
-        await inter.edit_original_message(content=new)
-
-    @button(label="4", row=1, custom_id="calc:four")
-    async def calc_four(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(4)
-        await inter.edit_original_message(content=new)
-
-    @button(label="5", row=1, custom_id="calc:five")
-    async def calc_five(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(5)
-        await inter.edit_original_message(content=new)
-
-    @button(label="6", row=1, custom_id="calc:six")
-    async def calc_six(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(6)
-        await inter.edit_original_message(content=new)
-
-    @button(label="7", row=2, custom_id="calc:seven")
-    async def calc_seven(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(7)
-        await inter.edit_original_message(content=new)
-
-    @button(label="8", row=2, custom_id="calc:eight")
-    async def calc_eight(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(8)
-        await inter.edit_original_message(content=new)
-
-    @button(label="9", row=2, custom_id="calc:nine")
-    async def calc_nine(self, button, inter):
-        await inter.response.defer()
-        data = (inter.message.content).replace(self.string, "")
-        new = data + str(9)
-        await inter.edit_original_message(content=new)
-
-    @button(label="+", style=discord.ButtonStyle.blurple, row=0, custom_id="calc:plus")
-    async def plus(self, button, inter):
-
-        if inter.message.content == self.string:
-            return await inter.response.send_message(
-                "What are you trying to do?", ephemeral=True
-            )
-
-        await inter.response.defer()
-
-        data = (inter.message.content).replace(self.string, "")
-
-        new_plus = data.count("+")
-        if new_plus >= 1:
-            return await inter.response.send_message(
-                "You cannot have more than one operator in a message."
-            )
-
-        new = data + str("+")
-        await inter.edit_original_message(content=new)
-
-    @button(
-        label="*", style=discord.ButtonStyle.blurple, row=1, custom_id="calc:multiply"
-    )
-    async def multiply(self, button, inter):
-        if inter.message.content == self.string:
-            return await inter.response.send_message(
-                "What are you trying to do?", ephemeral=True
-            )
-
-        await inter.response.defer()
-
-        data = (inter.message.content).replace(self.string, "")
-        new_plus = data.count("*")
-
-        if new_plus >= 1:
-            return await inter.response.send_message(
-                "You cannot have more than one operator in a message."
-            )
-
-        new = data + str("*")
-        await inter.edit_original_message(content=new)
-
-    @button(
-        label="=", style=discord.ButtonStyle.blurple, row=2, custom_id="calc:equals"
-    )
-    async def equals(self, button, inter):
-        await inter.response.defer()
-        new = eval(inter.message.content)
-        await inter.edit_original_message(content=new)
-
-    @button(label="Clear", style=discord.ButtonStyle.red, row=3, custom_id="calc:clear")
-    async def clear(self, button, inter):
-        await inter.response.defer()
-        await inter.edit_original_message(content=self.string)
-
-    @button(label="Stop", style=discord.ButtonStyle.red, row=3, custom_id="calc:stop")
-    async def stop(self, button, inter):
-        await inter.response.defer()
-
-        for children in self.children:
-            children.disabled = True
-
-        await inter.edit_original_message(view=self)
 
 
 class Fun(commands.Cog):
@@ -157,13 +20,17 @@ class Fun(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self._snipe_cache = []
-        self._edit_cache = []
-        self.afk = self.bot.mongo["discord"]["afk"]
+        self._snipe_cache: list[dict] = []
+        self._edit_cache: list[dict] = []
+        self.afk: dict[int, dict[int, str]] = {}
 
     @property
     def emoji(self) -> str:
         return "🙌"
+
+    @staticmethod
+    def parse_expressions(expressions: str) -> str:
+        return expressions.replace("^", "**")
 
     @staticmethod
     def base64_encode(text: str):
@@ -227,7 +94,7 @@ class Fun(commands.Cog):
         if not isinstance(message.channel, discord.TextChannel):
             return
 
-        self._snipe_cache.append(
+        self._snipe_cache.append( 
             {
                 "author": str(message.author),
                 "channel": message.channel.id,
@@ -252,63 +119,6 @@ class Fun(commands.Cog):
                 "msg": before,
             }
         )
-
-    @commands.Cog.listener("on_message")
-    async def on_message(self, message: discord.Message) -> None:
-
-        if not isinstance(message.channel, discord.TextChannel):
-            return
-
-        if message.author.bot:
-            return
-
-        afk_db = self.afk[str(message.guild.id)]
-
-        data = await afk_db.find_one({"_id": message.author.id})
-
-        if data:
-            await message.channel.send(
-                embed=discord.Embed(
-                    description=f"Welcome back {message.author.mention}!",
-                    color=message.author.top_role.color,
-                )
-            )
-            await afk_db.delete_one({"_id": message.author.id})
-
-        if message.mentions:
-            for member in message.mentions:
-                mention_data = await afk_db.find_one({"_id": member.id})
-                if mention_data:
-                    if mention_data["message"] == message.id:
-                        return
-                    if member.id == mention_data["_id"]:
-                        timestamp = mention_data["timestamp"]
-                        reason = mention_data.get("reason")
-                        if reason:
-                            await message.channel.send(
-                                embed=discord.Embed(
-                                    description=f"{member.mention} is AFK: `{reason}` <t:{timestamp}:R>",
-                                    color=message.author.top_role.color,
-                                ),
-                                allowed_mentions=discord.AllowedMentions(
-                                    everyone=False, users=False, roles=False
-                                ),
-                            )
-
-                        if not reason:
-                            await message.channel.send(
-                                embed=discord.Embed(
-                                    description=f"{member.mention} is AFK. Since <t:{timestamp}:R>",
-                                    color=message.author.top_role.color,
-                                ),
-                                allowed_mentions=discord.AllowedMentions(
-                                    everyone=False, users=False, roles=False
-                                ),
-                            )
-                    else:
-                        break
-                else:
-                    break
 
     @commands.command(name="editsnipe")
     async def editsnipe(self, ctx: commands.Context, id: int = None):
@@ -558,66 +368,12 @@ class Fun(commands.Cog):
         """Show's a meaning of a word."""
         await self.get_urban_response(ctx, term)
 
-    @commands.command(name="afk")
-    async def afk(self, ctx: commands.Context, *, reason: Optional[str] = None):
-        """Become AFK."""
-
-        afk_db = self.afk[str(ctx.guild.id)]
-
-        data = await afk_db.find_one({"_id": ctx.author.id})
-
-        if not data:
-            if reason:
-                await afk_db.insert_one(
-                    {
-                        "_id": ctx.author.id,
-                        "reason": reason,
-                        "timestamp": int(datetime.utcnow().timestamp()),
-                        "message": ctx.message.id,
-                    }
-                )
-                await ctx.send(
-                    embed=discord.Embed(
-                        description="You are now AFK.", color=ctx.author.top_role.color
-                    )
-                )
-                return
-
-            await afk_db.insert_one(
-                {
-                    "_id": ctx.author.id,
-                    "timestamp": int(datetime.utcnow().timestamp()),
-                    "message": ctx.message.id,
-                }
-            )
-            await ctx.send(
-                embed=discord.Embed(
-                    description="You are now AFK.", color=ctx.author.top_role.color
-                )
-            )
-        else:
-            return
-
     @commands.command(name="choose")
     async def choose(self, ctx: commands.Context, *args) -> None:
 
         """Chooses between multiple choices."""
 
         await ctx.send(random.choice(args))
-
-    @commands.command(name="bcalc", aliases=("bcalculator",))
-    async def button_calculator(self, ctx: commands.Context) -> None:
-
-        """
-        A custom calculator made using buttons.
-        """
-
-        view = Calculator()
-        await ctx.send("Click a button!", view=view)
-
-    @staticmethod
-    def parse_expressions(expressions: str) -> str:
-        return expressions.replace("^", "**")
 
     @commands.command(name="calc")
     async def calc(self, ctx: commands.Context, *, expressions: str) -> None:

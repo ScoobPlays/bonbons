@@ -32,7 +32,7 @@ class Reminders(commands.Cog):
         self.bot = bot
         self.check_for_reminders.start()
         self.base = self.bot.mongo["reminders"]
-        self._channels: dict = {}
+        self._channels: dict[int, discord.TextChannel] = {}
 
     @property
     def emoji(self) -> str:

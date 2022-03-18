@@ -10,8 +10,6 @@ class Bot(commands.Cog):
 
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.db = self.bot.mongo["discord"]["bot"]
-        self.prefixes = self.bot.mongo["discord"]["prefixes"]
 
     @property
     def emoji(self) -> str:
@@ -96,10 +94,7 @@ class Bot(commands.Cog):
             return await ctx.send("Message failed to send. Are your DMs open?")
 
     @commands.command(name="prefix")
-    @commands.check(
-        lambda ctx: ctx.author.id == 534738044004335626
-        or ctx.author.id == 656073353215344650
-    )
+    @commands.is_owner()
     async def prefix(self, ctx: commands.Context, *, prefix: str) -> None:
 
         """Sets a prefix for the server."""
@@ -126,18 +121,12 @@ class Bot(commands.Cog):
 
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
-        commands = f"**{self.bot.invoked_commands}** commands have been invoked." if self.bot.invoked_commands is not None else "N/A"
 
         embed = discord.Embed(
             title="Info",
-            color=discord.Color.blurple(),
-            description=f"I can see {guilds:,} guilds, {users:,} users.",
         )
-
-        embed.add_field(
-            name="Commands",
-            value=commands,
-        )
+        embed.add_field(name="Guilds", value=f"{guilds:,}")
+        embed.add_field(name="Users", value=f"{users:,}")
         embed.add_field(
             name="Uptime",
             value=f"<t:{int(self.bot.uptime)}:F> (<t:{int(self.bot.uptime)}:R>)",

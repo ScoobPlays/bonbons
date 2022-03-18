@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 
 import discord
 from aiohttp import ClientSession
@@ -8,6 +7,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from .help.help_command import CustomHelpCommand
 
+EXTENSIONS = (
+    f'cogs.{ext[:-3]}'
+    for ext in 
+    os.listdir('./cogs')
+    if ext.endswith('.py')
+)
 
 class Bonbons(commands.Bot):
     def __init__(self, **kwargs) -> None:
@@ -26,7 +31,6 @@ class Bonbons(commands.Bot):
         self._economy = self.mongo["discord"]["economy"]
         self.default_prefix = "b"
         self._prefixes = self.mongo["discord"]["prefixes"]
-        self.memes = []
 
     @property
     def uptime(self) -> int:
@@ -47,9 +51,11 @@ class Bonbons(commands.Bot):
 
         await self.load_extension("jishaku")
 
-        for ext in os.listdir("./cogs"):
-            if ext.endswith(".py"):
-                await self.load_extension(f"cogs.{ext[:-3]}")
+        for extension in EXTENSIONS:
+            try:
+                await self.load_extension(extension)
+            except Exception as err:
+                print(f"Failed to load extension {extension}: {err}")
 
     async def on_ready(self) -> None:
 
