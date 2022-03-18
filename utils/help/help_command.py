@@ -22,15 +22,11 @@ class CustomHelpCommand(commands.HelpCommand):
 
     async def send_bot_help(self, mapping) -> None:
 
-        value = "Use the dropdown below to select a category."
+        value = "Use the dropdown below to navigate through my modules."
 
         embed = HelpEmbed(
-            title="Bonbons Help Page",
+            title="Help Menu",
             description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.",
-        )
-        embed.add_field(
-            name="Support Server",
-            value="Not really a support server but you can join my (sift#0410) private discord server [here](https://discord.gg/cJsuVmk8Xq).",
         )
         embed.add_field(name="How do I get help?", value=value, inline=False)
 

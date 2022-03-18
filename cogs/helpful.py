@@ -55,14 +55,6 @@ class Helpful(commands.Cog):
     def emoji(self) -> str:
         return "😄"
 
-    @commands.Cog.listener("on_command")
-    async def on_command(self, ctx: commands.Context):
-        tag = await self.bot_database.find_one({"_id": self.bot.user.id})
-
-        await self.bot_database.update_one(tag, {"$inc": {"uses": 1}})
-
-        self.bot.invoked_commands = tag["uses"] + 1
-
     async def run_code(self, ctx: commands.Context, lang: str, code: str) -> None:
         try:
             lang = lang.split("```")[1]
