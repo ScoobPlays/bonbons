@@ -77,6 +77,10 @@ class Helpful(commands.Cog):
                 return
 
             else:
+                
+                if len(output) >= 100:
+                    output = output[:100] + "\n... (truncated, too many lines)"
+                    
                 self._run_cache[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
                 )
