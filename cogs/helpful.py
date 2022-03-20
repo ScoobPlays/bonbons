@@ -11,36 +11,6 @@ from utils.paginator import Paginator
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 
 
-class MyPages:
-
-    __slots__ = ("data")
-
-    def __init__(self, data: list):
-        self.data = data
-
-    async def start(self, ctx: commands.Context, *, per_page: int):
-        embeds = []
-
-        for i in range(0, len(self.data), per_page):
-            embed = discord.Embed(
-                title="Global Message Leaderboard",
-                description="",
-            )
-            for index, user in enumerate(self.data[i : i + per_page]):
-                embed.description += (
-                    f"\n{index+1}. **{user['name']}**: {user['messages']: ,}"
-                )
-
-            embeds.append(embed)
-
-        for index, embed in enumerate(embeds):
-            embed.set_footer(text=f"Page {index+1}/{len(embeds)}")
-
-        view = Paginator(ctx, embeds, embed=True)
-
-        view.msg = await ctx.send(embed=embeds[0], view=view)
-
-
 class Helpful(commands.Cog):
 
     """Helpful commands."""
@@ -78,8 +48,8 @@ class Helpful(commands.Cog):
 
             else:
                 
-                if len(output) >= 100:
-                    output = output[:100] + "\n... (truncated, too many lines)"
+                if len(str(output)) >= 100:
+                    output = str(output)[:100] + "\n... (truncated, too many lines)"
                     
                 self._run_cache[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
@@ -105,8 +75,8 @@ class Helpful(commands.Cog):
                 return
 
             else:
-                if len(output) >= 100:
-                    output = output[:100] + "\n... (truncated, too many lines)"
+                if len(str(output)) >= 100:
+                    output = str(output)[:100] + "\n... (truncated, too many lines)"
                     
                 self._run_cache[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
@@ -144,14 +114,18 @@ class Helpful(commands.Cog):
                     await msg.delete()
 
                 await cmd.invoke(ctx)
-                await after.clear_reaction("🔁")
-
+                
+                try:
+                    await after.clear_reaction("🔁")
+                except discord.Forbidden:
+                    pass
+                
         except Exception:
-            return
+            pass
 
     @commands.command(name="say")
     async def say(self, ctx: commands.Context, *, text: str):
-        """Says whatever you want for you :D"""
+        """Says whatever you want for you!"""
         await ctx.send(text)
 
 
