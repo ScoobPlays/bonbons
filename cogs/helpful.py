@@ -9,7 +9,6 @@ from pyston import File, PystonClient
 from utils.paginator import Paginator
 
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
-MAX_LINES = 15
 
 class Helpful(commands.Cog):
 
@@ -48,7 +47,7 @@ class Helpful(commands.Cog):
 
             else:
                 
-                if len(str(output)).count("\n") >= 15:
+                if str(output).count("\n") >= 15:
                     output = str(output)[:75] + "\n... (truncated, too many lines)"
                     
                 self._run_cache[ctx.author.id] = await ctx.send(
@@ -75,7 +74,7 @@ class Helpful(commands.Cog):
                 return
 
             else:
-                if len(str(output)).count("\n") >= 15:
+                if str(output).count("\n") >= 15:
                     output = str(output)[:75] + "\n... (truncated, too many lines)"
                     
                 self._run_cache[ctx.author.id] = await ctx.send(
