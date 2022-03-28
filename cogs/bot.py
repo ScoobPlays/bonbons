@@ -1,3 +1,5 @@
+import traceback
+
 import discord
 from discord.ext import commands
 
@@ -42,9 +44,9 @@ class Bot(commands.Cog):
             return await ctx.reply("I cannot run this command.")
 
         else:
-            print(error)
-            await ctx.reply(error)
+            await ctx.reply("An error has occured. Sorry.")
 
+            traceback.print_exc(type(error), error, error.__traceback__)
     @commands.command(name="invite")
     async def invite(self, ctx: commands.Context) -> None:
 
