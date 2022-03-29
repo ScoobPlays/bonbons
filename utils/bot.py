@@ -4,6 +4,8 @@ import discord
 from aiohttp import ClientSession
 from discord.ext import commands
 
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from .help.help_command import CustomHelpCommand
 
 EXTENSIONS = (
@@ -34,6 +36,9 @@ class Bonbons(commands.Bot):
         await super().start(os.environ["token"])
 
     async def setup_hook(self) -> None:
+
+
+        self.mongo = AsyncIOMotorClient(os.environ["mongo_uri"])
 
         os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"

@@ -1,10 +1,11 @@
-import discord
-from discord.ext import commands
 from typing import Union
-from datetime import timedelta, datetime
 import random
 import json
+from datetime import timedelta, datetime
 from random import choice
+
+import discord
+from discord.ext import commands
 
 User = Union[
     discord.Member,
@@ -41,7 +42,7 @@ class Economy(commands.Cog, description="Economy."):
         self.bot = bot
         self.db = bot.mongo["discord"]["economy"]
         
-        with open("utils/db/shop.json", "r") as _shop:
+        with open("utils/storage/shop.json", "r") as _shop:
             self._shop = json.load(_shop)
 
     @property
