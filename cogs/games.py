@@ -24,7 +24,7 @@ class GameView(discord.ui.View):
         values = [str(y).replace('0', '⬜').replace('1', '😏').replace('2', '🔳') for x in item for y in x]
         message = ''
 
-        for i, hi in enumerate(s):
+        for i, hi in enumerate(values):
             if i in (2, 5, 8):
                 message += f'{hi}\n'
             else:
@@ -171,7 +171,8 @@ class Games(Cog):
         """
 
         view = GameView(ctx, Maze(boxes))
-        await ctx.send(content='click the button', view=view)
+        embed = discord.Embed(description=view.parse_response(view.game.tree))
+        await ctx.send(embed=embed, view=view)
 
 async def setup(bot: Bonbons):
     await bot.add_cog(Games(bot))
