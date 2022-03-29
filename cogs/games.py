@@ -42,7 +42,6 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 f"You win!",
-                view=self,
             )
             return
 
@@ -62,6 +61,17 @@ class GameView(discord.ui.View):
             embed=embed
             )
     
+        if self.game.check_for_win():
+
+            for item in self.children:
+                item.disabled = True
+
+            await inter.response.edit_message(
+                f"You win!",
+
+            )
+            return  
+
     @discord.ui.button(label='down')
     async def down(self, inter, button):
 
@@ -72,7 +82,6 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 f"You win!",
-                view=self,
             )
             return  
 
@@ -92,6 +101,17 @@ class GameView(discord.ui.View):
             embed=embed
             )
 
+        if self.game.check_for_win():
+
+            for item in self.children:
+                item.disabled = True
+
+            await inter.response.edit_message(
+                f"You win!",
+
+            )
+            return  
+
     @discord.ui.button(label='left')
     async def left(self, inter, button):
 
@@ -102,7 +122,7 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 f"You win!",
-                view=self,
+
             )
             return  
 
@@ -122,6 +142,17 @@ class GameView(discord.ui.View):
             embed=embed
             )
 
+        if self.game.check_for_win():
+
+            for item in self.children:
+                item.disabled = True
+
+            await inter.response.edit_message(
+                f"You win!",
+
+            )
+            return  
+
     @discord.ui.button(label='right')
     async def right(self, inter, button):
 
@@ -132,7 +163,6 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 f"You win!",
-                view=self,
             )
             return
 
@@ -151,6 +181,17 @@ class GameView(discord.ui.View):
         await inter.response.edit_message(
             embed=embed
             )
+            
+        if self.game.check_for_win():
+
+            for item in self.children:
+                item.disabled = True
+
+            await inter.response.edit_message(
+                f"You win!",
+
+            )
+            return  
 
 class Games(Cog):
     """
