@@ -58,9 +58,6 @@ class GameView(discord.ui.View):
         embed = discord.Embed(
             description=self.parse_response(response)
             )
-        await inter.response.edit_message(
-            embed=embed
-            )
     
         if self.game.check_for_win():
 
@@ -73,6 +70,10 @@ class GameView(discord.ui.View):
 
             )
             return  
+        else:
+            await inter.response.edit_message(
+                embed=embed
+            )
 
     @discord.ui.button(label='down')
     async def down(self, inter, button):
@@ -100,9 +101,6 @@ class GameView(discord.ui.View):
         embed = discord.Embed(
             description=self.parse_response(response)
             )
-        await inter.response.edit_message(
-            embed=embed
-            )
 
         if self.game.check_for_win():
 
@@ -115,6 +113,10 @@ class GameView(discord.ui.View):
 
             )
             return  
+        else:
+            await inter.response.edit_message(
+                embed=embed
+            )
 
     @discord.ui.button(label='left')
     async def left(self, inter, button):
@@ -143,9 +145,6 @@ class GameView(discord.ui.View):
         embed = discord.Embed(
             description=self.parse_response(response)
             )
-        await inter.response.edit_message(
-            embed=embed
-            )
 
         if self.game.check_for_win():
 
@@ -158,6 +157,10 @@ class GameView(discord.ui.View):
 
             )
             return  
+        else:
+            await inter.response.edit_message(
+                embed=embed
+            )
 
     @discord.ui.button(label='right')
     async def right(self, inter, button):
@@ -184,9 +187,6 @@ class GameView(discord.ui.View):
         embed = discord.Embed(
             description=self.parse_response(response)
             )
-        await inter.response.edit_message(
-            embed=embed
-            )
 
         if self.game.check_for_win():
 
@@ -198,6 +198,10 @@ class GameView(discord.ui.View):
 
             )
             return  
+        else:
+            await inter.response.edit_message(
+                embed=embed
+            )
 
 class Games(Cog):
     """
