@@ -51,7 +51,7 @@ class GameView(discord.ui.View):
 
         if response.startswith('You'):
             await inter.response.send_message(
-                response},
+                response,
                 ephemeral=True,
             )
             return
@@ -82,7 +82,7 @@ class GameView(discord.ui.View):
 
         if response.startswith('You'):
             await inter.response.send_message(
-                response},
+                response,
                 ephemeral=True,
             )
             return
@@ -113,7 +113,7 @@ class GameView(discord.ui.View):
 
         if response.startswith('You'):
             await inter.response.send_message(
-                response},
+                response,
                 ephemeral=True,
             )
             return
@@ -144,7 +144,7 @@ class GameView(discord.ui.View):
 
         if response.startswith('You'):
             await inter.response.send_message(
-                response},
+                response,
                 ephemeral=True,
             )
             return
@@ -173,7 +173,7 @@ class Games(Cog):
         """
         Play a maze game.
         """
-        
+
         view = GameView(ctx, Maze(boxes))
         await ctx.send(content='click the button', view=view)
 
