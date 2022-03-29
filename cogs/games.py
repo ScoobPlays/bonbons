@@ -76,6 +76,11 @@ class GameView(discord.ui.View):
             )
             return  
 
+
+
+
+
+
         response = self.game.move_down()
 
         if response.startswith('You'):
