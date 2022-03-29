@@ -1,1 +1,1 @@
-web: echo 'hi' && python main.py
+web: echo 'hi'
