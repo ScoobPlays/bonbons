@@ -44,21 +44,21 @@ class Paginator(discord.ui.View):
             await inter.edit_original_message(content=data, view=self)
 
     @discord.ui.button(label="<<", style=discord.ButtonStyle.grey)
-    async def back_two(self, button: discord.ui.Button, inter):
+    async def back_two(self, inter, button: discord.ui.Button):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page)
 
     @discord.ui.button(label="Back", style=discord.ButtonStyle.blurple)
-    async def back_one(self, button: discord.ui.Button, inter):
+    async def back_one(self, inter, button: discord.ui.Button):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - 1)
 
     @discord.ui.button(label="Next", style=discord.ButtonStyle.blurple)
-    async def next_one(self, button: discord.ui.Button, inter):
+    async def next_one(self, inter, button: discord.ui.Button):
         await inter.response.defer()
         await self.show_page(inter, self.current_page + 1)
 
     @discord.ui.button(label="️>>", style=discord.ButtonStyle.grey)
-    async def next_two(self, button: discord.ui.Button, inter):
+    async def next_two(self, inter, button: discord.ui.Button):
         await inter.response.defer()
         await self.show_page(inter, self.current_page - self.current_page - 1)
