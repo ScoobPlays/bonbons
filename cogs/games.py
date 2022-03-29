@@ -32,7 +32,12 @@ class GameView(discord.ui.View):
         
         return message
 
-    @discord.ui.button(label='up')
+
+    @discord.ui.button(label='\u200b', row=0, style=discord.ButtonStyle.blurple, disabled=True)
+    async def blank2(self, inter, button):
+        pass
+
+    @discord.ui.button(emoji='⬆️', row=0, style=discord.ButtonStyle.blurple)
     async def up(self, inter, button):
 
         if self.game.check_for_win():
@@ -76,51 +81,11 @@ class GameView(discord.ui.View):
                 embed=embed
             )
 
-    @discord.ui.button(label='down')
-    async def down(self, inter, button):
+    @discord.ui.button(label='\u200b', row=0, style=discord.ButtonStyle.blurple, disabled=True)
+    async def blank1(self, inter, button):
+        pass
 
-        if self.game.check_for_win():
-
-            for item in self.children:
-                item.disabled = True
-
-            await inter.response.edit_message(
-                content=f"You win!",
-                view=self,
-            )
-            return  
-
-        response = self.game.move_down()
-
-        if 'You' in response:
-            await inter.response.send_message(
-                response,
-                ephemeral=True,
-            )
-            return
-
-        embed = discord.Embed(
-            description=self.parse_response(response)
-            )
-
-        if self.game.check_for_win():
-
-            for item in self.children:
-                item.disabled = True
-
-            await inter.response.edit_message(
-                content=f"You win!",
-                view=self,
-                embed=embed
-
-            )
-            return  
-        else:
-            await inter.response.edit_message(
-                embed=embed
-            )
-
-    @discord.ui.button(label='left')
+    @discord.ui.button(emoji='⬅️', row=1, style=discord.ButtonStyle.blurple)
     async def left(self, inter, button):
 
         if self.game.check_for_win():
@@ -165,7 +130,51 @@ class GameView(discord.ui.View):
                 embed=embed
             )
 
-    @discord.ui.button(label='right')
+    @discord.ui.button(emoji='⬇️', row=1, style=discord.ButtonStyle.blurple)
+    async def down(self, inter, button):
+
+        if self.game.check_for_win():
+
+            for item in self.children:
+                item.disabled = True
+
+            await inter.response.edit_message(
+                content=f"You win!",
+                view=self,
+            )
+            return  
+
+        response = self.game.move_down()
+
+        if 'You' in response:
+            await inter.response.send_message(
+                response,
+                ephemeral=True,
+            )
+            return
+
+        embed = discord.Embed(
+            description=self.parse_response(response)
+            )
+
+        if self.game.check_for_win():
+
+            for item in self.children:
+                item.disabled = True
+
+            await inter.response.edit_message(
+                content=f"You win!",
+                view=self,
+                embed=embed
+
+            )
+            return  
+        else:
+            await inter.response.edit_message(
+                embed=embed
+            )
+
+    @discord.ui.button(emoji='➡️', row=1, style=discord.ButtonStyle.blurple)
     async def right(self, inter, button):
 
         if self.game.check_for_win():
