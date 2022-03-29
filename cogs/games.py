@@ -33,7 +33,7 @@ class GameView(discord.ui.View):
         return message
 
     @discord.ui.button(label='up')
-    async def button(self, inter, button):
+    async def up(self, inter, button):
 
         if self.game.check_for_win():
 
@@ -43,7 +43,6 @@ class GameView(discord.ui.View):
             await inter.response.edit_message(
                 f"You win!",
                 view=self,
-                ephemeral=True,
             )
             return
 
@@ -64,7 +63,7 @@ class GameView(discord.ui.View):
             )
     
     @discord.ui.button(label='down')
-    async def button(self, inter, button):
+    async def down(self, inter, button):
 
         if self.game.check_for_win():
 
@@ -74,7 +73,6 @@ class GameView(discord.ui.View):
             await inter.response.edit_message(
                 f"You win!",
                 view=self,
-                ephemeral=True,
             )
             return  
 
@@ -95,7 +93,7 @@ class GameView(discord.ui.View):
             )
 
     @discord.ui.button(label='left')
-    async def button(self, inter, button):
+    async def left(self, inter, button):
 
         if self.game.check_for_win():
 
@@ -105,7 +103,6 @@ class GameView(discord.ui.View):
             await inter.response.edit_message(
                 f"You win!",
                 view=self,
-                ephemeral=True,
             )
             return  
 
@@ -126,7 +123,7 @@ class GameView(discord.ui.View):
             )
 
     @discord.ui.button(label='right')
-    async def button(self, inter, button):
+    async def right(self, inter, button):
 
         if self.game.check_for_win():
 
@@ -136,7 +133,6 @@ class GameView(discord.ui.View):
             await inter.response.edit_message(
                 f"You win!",
                 view=self,
-                ephemeral=True,
             )
             return
 
