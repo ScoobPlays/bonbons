@@ -41,7 +41,8 @@ class GameView(discord.ui.View):
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
+                view=self
             )
             return
 
@@ -67,7 +68,8 @@ class GameView(discord.ui.View):
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
+                view=self
 
             )
             return  
@@ -81,7 +83,8 @@ class GameView(discord.ui.View):
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
+                view=self,
             )
             return  
 
@@ -107,7 +110,8 @@ class GameView(discord.ui.View):
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
+                view=self
 
             )
             return  
@@ -121,7 +125,8 @@ class GameView(discord.ui.View):
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
+                view=self
 
             )
             return  
@@ -148,7 +153,8 @@ class GameView(discord.ui.View):
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
+                view=self
 
             )
             return  
@@ -162,7 +168,7 @@ class GameView(discord.ui.View):
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
             )
             return
 
@@ -181,14 +187,14 @@ class GameView(discord.ui.View):
         await inter.response.edit_message(
             embed=embed
             )
-            
+
         if self.game.check_for_win():
 
             for item in self.children:
                 item.disabled = True
 
             await inter.response.edit_message(
-                f"You win!",
+                content=f"You win!",
 
             )
             return  
