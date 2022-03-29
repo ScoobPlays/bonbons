@@ -66,7 +66,8 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 content=f"You win!",
-                view=self
+                view=self,
+                embed=embed
 
             )
             return  
@@ -109,7 +110,8 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 content=f"You win!",
-                view=self
+                view=self,
+                embed=embed
 
             )
             return  
@@ -153,7 +155,8 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 content=f"You win!",
-                view=self
+                view=self,
+                embed=embed
 
             )
             return  
@@ -195,6 +198,8 @@ class GameView(discord.ui.View):
 
             await inter.response.edit_message(
                 content=f"You win!",
+                embed=embed,
+                view=self
 
             )
             return  
