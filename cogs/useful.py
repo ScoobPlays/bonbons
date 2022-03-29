@@ -193,6 +193,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
             "discord": "https://discord.readthedocs.io/en/latest",
             "nextcord": "https://nextcord.readthedocs.io/en/latest",
             "discord.py": "https://discordpy.readthedocs.io/en/master",
+            "pycord": "https://docs.pycord.dev/en/master/",
         }
 
         if obj is None:
@@ -246,7 +247,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
         case_insensitive=True,
     )
     async def rtfm_group(self, ctx: commands.Context, *, obj: str = None):
-        """Retrieve documentation on python libraries. Defaults to `discord.py` if no sub-command was passed."""
+        """Retrieve documentation on python libraries."""
 
         await self.do_rtfm(ctx, "discord.py", obj)
 
@@ -265,6 +266,11 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
         """Retrieve's documentation on discord.py."""
         await self.do_rtfm(ctx, "discord", obj)
 
+    @rtfm_group.command(name="pycord", aliases=("pyc",))
+    async def rtfm_discord(self, ctx: commands.Context, *, obj: str = None):
+        """Retrieve's documentation on pycord."""
+        await self.do_rtfm(ctx, "pycord", obj)
+        
     @commands.command(name="pypi")
     async def pypi(self, ctx: commands.Context, name: str):
 
