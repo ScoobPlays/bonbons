@@ -2,6 +2,6 @@
     "banknote": {
         "name": "Banknote",
         "description": "A special item that increases your bank size by 30%",
-        "price": 250
+        "price": 25
     }
 }
