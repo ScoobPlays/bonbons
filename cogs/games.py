@@ -48,7 +48,7 @@ class GameView(discord.ui.View):
 
         response = self.game.move_up()
 
-        if response.startswith('You'):
+        if 'You' in response:
             await inter.response.send_message(
                 response,
                 ephemeral=True,
@@ -76,14 +76,9 @@ class GameView(discord.ui.View):
             )
             return  
 
-
-
-
-
-
         response = self.game.move_down()
 
-        if response.startswith('You'):
+        if 'You' in response:
             await inter.response.send_message(
                 response,
                 ephemeral=True,
@@ -113,7 +108,7 @@ class GameView(discord.ui.View):
 
         response = self.game.move_left()
 
-        if response.startswith('You'):
+        if 'You' in response:
             await inter.response.send_message(
                 response,
                 ephemeral=True,
@@ -143,7 +138,7 @@ class GameView(discord.ui.View):
 
         response = self.game.move_right()
 
-        if response.startswith('You'):
+        if 'You' in response:
             await inter.response.send_message(
                 response,
                 ephemeral=True,
