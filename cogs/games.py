@@ -23,7 +23,7 @@ class GameView(discord.ui.View):
         return True
 
     def parse_response(self, item: list[list]):
-        values = [str(y).replace('0', '⬜').replace('1', '😏').replace('2', '🔳') for x in item for y in x]
+        values = [str(y).replace('0', '⬜').replace('1', '😏').replace('2', '🔳').replace('3', '🟫') for x in item for y in x]
         message = ''
 
         for i, hi in enumerate(values):
@@ -232,10 +232,13 @@ class Games(Cog):
         return "🎮"
 
     @command(name='maze')
-    async def maze(self, ctx: Context, boxes: int = 10):
+    async def maze(self, ctx: Context, boxes: int = 4):
         """
         Play a maze game.
         """
+
+        if boxes < 4:
+            return await ctx.send('Boxes must be bigger than 4.')
 
         view = GameView(ctx, Maze(boxes=boxes))
         tree = view.parse_response(view.game.tree)
