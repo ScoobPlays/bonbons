@@ -5,7 +5,7 @@ PLAYER = 1
 CAVE = 2
 WALL = 3
 
-class Game:
+class Maze:
     def __init__(self, boxes: int = 3) -> None: 
         self.tree = [[0 for _ in range(boxes)] for _ in range(boxes)]
 
