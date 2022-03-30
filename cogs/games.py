@@ -6,14 +6,14 @@ import discord
 from utils.maze import Maze
 
 class GameView(discord.ui.View):
-    def __init__(self, ctx, game):
+    def __init__(self, ctx: Context, game: Maze) -> None:
         super().__init__()
         self.game = game
         self.ctx = ctx
 
-    async def interaction_check(self, inter):
-        if inter.user.id != self.ctx.author.id:
-            await inter.response.send_message(
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user.id != self.ctx.author.id:
+            await interaction.response.send_message(
                 f"You are not the owner of this message.",
                 ephemeral=True,
             )
@@ -230,13 +230,14 @@ class Games(Cog):
         return "🎮"
 
     @command(name='maze')
-    async def maze(self, ctx: Context, boxes: int = 3):
+    async def maze(self, ctx: Context, boxes: int = 10):
         """
         Play a maze game.
         """
 
-        view = GameView(ctx, Maze(boxes))
-        embed = discord.Embed(description=view.parse_response(view.game.tree))
+        view = GameView(ctx, Maze(boxes=boxes))
+        tree = view.parse_response(view.game.tree)
+        embed = discord.Embed(description=tree)
         await ctx.send(embed=embed, view=view)
 
 async def setup(bot: Bonbons):
