@@ -5,6 +5,8 @@ import discord
 
 from utils.maze import Maze
 
+
+
 class GameView(discord.ui.View):
     def __init__(self, ctx: Context, game: Maze) -> None:
         super().__init__()
