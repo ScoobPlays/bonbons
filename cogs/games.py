@@ -26,13 +26,15 @@ class GameView(discord.ui.View):
         values = [str(y).replace('0', '⬜').replace('1', '😏').replace('2', '🔳').replace('3', '🟫') for x in item for y in x]
         message = ''
 
-        for i, hi in enumerate(values):
-            if i in (2, 5, 8):
-                message += f'{hi}\n'
-            else:
-                message += str(hi)
-        
+        for index, value in enumerate(values):
+            if index % self.game.boxes == 0:
+                message += '\n'
+
+            message += value
+
         return message
+
+        
 
 
     @discord.ui.button(label='\u200b', row=0, style=discord.ButtonStyle.blurple, disabled=True)

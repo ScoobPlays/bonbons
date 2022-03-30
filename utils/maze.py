@@ -8,6 +8,7 @@ WALL = 3
 class Maze:
     def __init__(self, boxes: int = 3) -> None: 
         self.tree = [[0 for _ in range(boxes)] for _ in range(boxes)]
+        self.boxes = boxes
 
         self._CAVE_POSITION = (randint(0, boxes-1), randint(0, boxes-1))
         self._PLAYER_POSITION = (randint(0, boxes-1), randint(0, boxes-1))
