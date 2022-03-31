@@ -13,13 +13,15 @@ class Maze:
         self._CAVE_POSITION = (randint(0, boxes-1), randint(0, boxes-1))
         self._PLAYER_POSITION = (randint(0, boxes-1), randint(0, boxes-1))
 
-        if self.tree[self._CAVE_POSITION[0]][self._CAVE_POSITION[1]] == AIR: # generates the cave position
+        if self.tree[self._CAVE_POSITION[0]][self._CAVE_POSITION[1]] == AIR: 
             self.tree[self._CAVE_POSITION[0]][self._CAVE_POSITION[1]] = CAVE
 
             self.cave = self._CAVE_POSITION
 
-        if self.tree[self._PLAYER_POSITION[0]][self._PLAYER_POSITION[1]] == AIR: # generates the players position
+        if self.tree[self._PLAYER_POSITION[0]][self._PLAYER_POSITION[1]] == AIR: 
             self.tree[self._PLAYER_POSITION[0]][self._PLAYER_POSITION[1]] = PLAYER
+
+        self._ensure_cave_and_user()
 
         for index, item in enumerate(self.tree): # generates the walls
             wall_position = randint(0, boxes-1)
@@ -29,6 +31,22 @@ class Maze:
             
             item[wall_position] = WALL
 
+        if self.boxes >= 10:
+            for index, item in enumerate(self.tree): # generates the walls
+                wall_position = randint(0, boxes-1)
+
+                if item[index] in (1, 2, 3):
+                    continue
+            
+                item[wall_position] = WALL
+
+    def _ensure_cave_and_user(self) -> None:
+        for index, item in enumerate(self.tree):
+            if CAVE not in item:
+                self.tree[index][index] = CAVE
+            
+            if PLAYER not in item:
+                self.tree[index][index] = PLAYER
 
     def check_for_win(self) -> bool:
         positions = self.get()
@@ -63,6 +81,7 @@ class Maze:
 
     def move_down(self) -> str | list:
         positions = self.get()
+        print(positions)
         list_pos = positions[0]
         item_pos = positions[1]
     

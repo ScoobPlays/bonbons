@@ -41,6 +41,10 @@ class GameView(discord.ui.View):
     async def blank2(self, inter, button):
         pass
 
+
+    @discord.ui.button(label='\u200b', row=0, style=discord.ButtonStyle.blurple, disabled=True)
+    async def blank3(self, inter, button):
+        pass
     @discord.ui.button(emoji='⬆️', row=0, style=discord.ButtonStyle.blurple)
     async def up(self, inter, button):
 
@@ -221,6 +225,13 @@ class GameView(discord.ui.View):
                 embed=embed
             )
 
+    @discord.ui.button(emoji='🗑️', row=1, style=discord.ButtonStyle.red, disabled=True)
+    async def delete(self, inter, button):
+        
+        await inter.response.defer()
+
+        await inter.delete_original_message()
+
 class Games(Cog):
     """
     Games to play around with.
@@ -234,13 +245,16 @@ class Games(Cog):
         return "🎮"
 
     @command(name='maze')
-    async def maze(self, ctx: Context, boxes: int = 4):
+    async def maze(self, ctx: Context, boxes: int = 10):
         """
         Play a maze game.
         """
 
         if boxes < 4:
             return await ctx.send('Boxes must be bigger than 4.')
+        
+        if boxes >= 15:
+            return await ctx.send('Boxes must be smaller than 15.')
 
         view = GameView(ctx, Maze(boxes=boxes))
         tree = view.parse_response(view.game.tree)
