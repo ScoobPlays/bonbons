@@ -35,16 +35,10 @@ class GameView(discord.ui.View):
         return message
 
         
-
-
     @discord.ui.button(label='\u200b', row=0, style=discord.ButtonStyle.blurple, disabled=True)
     async def blank2(self, inter, button):
         pass
 
-
-    @discord.ui.button(label='\u200b', row=0, style=discord.ButtonStyle.blurple, disabled=True)
-    async def blank3(self, inter, button):
-        pass
     @discord.ui.button(emoji='⬆️', row=0, style=discord.ButtonStyle.blurple)
     async def up(self, inter, button):
 
@@ -90,7 +84,7 @@ class GameView(discord.ui.View):
             )
 
     @discord.ui.button(label='\u200b', row=0, style=discord.ButtonStyle.blurple, disabled=True)
-    async def blank1(self, inter, button):
+    async def blank4(self, inter, button):
         pass
 
     @discord.ui.button(emoji='⬅️', row=1, style=discord.ButtonStyle.blurple)

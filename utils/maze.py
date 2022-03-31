@@ -21,8 +21,6 @@ class Maze:
         if self.tree[self._PLAYER_POSITION[0]][self._PLAYER_POSITION[1]] == AIR: 
             self.tree[self._PLAYER_POSITION[0]][self._PLAYER_POSITION[1]] = PLAYER
 
-        self._ensure_cave_and_user()
-
         for index, item in enumerate(self.tree): # generates the walls
             wall_position = randint(0, boxes-1)
 
@@ -39,14 +37,6 @@ class Maze:
                     continue
             
                 item[wall_position] = WALL
-
-    def _ensure_cave_and_user(self) -> None:
-        for index, item in enumerate(self.tree):
-            if CAVE not in item:
-                self.tree[index][index] = CAVE
-            
-            if PLAYER not in item:
-                self.tree[index][index] = PLAYER
 
     def check_for_win(self) -> bool:
         positions = self.get()
