@@ -16,7 +16,7 @@ EXTENSIONS = (
 )
 
 class Bonbons(commands.Bot):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self) -> None:
         super().__init__(
             command_prefix="b!",
             case_insensitive=True,
@@ -24,16 +24,15 @@ class Bonbons(commands.Bot):
             allowed_mentions=discord.AllowedMentions(everyone=False, roles=False),
             help_command=CustomHelpCommand(),
             strip_after_prefix=True,
-            **kwargs,
         )
-        self._uptime = discord.utils.utcnow().timestamp()
-
-    @property
-    def uptime(self) -> int:
-        return int(self._uptime) or discord.utils.utcnow()
+        self.uptime = int(discord.utils.utcnow().timestamp())
+        self.messages: dict[int, discord.Message] = {}
 
     async def start(self) -> None:
         await super().start(os.environ["token"])
+
+    def get_message(self, message_id: int) -> discord.Message:
+        return self.messages.get(message_id, None)
 
     async def setup_hook(self) -> None:
 

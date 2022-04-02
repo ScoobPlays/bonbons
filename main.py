@@ -44,6 +44,7 @@ bot.text = TextGenerator(depth=3)
 @bot.listen("on_message")
 async def on_message(message):
     bot.text.train(message.content)
+    bot.messages[message.id] = message
 
 @bot.command(name="gentext")
 async def gentext(ctx, start: str = None):
