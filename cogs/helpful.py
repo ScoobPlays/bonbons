@@ -26,11 +26,19 @@ class Helpful(commands.Cog):
     def emoji(self) -> str:
         return "😄"
 
+    @staticmethod
+    def parse_content(content: str, lang: str) -> str:
+        
+        if lang:
+            return content.replace('```', '', 2).replace(lang, '')
+        
+        return content.replace('```', '', 2)
+    
     async def run_code(self, ctx: commands.Context, lang: str, code: str) -> None:
         try:
             lang = lang.split("```")[1]
             code = code.split("```")[0]
-            output = await self.pysclient.execute(str(lang), [File(code)])
+            output = await self.pysclient.execute(str(lang), [File(self.parse_content(code, lang))])
 
             if (
                 output.raw_json["run"]["stdout"] == ""
@@ -58,7 +66,7 @@ class Helpful(commands.Cog):
                 return
 
         except Exception:
-            output = await self.pysclient.execute(lang, [File(code)])
+            output = await self.pysclient.execute(lang, [File(self.parse_content(code, lang))])
 
             if (
                 output.raw_json["run"]["stdout"] == ""
