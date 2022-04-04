@@ -7,7 +7,7 @@ from discord.ext import commands
 class Bot(commands.Cog):
 
     """
-    Commands related to me.
+    A cog for commands related to me.
     """
 
     def __init__(self, bot: commands.Bot) -> None:
@@ -47,28 +47,6 @@ class Bot(commands.Cog):
             await ctx.reply("An error has occured. Sorry.")
 
             traceback.print_exc(type(error), error, error.__traceback__)
-    @commands.command(name="invite")
-    async def invite(self, ctx: commands.Context) -> None:
-
-        """Sends you my invite link!"""
-
-        invite = discord.ui.View()
-        invite.add_item(
-            discord.ui.Button(
-                label="Invite Me!",
-                style=discord.ButtonStyle.url,
-                url="https://discord.com/api/oauth2/authorize?client_id=888309915620372491&permissions=412387494464&scope=bot",
-            )
-        )
-
-        try:
-            await ctx.author.send(
-                "Click the button below to invite me to your discord server!"
-            )
-            await ctx.message.add_reaction("✅")
-        except discord.Forbidden:
-            await ctx.message.add_reaction("❌")
-            return await ctx.send("Message failed to send. Are your DMs open?")
 
     @commands.command(
         aliases=(
@@ -84,17 +62,15 @@ class Bot(commands.Cog):
 
         embed = discord.Embed(
             title="Info",
+            color=discord.Color.blurple()
         )
-        embed.add_field(name="Guilds", value=f"{guilds:,}")
-        embed.add_field(name="Users", value=f"{users:,}")
-        embed.add_field(
-            name="Uptime",
-            value=f"<t:{int(self.bot.uptime)}:F> (<t:{int(self.bot.uptime)}:R>)",
-        )
-        embed.add_field(
-            name="Ping",
-            value=f"{int(self.bot.latency * 1000):.2f}ms",
-        )
+        
+        embed.description = f"""
+        • Guilds: {guilds:,}
+        • Users: {users:,}
+        • Uptime: <t:{int(self.bot.uptime)}:F> (<t:{int(self.bot.uptime)}:R>)
+        • Latency: {int(self.bot.latency * 1000):.2f}ms
+        """
         await ctx.send(embed=embed)
 
 
