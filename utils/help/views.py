@@ -78,22 +78,12 @@ def get_options(bot: commands.Bot) -> list:
         ]:
             continue
 
-        if hasattr(cog, "emoji"):
-            options.append(
-                discord.SelectOption(
-                    label=cog.qualified_name,
-                    description=cog.description,
-                    emoji=cog.emoji,
-                )
+        options.append(
+            discord.SelectOption(
+                label=cog.qualified_name,
+                description=cog.description,
             )
-
-        else:
-            options.append(
-                discord.SelectOption(
-                    label=cog.qualified_name,
-                    description=cog.description,
-                )
-            )
+        )
 
     options.append(
         discord.SelectOption(
