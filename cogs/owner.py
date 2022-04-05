@@ -11,7 +11,7 @@ from utils.paginator import Paginator
 
 class TextPaginator:
 
-    __slots__ = ('data', 'ctx')
+    __slots__ = ("data", "ctx")
 
     def __init__(self, ctx: commands.Context, data: list):
         self.ctx = ctx
@@ -101,6 +101,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
         if after.content.startswith(valid_messages):
             await self.bot.process_commands(after)
 
-                          
+
 async def setup(bot):
     await bot.add_cog(Owner(bot))

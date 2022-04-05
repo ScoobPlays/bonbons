@@ -12,6 +12,7 @@ CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 NEWLINE_LIMIT = 15
 SLICE_LIMIT = 150
 
+
 class Helpful(commands.Cog):
 
     """Helpful commands."""
@@ -28,17 +29,19 @@ class Helpful(commands.Cog):
 
     @staticmethod
     def parse_content(content: str, lang: str) -> str:
-        
+
         if lang:
-            return content.replace('```', '', 2).replace(lang, '')
-        
-        return content.replace('```', '', 2)
-    
+            return content.replace("```", "", 2).replace(lang, "")
+
+        return content.replace("```", "", 2)
+
     async def run_code(self, ctx: commands.Context, lang: str, code: str) -> None:
         try:
             lang = lang.split("```")[1]
             code = code.split("```")[0]
-            output = await self.pysclient.execute(str(lang), [File(self.parse_content(code, lang))])
+            output = await self.pysclient.execute(
+                str(lang), [File(self.parse_content(code, lang))]
+            )
 
             if (
                 output.raw_json["run"]["stdout"] == ""
@@ -56,17 +59,21 @@ class Helpful(commands.Cog):
                 return
 
             else:
-                
+
                 if str(output).count("\n") >= NEWLINE_LIMIT:
-                    output = str(output)[:SLICE_LIMIT] + "\n... (truncated, too many lines)"
-                    
+                    output = (
+                        str(output)[:SLICE_LIMIT] + "\n... (truncated, too many lines)"
+                    )
+
                 self._run_cache[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
                 )
                 return
 
         except Exception:
-            output = await self.pysclient.execute(lang, [File(self.parse_content(code, lang))])
+            output = await self.pysclient.execute(
+                lang, [File(self.parse_content(code, lang))]
+            )
 
             if (
                 output.raw_json["run"]["stdout"] == ""
@@ -85,13 +92,14 @@ class Helpful(commands.Cog):
 
             else:
                 if str(output).count("\n") >= NEWLINE_LIMIT:
-                    output = str(output)[:SLICE_LIMIT] + "\n... (truncated, too many lines)"
-                    
+                    output = (
+                        str(output)[:SLICE_LIMIT] + "\n... (truncated, too many lines)"
+                    )
+
                 self._run_cache[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
                 )
                 return
-
 
     @commands.command(name="run")
     async def run(self, ctx: commands.Context, lang, *, code: str):
@@ -123,12 +131,12 @@ class Helpful(commands.Cog):
                     await msg.delete()
 
                 await cmd.invoke(ctx)
-                
+
                 try:
                     await after.clear_reaction("🔁")
                 except discord.Forbidden:
                     pass
-                
+
         except Exception:
             pass
 
@@ -136,7 +144,6 @@ class Helpful(commands.Cog):
     async def say(self, ctx: commands.Context, *, text: str):
         """Says whatever you want for you!"""
         await ctx.send(text)
-
 
     @commands.command(name="translate")
     async def translate(

@@ -52,7 +52,7 @@ class RTFMView(discord.ui.View):
         ctx: commands.Context,
         now: float,
         when: float,
-        ):
+    ):
         super().__init__()
         self.reference = reference
         self.embed = embed
@@ -79,7 +79,9 @@ class RTFMView(discord.ui.View):
         await interaction.delete_original_message()
 
     @discord.ui.button(label=f"...", disabled=True)
-    async def took_when(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def took_when(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ):
         pass
 
 
@@ -270,7 +272,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
     async def rtfm_discord(self, ctx: commands.Context, *, obj: str = None):
         """Retrieve's documentation on pycord."""
         await self.do_rtfm(ctx, "pycord", obj)
-        
+
     @commands.command(name="pypi")
     async def pypi(self, ctx: commands.Context, name: str):
 

@@ -37,7 +37,9 @@ class CustomHelpCommand(commands.HelpCommand):
             view=view,
         )
 
-    async def paginate(self, title: str, description: str, data, *, per_page: int, prefix: str = "b") -> None:
+    async def paginate(
+        self, title: str, description: str, data, *, per_page: int, prefix: str = "b"
+    ) -> None:
         embeds = []
 
         for i in range(0, len(data), per_page):
@@ -57,13 +59,17 @@ class CustomHelpCommand(commands.HelpCommand):
 
         for index, embed in enumerate(embeds):
             embed.title += f" Page {index+1}/{len(embeds)}"
-            embed.set_footer(text=f"Use {prefix}help [command] for more info on a command.")
+            embed.set_footer(
+                text=f"Use {prefix}help [command] for more info on a command."
+            )
 
         view = Paginator(self.context, embeds, embed=True)
 
         view.msg = await self.send(embed=embeds[0], view=view)
 
-    async def send_help_embed(self, title: str, description: str, _commands, prefix: str="b") -> None:
+    async def send_help_embed(
+        self, title: str, description: str, _commands, prefix: str = "b"
+    ) -> None:
 
         for command in _commands:
             if isinstance(command, commands.Group):
@@ -91,7 +97,9 @@ class CustomHelpCommand(commands.HelpCommand):
                     }
                 )
 
-        await self.paginate(title, description, self.commands, per_page=7, prefix=prefix)
+        await self.paginate(
+            title, description, self.commands, per_page=7, prefix=prefix
+        )
 
         self.commands = []
 
@@ -102,7 +110,10 @@ class CustomHelpCommand(commands.HelpCommand):
 
     async def send_cog_help(self, cog: commands.Group) -> None:
         return await self.send_help_embed(
-            "Category Help", cog.description, cog.get_commands(), self.context.clean_prefix
+            "Category Help",
+            cog.description,
+            cog.get_commands(),
+            self.context.clean_prefix,
         )
 
     async def send_command_help(self, command: commands.Command) -> None:

@@ -1,4 +1,4 @@
-print('main.py ran')
+print("main.py ran")
 
 import asyncio
 import random
@@ -7,7 +7,8 @@ from utils.bot import Bonbons
 
 bot = Bonbons()
 
-class TextGenerator: 
+
+class TextGenerator:
     def __init__(self, depth=1) -> None:
         self.map = {}
         self.depth = depth
@@ -17,14 +18,14 @@ class TextGenerator:
         c = self.depth
         while c >= 1:
             for i, word in enumerate(s[:-c]):
-                x = s[i+1:i+c+1]
+                x = s[i + 1 : i + c + 1]
                 if word in self.map:
                     self.map[word].append(x)
                 else:
                     self.map[word] = [x]
             c -= 1
 
-    def generate_text(self, start = None):
+    def generate_text(self, start=None):
         sentence = []
         if start and start in self.map:
             sentence.append(start)
@@ -39,19 +40,24 @@ class TextGenerator:
 
         return " ".join(sentence)
 
-bot.text = TextGenerator(depth=3) 
+
+bot.text = TextGenerator(depth=3)
+
 
 @bot.listen("on_message")
 async def on_message(message):
     bot.text.train(message.content)
     bot.messages[message.id] = message
 
+
 @bot.command(name="gentext")
 async def gentext(ctx, start: str = None):
     result = bot.text.generate_text(start)
     await ctx.send(result)
 
+
 async def main():
     await bot.start()
+
 
 asyncio.run(main())

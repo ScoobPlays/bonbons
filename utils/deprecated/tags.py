@@ -9,7 +9,7 @@ from utils.paginator import Paginator
 
 class TagPages:
 
-    __slots__ = ('data',)
+    __slots__ = ("data",)
 
     def __init__(self, data: list):
         self.data = data
@@ -22,7 +22,7 @@ class TagPages:
                 description="",
                 colour=discord.Color.greyple(),
             ).set_author(name=str(ctx.author), icon_url=ctx.author.display_avatar)
-                        
+
             for index, result in enumerate(self.data[i : i + per_page]):
                 embed.description += (
                     f"\n{index+1}. {result['name']} (ID: {result['_id']})"
@@ -211,7 +211,7 @@ class Tags(commands.Cog):
             msg = copy.copy(message)
 
             if ctx.prefix:
-                new_content = msg.content[len(ctx.prefix):]
+                new_content = msg.content[len(ctx.prefix) :]
 
                 if await db.find_one({"name": new_content}) is None:
                     return await self.bot.process_commands(msg)

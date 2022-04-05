@@ -86,9 +86,7 @@ def get_options(bot: commands.Bot) -> list:
         )
 
     options.append(
-        discord.SelectOption(
-            label="Home", description="Go back to the main help page.", emoji="🏠"
-        )
+        discord.SelectOption(label="Home", description="Go back to the main help page.")
     )
 
     return options
@@ -168,7 +166,9 @@ class HelpCommandDropdown(discord.ui.Select):
 
         for index, embed in enumerate(embeds):
             embed.title += f" Page {index+1}/{len(embeds)}"
-            embed.set_footer(text=f"Use {prefix}help [command] for more info on a command.")
+            embed.set_footer(
+                text=f"Use {prefix}help [command] for more info on a command."
+            )
 
         view = HelpMenuPaginator(self.ctx, embeds, timeout=60, embed=True)
         view.add_item(self)

@@ -8,12 +8,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from .help.help_command import CustomHelpCommand
 
-EXTENSIONS = (
-    f'cogs.{ext[:-3]}'
-    for ext in 
-    os.listdir('./cogs')
-    if ext.endswith('.py')
-)
+EXTENSIONS = (f"cogs.{ext[:-3]}" for ext in os.listdir("./cogs") if ext.endswith(".py"))
+
 
 class Bonbons(commands.Bot):
     def __init__(self) -> None:
@@ -35,7 +31,6 @@ class Bonbons(commands.Bot):
         return self.messages.get(message_id, None)
 
     async def setup_hook(self) -> None:
-
 
         self.mongo = AsyncIOMotorClient(os.environ["mongo_token"])
 

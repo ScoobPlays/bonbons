@@ -21,13 +21,13 @@ class NSFW(Cog, description="NSFW related commands."):
             embed = discord.Embed(color=discord.Color.blurple())
             embed.set_author(
                 name=str(ctx.author),
-                 icon_url=ctx.author.display_avatar,
-                 url=data["source"],
+                icon_url=ctx.author.display_avatar,
+                url=data["source"],
             )
             embed.set_image(url=data["url"])
-            
+
             return embed
-        
+
     async def _get_sfw_image(self, ctx: Context, type: str) -> discord.Embed:
         url = f"{BASE_URL}/random/?selected_tags={type}"
 
@@ -37,11 +37,11 @@ class NSFW(Cog, description="NSFW related commands."):
             embed = discord.Embed(color=discord.Color.blurple())
             embed.set_author(
                 name=str(ctx.author),
-                 icon_url=ctx.author.display_avatar,
-                 url=data["source"],
+                icon_url=ctx.author.display_avatar,
+                url=data["source"],
             )
             embed.set_image(url=data["url"])
-            
+
             return embed
 
     @group(name="nsfw", invoke_without_command=True, case_insensitive=True)

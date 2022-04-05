@@ -106,7 +106,9 @@ class Information(commands.Cog):
 
     @commands.command(name="whois", aliases=("userinfo", "u"))
     @commands.guild_only()
-    async def whois(self, ctx: commands.Context, *, member: discord.Member = None) -> None:
+    async def whois(
+        self, ctx: commands.Context, *, member: discord.Member = None
+    ) -> None:
 
         """
         Tells you information about a member.

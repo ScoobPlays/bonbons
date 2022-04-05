@@ -48,11 +48,7 @@ class Bot(commands.Cog):
 
             traceback.print_exc(type(error), error, error.__traceback__)
 
-    @commands.command(
-        aliases=(
-            "uptime",
-        )
-    )
+    @commands.command(aliases=("uptime",))
     async def info(self, ctx: commands.Context) -> None:
 
         """Tells you my information."""
@@ -60,11 +56,8 @@ class Bot(commands.Cog):
         users = len(self.bot.users)
         guilds = len(self.bot.guilds)
 
-        embed = discord.Embed(
-            title="Info",
-            color=discord.Color.blurple()
-        )
-        
+        embed = discord.Embed(title="Info", color=discord.Color.blurple())
+
         embed.description = f"""
         • Guilds: {guilds:,}
         • Users: {users:,}
@@ -72,7 +65,6 @@ class Bot(commands.Cog):
         • Latency: {int(self.bot.latency * 1000):.2f}ms
         """
         await ctx.send(embed=embed)
-
 
     @commands.command(name="ping")
     async def ping(self, ctx: commands.Context) -> None:

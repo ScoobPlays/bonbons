@@ -86,7 +86,9 @@ class Levels(commands.Cog):
 
             embed = discord.Embed(color=discord.Color.blurple())
             embed.set_image(url="attachment://rank_card.png")
-            return await ctx.send(file=discord.File(buffer, "rank_card.png"), embed=embed)
+            return await ctx.send(
+                file=discord.File(buffer, "rank_card.png"), embed=embed
+            )
 
     async def _generate_leaderboard(self, ctx: commands.Context) -> None:
 
@@ -135,7 +137,9 @@ class Levels(commands.Cog):
             embed.set_image(url="attachment://leaderboard.png")
             embed.set_footer(text=f"Took{done: .2f}s")
 
-            return await ctx.send(file=discord.File(buffer, "leaderboard.png"), embed=embed)
+            return await ctx.send(
+                file=discord.File(buffer, "leaderboard.png"), embed=embed
+            )
 
     @commands.command(name="rank", aliases=("level",))
     @commands.cooldown(1, 20, commands.BucketType.user)
@@ -151,8 +155,10 @@ class Levels(commands.Cog):
         if data is not None:
             return await self._generate_rank_card(ctx, member, data)
 
-        await ctx.reply("You have no XP somehow. Send some more messages into the chat and try again..")
-        
+        await ctx.reply(
+            "You have no XP somehow. Send some more messages into the chat and try again.."
+        )
+
     @commands.command(name="setlevel")
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def setlevel(self, ctx: commands.Context, member: discord.Member, level: int):

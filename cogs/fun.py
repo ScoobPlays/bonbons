@@ -94,7 +94,7 @@ class Fun(commands.Cog):
         if not isinstance(message.channel, discord.TextChannel):
             return
 
-        self._snipe_cache.append( 
+        self._snipe_cache.append(
             {
                 "author": str(message.author),
                 "channel": message.channel.id,
@@ -155,9 +155,7 @@ class Fun(commands.Cog):
         """Tells you the most recently deleted message."""
 
         if len(self._snipe_cache) == 0:
-            return await ctx.reply(
-                "There are no recently deleted messages."
-            )
+            return await ctx.reply("There are no recently deleted messages.")
 
         try:
             message = self._snipe_cache[id]
@@ -176,10 +174,10 @@ class Fun(commands.Cog):
                 icon_url=message["msg"].author.display_avatar.url,
             )
             return await ctx.send(embed=embed)
-        
-        return await ctx.reply("There are no recently deleted messages in this channel.")
-        
 
+        return await ctx.reply(
+            "There are no recently deleted messages in this channel."
+        )
 
     @commands.command(name="joke")
     async def joke(self, ctx: commands.Context) -> None:
@@ -405,14 +403,17 @@ class Fun(commands.Cog):
         """
 
         if self.bot.memes == []:
-            return await ctx.reply("Memes have not yet been cached. Please wait a couple of seconds.")
-        
+            return await ctx.reply(
+                "Memes have not yet been cached. Please wait a couple of seconds."
+            )
+
         meme = random.choice(self.bot.memes)
 
         embed = discord.Embed(title=meme.title, color=discord.Color.random())
         embed.set_image(url=meme.url)
 
         await ctx.send(embed=embed)
+
 
 async def setup(bot: Bonbons) -> None:
     await bot.add_cog(Fun(bot))
