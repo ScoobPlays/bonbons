@@ -6,7 +6,7 @@ from utils.help.help import CustomHelpCommand
 class Help(Cog):
     def __init__(self, bot: Bonbons) -> None:
         self.bot = bot
-        self.bot.help_command = CustomHelpCommand
+        self.bot.help_command = CustomHelpCommand()
 
 
 async def setup(bot: Bonbons) -> None:
