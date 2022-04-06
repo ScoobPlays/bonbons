@@ -1,9 +1,9 @@
 from discord import Color, Embed, SelectOption
 from discord.ext.commands import Command, Context, Group
 from discord.ui import Select, View
-from utils.paginator import HelpMenuPaginator
 
-from bot import Bonbons
+from utils.paginator import HelpMenuPaginator
+from utils.bot import Bonbons
 
 BUTTON_ROW = 1
 
