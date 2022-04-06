@@ -1,7 +1,7 @@
 from discord import Color, Embed, SelectOption
 from discord.ext.commands import Command, Context, Group
 from discord.ui import Select, View
-from paginator import HelpMenuPaginator
+from utils.paginator import HelpMenuPaginator
 
 from bot import Bonbons
 
