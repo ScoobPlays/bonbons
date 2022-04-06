@@ -32,14 +32,14 @@ class HelpCommandDropdown(Select):
             if cog.qualified_name in self.bot.ignored_cogs:
                 continue
 
-            self.add_option(
+            self.append_option(
                 SelectOption(
                     label=cog.qualified_name,
                     description=cog.description,
                 )
             )
 
-        self.add_option(
+        self.append_option(
             SelectOption(label="Home", description="Go back to the main help page.")
         )
 
