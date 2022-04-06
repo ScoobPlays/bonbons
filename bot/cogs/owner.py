@@ -5,7 +5,7 @@ import traceback
 
 import discord
 from discord.ext import commands
-
+from utils.bot import Bonbons
 from utils.paginator import Paginator
 
 
@@ -102,5 +102,6 @@ class Owner(commands.Cog, command_attrs=dict(hidden=True)):
             await self.bot.process_commands(after)
 
 
-async def setup(bot):
+async def setup(bot: Bonbons):
+    print("Loaded: Owner")
     await bot.add_cog(Owner(bot))

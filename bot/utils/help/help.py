@@ -1,13 +1,17 @@
 import discord
-from discord.ext import commands
-
+from discord import Color, Embed
+from discord.ext.commands import Command, Group, HelpCommand
 from utils.paginator import Paginator
 
-from .ext import HelpEmbed
 from .views import HelpCommandMenu
 
 
-class CustomHelpCommand(commands.HelpCommand):
+class CustomHelpCommand(HelpCommand):
+
+    """
+    A custom help command with a custom paginator.
+    """
+
     def __init__(self):
         super().__init__(
             command_attrs={
@@ -24,12 +28,11 @@ class CustomHelpCommand(commands.HelpCommand):
 
         value = "Use the dropdown below to navigate through my modules."
 
-        embed = HelpEmbed(
+        embed = Embed(
             title="Help Menu",
-            description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.",
+            description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.\n\nUse the dropdown below to navigate through my modules.",
+            color=Color.blurple(),
         )
-        embed.add_field(name="How do I get help?", value=value, inline=False)
-
         view = HelpCommandMenu(self.context, self.context.bot, embed)
 
         view.msg = await self.send(
@@ -72,7 +75,7 @@ class CustomHelpCommand(commands.HelpCommand):
     ) -> None:
 
         for command in _commands:
-            if isinstance(command, commands.Group):
+            if isinstance(command, Group):
                 for cmd in command.commands:
                     self.commands.append(
                         {
@@ -89,7 +92,7 @@ class CustomHelpCommand(commands.HelpCommand):
                 )
                 break
 
-            if isinstance(command, commands.Command):
+            if isinstance(command, Command):
                 self.commands.append(
                     {
                         "name": command.name,
@@ -103,12 +106,12 @@ class CustomHelpCommand(commands.HelpCommand):
 
         self.commands = []
 
-    async def send_group_help(self, group: commands.Group) -> None:
+    async def send_group_help(self, group: Group) -> None:
         return await self.send_help_embed(
             "Group Help", group.description, group.commands, self.context.clean_prefix
         )
 
-    async def send_cog_help(self, cog: commands.Group) -> None:
+    async def send_cog_help(self, cog: Group) -> None:
         return await self.send_help_embed(
             "Category Help",
             cog.description,
@@ -116,8 +119,8 @@ class CustomHelpCommand(commands.HelpCommand):
             self.context.clean_prefix,
         )
 
-    async def send_command_help(self, command: commands.Command) -> None:
-        embed = HelpEmbed(title="Command Help")
+    async def send_command_help(self, command: Command) -> None:
+        embed = Embed(title="Command Help", color=Color.blurple())
         description = command.description or command.help or "..."
 
         embed.description = (

@@ -11,7 +11,7 @@ from easy_pil import Canvas, Editor, Font, load_image_async
 class Levels(commands.Cog):
 
     """
-    A levelling category.
+    A cog for levels.
     """
 
     def __init__(self, bot: commands.Bot) -> None:
@@ -211,4 +211,5 @@ class Levels(commands.Cog):
 
 
 async def setup(bot):
+    print("Loaded: Levels")
     await bot.add_cog(Levels(bot))

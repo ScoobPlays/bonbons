@@ -253,4 +253,5 @@ class Information(commands.Cog):
 
 
 async def setup(bot):
+    print("Loaded: Information")
     await bot.add_cog(Information(bot))

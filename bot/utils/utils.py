@@ -1,19 +1,12 @@
-print("main.py ran")
-
-import asyncio
 import random
 
-from utils.bot import Bonbons
 
-bot = Bonbons()
-
-
-class TextGenerator:
-    def __init__(self, depth=1) -> None:
+class Generator:
+    def __init__(self, depth: int = 1) -> None:
         self.map = {}
         self.depth = depth
 
-    def train(self, text: str):
+    def train(self, text: str) -> None:
         s = ["__start__"] + text.split(" ")
         c = self.depth
         while c >= 1:
@@ -25,7 +18,7 @@ class TextGenerator:
                     self.map[word] = [x]
             c -= 1
 
-    def generate_text(self, start=None):
+    def generate_text(self, start: str = None) -> str:
         sentence = []
         if start and start in self.map:
             sentence.append(start)
@@ -39,25 +32,3 @@ class TextGenerator:
             start = x[-1]
 
         return " ".join(sentence)
-
-
-bot.text = TextGenerator(depth=3)
-
-
-@bot.listen("on_message")
-async def on_message(message):
-    bot.text.train(message.content)
-    bot.messages[message.id] = message
-
-
-@bot.command(name="gentext")
-async def gentext(ctx, start: str = None):
-    result = bot.text.generate_text(start)
-    await ctx.send(result)
-
-
-async def main():
-    await bot.start()
-
-
-asyncio.run(main())

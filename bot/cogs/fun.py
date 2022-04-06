@@ -8,7 +8,6 @@ import aiohttp
 import discord
 from discord.ext import commands
 from simpleeval import simple_eval
-
 from utils.bot import Bonbons
 from utils.paginator import Paginator
 
@@ -18,10 +17,10 @@ class Fun(commands.Cog):
     Fun commands.
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: Bonbons) -> None:
         self.bot = bot
-        self._snipe_cache: list[dict] = []
-        self._edit_cache: list[dict] = []
+        self.snipes: list[dict] = []
+        self.edits: list[dict] = []
         self.afk: dict[int, dict[int, str]] = {}
 
     @property
@@ -94,7 +93,7 @@ class Fun(commands.Cog):
         if not isinstance(message.channel, discord.TextChannel):
             return
 
-        self._snipe_cache.append(
+        self.snipes.append(
             {
                 "author": str(message.author),
                 "channel": message.channel.id,
@@ -110,7 +109,7 @@ class Fun(commands.Cog):
         if after.author.bot:
             return
 
-        self._edit_cache.append(
+        self.edits.append(
             {
                 "author": str(before.author),
                 "channel": before.channel.id,
@@ -125,13 +124,13 @@ class Fun(commands.Cog):
 
         """Tells you most recently edited message."""
 
-        if len(self._edit_cache) == 0:
+        if len(self.edits) == 0:
             return await ctx.send("There are no recently edited messages.")
 
         try:
-            message = self._edit_cache[id]
+            message = self.edits[id]
         except Exception:
-            message = self._edit_cache[-1]
+            message = self.edits[-1]
 
         if message["channel"] == ctx.channel.id:
 
@@ -154,13 +153,13 @@ class Fun(commands.Cog):
 
         """Tells you the most recently deleted message."""
 
-        if len(self._snipe_cache) == 0:
+        if len(self.snipes) == 0:
             return await ctx.reply("There are no recently deleted messages.")
 
         try:
-            message = self._snipe_cache[id]
+            message = self.snipes[id]
         except Exception:
-            message = self._snipe_cache[-1]
+            message = self.snipes[-1]
 
         if message["channel"] == ctx.channel.id:
 
@@ -362,8 +361,8 @@ class Fun(commands.Cog):
                     )
 
     @commands.command(name="define")
-    async def define(self, ctx: commands.Context, term: str):
-        """Show's a meaning of a word."""
+    async def define(self, ctx: commands.Context, term: str) -> None:
+        """Defines a word."""
         await self.get_urban_response(ctx, term)
 
     @commands.command(name="choose")
@@ -396,24 +395,7 @@ class Fun(commands.Cog):
         except:
             return await ctx.send("I could not evalute expression your expression(s).")
 
-    @commands.command(name="meme")
-    async def meme(self, ctx: commands.Context) -> None:
-        """
-        Sends a random meme.
-        """
-
-        if self.bot.memes == []:
-            return await ctx.reply(
-                "Memes have not yet been cached. Please wait a couple of seconds."
-            )
-
-        meme = random.choice(self.bot.memes)
-
-        embed = discord.Embed(title=meme.title, color=discord.Color.random())
-        embed.set_image(url=meme.url)
-
-        await ctx.send(embed=embed)
-
 
 async def setup(bot: Bonbons) -> None:
+    print("Loaded: Fun")
     await bot.add_cog(Fun(bot))

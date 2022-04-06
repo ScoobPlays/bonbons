@@ -6,8 +6,6 @@ import googletrans
 from discord.ext import commands
 from pyston import File, PystonClient
 
-from utils.paginator import Paginator
-
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 NEWLINE_LIMIT = 15
 SLICE_LIMIT = 150
@@ -20,7 +18,7 @@ class Helpful(commands.Cog):
     def __init__(self, bot):
         self.pysclient = PystonClient()
         self.bot = bot
-        self._run_cache = {}
+        self.runs = {}
         self.translator = googletrans.Translator()
 
     @property
@@ -47,13 +45,13 @@ class Helpful(commands.Cog):
                 output.raw_json["run"]["stdout"] == ""
                 and output.raw_json["run"]["stderr"]
             ):
-                self._run_cache[ctx.author.id] = await ctx.reply(
+                self.runs[ctx.author.id] = await ctx.reply(
                     content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 1.\n\n```\n{output}\n```"
                 )
                 return
 
             if output.raw_json["run"]["stdout"] == "":
-                self._run_cache[ctx.author.id] = await ctx.send(
+                self.runs[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 0.\n\n```\n[No output]\n```"
                 )
                 return
@@ -65,7 +63,7 @@ class Helpful(commands.Cog):
                         str(output)[:SLICE_LIMIT] + "\n... (truncated, too many lines)"
                     )
 
-                self._run_cache[ctx.author.id] = await ctx.send(
+                self.runs[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
                 )
                 return
@@ -79,13 +77,13 @@ class Helpful(commands.Cog):
                 output.raw_json["run"]["stdout"] == ""
                 and output.raw_json["run"]["stderr"]
             ):
-                self._run_cache[ctx.author.id] = await ctx.reply(
+                self.runs[ctx.author.id] = await ctx.reply(
                     content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 1.\n\n```\n{output}\n```"
                 )
                 return
 
             if output.raw_json["run"]["stdout"] == "":
-                self._run_cache[ctx.author.id] = await ctx.send(
+                self.runs[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :warning: Your {lang} job has completed with return code 0.\n\n```\n[No output]\n```"
                 )
                 return
@@ -96,7 +94,7 @@ class Helpful(commands.Cog):
                         str(output)[:SLICE_LIMIT] + "\n... (truncated, too many lines)"
                     )
 
-                self._run_cache[ctx.author.id] = await ctx.send(
+                self.runs[ctx.author.id] = await ctx.send(
                     content=f"{ctx.author.mention} :white_check_mark: Your {lang} job has completed with return code 0.\n\n```\n{output}\n```"
                 )
                 return
@@ -174,4 +172,5 @@ class Helpful(commands.Cog):
 
 
 async def setup(bot):
+    print("Loaded: Helpful")
     await bot.add_cog(Helpful(bot))

@@ -1,8 +1,8 @@
-from typing import Union
-import random
 import json
-from datetime import timedelta, datetime
+import random
+from datetime import datetime, timedelta
 from random import choice
+from typing import Union
 
 import discord
 from discord.ext import commands

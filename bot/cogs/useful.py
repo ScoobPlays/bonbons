@@ -2,13 +2,13 @@ import io
 import os
 import random
 import re
+import time
 import zlib
 from typing import Dict
-import time
 
 import discord
 from discord.ext import commands
-
+from utils.bot import Bonbons
 from utils.constants import REPLIES
 
 
@@ -299,5 +299,6 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
                     await ctx.reply("A package with that name does not exist!")
 
 
-async def setup(bot: commands.Bot):
+async def setup(bot: Bonbons):
+    print("Loaded: Useful")
     await bot.add_cog(Useful(bot))
