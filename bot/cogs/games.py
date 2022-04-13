@@ -15,7 +15,6 @@ class Games(Cog):
     def emoji(self) -> str:
         return "🎮"
 
-
 async def setup(bot: Bonbons):
     print("Loaded: Games")
     await bot.add_cog(Games(bot))
