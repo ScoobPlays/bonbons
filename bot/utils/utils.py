@@ -1,6 +1,6 @@
 import random
 
-
+#
 class Generator:
     def __init__(self, depth: int = 1) -> None:
         self.map = {}
