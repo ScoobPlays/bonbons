@@ -29,7 +29,7 @@ class Helpful(commands.Cog):
     def parse_content(content: str, lang: str) -> str:
 
         if lang:
-            return content.replace("```", "", 2).replace(lang, "")
+            return content.replace("```", "", 2).replace(lang, "", 1)
 
         return content.replace("```", "", 2)
 
