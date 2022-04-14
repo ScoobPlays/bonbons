@@ -6,7 +6,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 from easy_pil import Canvas, Editor, Font, load_image_async
-
+from tabulate import tabulate
 
 class Levels(commands.Cog):
 
@@ -140,7 +140,7 @@ class Levels(commands.Cog):
             return await ctx.send(
                 file=discord.File(buffer, "leaderboard.png"), embed=embed
             )
-
+        
     @commands.command(name="rank", aliases=("level",))
     @commands.cooldown(1, 20, commands.BucketType.user)
     async def rank(self, ctx: commands.Context, member: discord.Member = None):
@@ -172,8 +172,25 @@ class Levels(commands.Cog):
 
     @commands.command(name="leaderboard", aliases=("lb",))
     @commands.cooldown(1, 20, commands.BucketType.user)
-    async def leaderboard(self, ctx: commands.Context):
+    async def leaderboard(self, ctx: commands.Context, args: str=None):
         """Shows the level leaderboard for the current server."""
+        
+        if args:
+            if args == "--text" or args == "--all":
+                data = {'level': [], 'xp': [], 'id': []}
+                db = self.db[str(ctx.guild.id)]
+
+                async for doc in db.find().sort('level', -1):
+                    data['level'].append(doc['level'])
+                    data['xp'].append(doc['xp'])
+                    data['id'].append(doc['_id'])
+
+                content = tabulate({'ID': data['id'], 'Level': data['level'], 'XP': data['xp']}, ['ID', 'Level', 'XP'], tablefmt='pretty')
+                file = discord.File(io.BytesIO(content.encode('utf-8')), filename='text.txt')
+                return await ctx.send(file=file)
+            else:
+                pass
+            
         await self._generate_leaderboard(ctx)
 
     @commands.Cog.listener("on_message")
