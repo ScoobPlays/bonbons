@@ -7,3 +7,4 @@ simpleeval
 easy_pil
 motor
 dnspython
+tabulate
