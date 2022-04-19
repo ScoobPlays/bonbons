@@ -1,5 +1,9 @@
-## bonbons
-my very awesome and cool bot :)
+## Bonbons
+A multi-purpose discord bot.
 
-## Note
-I think most of the code is broken
+### Most used features
+- Code Evaluation
+- Docs (credit: [Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny/))
+
+### License
+Copyright © 2021, [sifte](https://github.com/sifte). Released under the [MIT License](https://github.com/sifte/bonbons/blob/master/LICENSE).
