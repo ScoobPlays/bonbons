@@ -16,20 +16,6 @@ class Bot(Cog):
     def emoji(self) -> str:
         return "🤖"
 
-    @Cog.listener("on_message")
-    async def on_message(self, message: discord.Message) -> None:
-        self.bot.generator.train(message.content)
-        self.bot.messages[message.id] = message
-
-    @command(name="log")
-    async def log(self, ctx: Context, start: str = None):
-        """
-        Generates text.
-        """
-
-        result = self.bot.generator.generate_text(start)
-        await ctx.send(result)
-
     @command(name="information", aliases=("uptime", "info"))
     async def info(self, ctx: Context) -> None:
 

@@ -21,7 +21,6 @@ class Bonbons(commands.Bot):
             strip_after_prefix=True,
         )
         self.uptime: int = int(discord.utils.utcnow().timestamp())
-        self.messages: dict[int, discord.Message] = {}
         self.ignored_cogs: list[str] = ["Jishaku", "Owner", "Help"]
 
     async def start(self) -> None:
