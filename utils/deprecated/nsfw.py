@@ -57,16 +57,16 @@ class NSFW(Cog, description="NSFW related commands."):
         img = await self._get_nsfw_image(ctx, "ass")
         await ctx.send(embed=img)
 
-    @nsfw.command(name="erotic", aliases=("ero"))
+    @nsfw.command(name="erotic", aliases=("ero",))
     @is_nsfw()
     async def erotic(self, ctx: Context):
         """Erotic content."""
         img = await self._get_nsfw_image(ctx, "ero")
         await ctx.send(embed=img)
 
-    @nsfw.command(name="hentai", aliases=("h"))
+    @nsfw.command(name="hentai")
     @is_nsfw()
-    async def hentai(self, ctx: Context, gif):
+    async def hentai(self, ctx: Context):
         """Any kind of erotic content."""
         img = await self._get_nsfw_image(ctx, "hentai")
         await ctx.send(embed=img)
@@ -106,7 +106,7 @@ class NSFW(Cog, description="NSFW related commands."):
         img = await self._get_nsfw_image(ctx, "paizuri")
         await ctx.send(embed=img)
 
-    @nsfw.command(name="selfie", aliases=("selfies"))
+    @nsfw.command(name="selfie", aliases=("selfies",))
     @is_nsfw()
     async def selfie(self, ctx: Context):
         """A girl taking a lewd picture of herself."""

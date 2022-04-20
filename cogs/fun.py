@@ -1,5 +1,4 @@
 import base64
-import os
 import random
 from datetime import datetime
 from io import BytesIO
@@ -9,6 +8,7 @@ import discord
 from discord.ext import commands
 from simpleeval import simple_eval
 from utils.bot import Bonbons
+from utils.constants import Config
 from utils.paginator import Paginator
 
 
@@ -325,8 +325,8 @@ class Fun(commands.Cog):
     async def get_urban_response(self, ctx: commands.Context, term: str):
 
         headers = {
-            "x-rapidapi-host": os.environ.get("x_host"),
-            "x-rapidapi-key": os.environ.get("x_key"),
+            "x-rapidapi-host": Config.HOST,
+            "x-rapidapi-key": Config.KEY,
         }
 
         async with aiohttp.ClientSession(headers=headers) as session:

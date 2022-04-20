@@ -8,7 +8,7 @@ from pyston import File, PystonClient
 
 CODE_REGEX = re.compile(r"(\w*)\s*(?:```)(\w*)?([\s\S]*)(?:```$)")
 NEWLINE_LIMIT = 15
-SLICE_LIMIT = 150
+SLICE_LIMIT = 300
 
 
 class Helpful(commands.Cog):

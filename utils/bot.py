@@ -5,7 +5,8 @@ import discord
 from aiohttp import ClientSession
 from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient
-from utils.utils import Generator
+
+from utils.constants import Config
 
 EXTENSIONS = (f"cogs.{ext[:-3]}" for ext in os.listdir("./cogs") if ext.endswith(".py"))
 
@@ -22,14 +23,13 @@ class Bonbons(commands.Bot):
         self.uptime: int = int(discord.utils.utcnow().timestamp())
         self.messages: dict[int, discord.Message] = {}
         self.ignored_cogs: list[str] = ["Jishaku", "Owner", "Help"]
-        self.generator: Generator = Generator(depth=3)
 
     async def start(self) -> None:
-        await super().start(os.environ["token"])
+        await super().start(Config.TOKEN)
 
     async def setup_hook(self) -> None:
 
-        self.mongo = AsyncIOMotorClient(os.environ["mongo_token"])
+        self.mongo = AsyncIOMotorClient(Config.MONGO)
 
         os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
         os.environ["JISHAKU_NO_UNDERSCORE"] = "True"

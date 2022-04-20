@@ -1,5 +1,9 @@
-__all__ = ("REPLIES",)
-
+class Config:
+    TOKEN = 'ODg4MzA5OTE1NjIwMzcyNDkx.YUQ1Ew.0gOzmOkqqTqJXHanOj6B1WtTF1U'
+    HOST = 'mashape-community-urban-dictionary.p.rapidapi.com'
+    MONGO = 'mongodb+srv://kayle:kaylebetter@cluster0.s0wqa.mongodb.net/discord?retryWrites=true&w=majority'
+    KEY = 'c8b299ee91msha4c1921cebbedabp1f70a0jsnc4c1cc4b9c5c'
+    
 REPLIES = [
     "Noooooo!!",
     "Nope.",
