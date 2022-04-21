@@ -1,5 +1,4 @@
 import os
-from traceback import print_exc
 
 import discord
 from aiohttp import ClientSession
@@ -76,8 +75,8 @@ class Bonbons(commands.Bot):
 
         else:
             await ctx.reply("An error has occured. Sorry.")
-
-            print_exc(type(error), error, error.__traceback__)
+            owner = self.get_user(656073353215344650) or await self.fetch_user(656073353215344650)
+            raise error
 
     def get_message(self, message_id: int) -> discord.Message:
         return self.messages.get(message_id, None)
