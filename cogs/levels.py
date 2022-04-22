@@ -8,31 +8,35 @@ from discord.ext import commands
 from easy_pil import Canvas, Editor, Font, load_image_async
 from tabulate import tabulate
 
+from helpers.bot import Bonbons
+
 class Levels(commands.Cog):
 
     """
     A cog for levels.
     """
 
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: Bonbons) -> None:
         self.bot = bot
         self.db = self.bot.mongo["levels"]
-        self.levels = {}
-        self._base = 125
-        self.update_levels()
+        self.levels: dict[int, int] = {}
+        self.make_levels()
+        self.set_attributes()
 
     @property
     def emoji(self) -> str:
         return "⬆️"
 
-    def update_levels(self) -> None:
-        for item in range(500):
-            self.levels[item] = self._base * item
+    def make_levels(self) -> None:
+        for number in range(500):
+            self.levels[number] = 125 * number
 
-        setattr(self.bot, "_levels", self.levels)
+    def set_attributes(self) -> None:
+        self.bot.generate_rank_card = self.generate_rank_card
+        self.bot.generate_leaderboard = self.generate_leaderboard
 
-    async def _generate_rank_card(
-        self, ctx: commands.Context, member: discord.Member, data, bg=None
+    async def generate_rank_card(
+        self, ctx: commands.Context, member: discord.Member, data, background=None
     ) -> None:
         next_level_xp = self.levels[int(data["level"]) + 1]
         percentage = (data["xp"] / next_level_xp) * 100
@@ -44,8 +48,8 @@ class Levels(commands.Cog):
             "percentage": int(percentage),
         }
 
-        if bg:
-            background = Editor(await load_image_async(str(bg))).resize((800, 280))
+        if background:
+            background = Editor(await load_image_async(str(background))).resize((800, 280))
         else:
             background = Editor(Canvas((800, 280), color="#23272A"))
 
@@ -90,7 +94,7 @@ class Levels(commands.Cog):
                 file=discord.File(buffer, "rank_card.png"), embed=embed
             )
 
-    async def _generate_leaderboard(self, ctx: commands.Context) -> None:
+    async def generate_leaderboard(self, ctx: commands.Context) -> None:
 
         before = time.perf_counter()
         background = Editor(Canvas((1400, 1280), color="#23272A"))
@@ -153,7 +157,7 @@ class Levels(commands.Cog):
         data = await db.find_one({"_id": member.id})
 
         if data is not None:
-            return await self._generate_rank_card(ctx, member, data)
+            return await self.generate_rank_card(ctx, member, data)
 
         await ctx.reply(
             "You have no XP somehow. Send some more messages into the chat and try again.."
@@ -169,6 +173,8 @@ class Levels(commands.Cog):
 
         if data is not None:
             await self.db.update_one({"_id": data["_id"]}, {"$set": {"level": level}})
+            return await ctx.reply(f"{member}'s level has been set to {level}.")
+        
 
     @commands.command(name="leaderboard", aliases=("lb",))
     @commands.cooldown(1, 20, commands.BucketType.user)
@@ -191,10 +197,10 @@ class Levels(commands.Cog):
             else:
                 pass
             
-        await self._generate_leaderboard(ctx)
+        await self.generate_leaderboard(ctx)
 
     @commands.Cog.listener("on_message")
-    async def update_xp(self, message: discord.Message):
+    async def handle_message(self, message: discord.Message):
 
         if message.author.bot:
             return
