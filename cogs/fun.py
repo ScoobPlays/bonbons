@@ -7,9 +7,9 @@ import aiohttp
 import discord
 from discord.ext import commands
 from simpleeval import simple_eval
-from utils.bot import Bonbons
-from utils.constants import Config
-from utils.paginator import Paginator
+from helpers.bot import Bonbons
+from helpers.constants import Config
+from helpers.paginator import Paginator
 
 
 class Fun(commands.Cog):

@@ -5,8 +5,8 @@ import traceback
 
 import discord
 from discord.ext import commands
-from utils.bot import Bonbons
-from utils.paginator import Paginator
+from helpers.bot import Bonbons
+from helpers.paginator import Paginator
 
 
 class TextPaginator:

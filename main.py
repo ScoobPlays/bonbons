@@ -1,6 +1,6 @@
 import asyncio
 
-from utils.bot import Bonbons
+from helpers.bot import Bonbons
 
 bot = Bonbons()
 
@@ -8,5 +8,5 @@ bot = Bonbons()
 async def main() -> None:
     await bot.start()
 
-
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.run(main())

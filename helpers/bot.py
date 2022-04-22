@@ -5,7 +5,7 @@ from aiohttp import ClientSession
 from discord.ext import commands
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from utils.constants import Config
+from helpers.constants import Config
 
 EXTENSIONS = (f"cogs.{ext[:-3]}" for ext in os.listdir("./cogs") if ext.endswith(".py"))
 
@@ -64,7 +64,6 @@ class Bonbons(commands.Bot):
         elif isinstance(error, commands.CommandOnCooldown):
             return await ctx.reply(
                 "You have already used this command earlier. Try again later.",
-                mention_author=False,
             )
 
         elif isinstance(error, commands.CheckFailure):
@@ -74,8 +73,7 @@ class Bonbons(commands.Bot):
             return await ctx.reply("I cannot run this command.")
 
         else:
-            await ctx.reply("An error has occured. Sorry.")
-            owner = self.get_user(656073353215344650) or await self.fetch_user(656073353215344650)
+            await ctx.reply(f"```sh\n{error}\n```")
             raise error
 
     def get_message(self, message_id: int) -> discord.Message:

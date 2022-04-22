@@ -1,89 +1,13 @@
-import io
 import os
 import random
 import re
 import time
-import zlib
-from typing import Dict
 
 import discord
 from discord.ext import commands
-from utils.bot import Bonbons
-from utils.constants import REPLIES
-
-
-class SphinxObjectFileReader:
-    BUFSIZE = 16 * 1024
-
-    def __init__(self, buffer: bytes):
-        self.stream = io.BytesIO(buffer)
-
-    def readline(self):
-        return self.stream.readline().decode("utf-8")
-
-    def skipline(self):
-        self.stream.readline()
-
-    def read_compressed_chunks(self):
-        decompressor = zlib.decompressobj()
-        while True:
-            chunk = self.stream.read(self.BUFSIZE)
-            if len(chunk) == 0:
-                break
-            yield decompressor.decompress(chunk)
-        yield decompressor.flush()
-
-    def read_compressed_lines(self):
-        buf = b""
-        for chunk in self.read_compressed_chunks():
-            buf += chunk
-            pos = buf.find(b"\n")
-            while pos != -1:
-                yield buf[:pos].decode("utf-8")
-                buf = buf[pos + 1 :]
-                pos = buf.find(b"\n")
-
-
-class RTFMView(discord.ui.View):
-    def __init__(
-        self,
-        reference: discord.MessageReference,
-        embed: discord.Embed,
-        ctx: commands.Context,
-        now: float,
-        when: float,
-    ):
-        super().__init__()
-        self.reference = reference
-        self.embed = embed
-        self.ctx = ctx
-        self.now = now
-        self.when = when
-
-    async def interaction_check(self, interaction: discord.Interaction):
-        if interaction.user.id != self.ctx.author.id:
-            return False
-        return True
-
-    def _update_labels(self):
-        self.took_when.label = f"Took{self.now-self.when: .3f}"
-
-    async def start(self, ctx: commands.Context):
-        self._update_labels()
-        await self.ctx.send(embed=self.embed, reference=self.reference, view=self)
-
-    @discord.ui.button(emoji="🗑️")
-    async def delete(self, button: discord.ui.Button, interaction: discord.Interaction):
-        await interaction.response.defer()
-
-        await interaction.delete_original_message()
-
-    @discord.ui.button(label=f"...", disabled=True)
-    async def took_when(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ):
-        pass
-
+from helpers.bot import Bonbons
+from helpers.constants import FAIL_REPLIES, REPLIES
+from helpers.utils import SphinxObjectFileReader, RTFMView
 
 class Useful(commands.Cog, description="Commands that I think are useful to me."):
     def __init__(self, bot):
@@ -128,7 +52,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
             return [z for _, _, z in sorted(suggestions, key=sort_key)]
 
     @staticmethod
-    def parse_object_inv(stream: SphinxObjectFileReader, url: str) -> Dict:
+    def parse_object_inv(stream: SphinxObjectFileReader, url: str) -> dict:
         result = {}
         inv_version = stream.readline().rstrip()
 
@@ -173,10 +97,10 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
 
         return result
 
-    async def build_rtfm_lookup_table(self, page_types: dict):
+    async def build_rtfm_lookup_table(self, page_types: dict) -> None:
         cache = {}
         for key, page in page_types.items():
-            async with self.bot.session.get(page + "/objects.inv") as resp:
+            async with self.bot.session.get(f"{page}/objects.inv") as resp:
                 if resp.status != 200:
                     raise RuntimeError(
                         "Cannot build rtfm lookup table, try again later."
@@ -187,8 +111,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
 
         self._rtfm_cache = cache
 
-    async def do_rtfm(self, ctx: commands.Context, key: str, obj: str):
-        now = time.perf_counter()
+    async def do_rtfm(self, ctx: commands.Context, key: str, obj: str) -> None:
 
         page_types = {
             "python": "https://docs.python.org/3",
@@ -199,8 +122,7 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
         }
 
         if obj is None:
-            await ctx.send(page_types[key])
-            return
+            return await ctx.send(page_types[key])
 
         if not hasattr(self, "_rtfm_cache"):
             await ctx.trigger_typing()
@@ -223,28 +145,20 @@ class Useful(commands.Cog, description="Commands that I think are useful to me."
 
         embed = discord.Embed(colour=0x2F3136)
         if len(matches) == 0:
-            responses = (
-                "I looked far and wide but nothing was found.",
-                "I could not find anything related to your query.",
-                "Could not find anything. Sorry.",
-                "I didn't find anything related to your query.",
-            )
-            return await self.send_error_message(ctx, random.choice(responses))
-
+            return await self.send_error_message(ctx, random.choice(FAIL_REPLIES))
+        print(matches)
         embed.description = "\n".join(f"[`{key}`]({url})" for key, url in matches)
         ref = ctx.message.reference
         reference = None
         if ref and isinstance(ref.resolved, discord.Message):
             reference = ref.resolved.to_reference()
 
-        done = time.perf_counter()
-        view = RTFMView(reference=reference, embed=embed, ctx=ctx, now=done, when=now)
-        view._update_labels()
-        await view.start(ctx)
+        view = RTFMView(reference=reference, embed=embed, context=ctx)
+        await view.start()
 
     @commands.group(
         name="rtfm",
-        aliases=("rtfd", "docs", "d", "doc"),
+        aliases=("rtfd",),
         invoke_without_command=True,
         case_insensitive=True,
     )

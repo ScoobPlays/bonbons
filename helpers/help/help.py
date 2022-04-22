@@ -1,7 +1,7 @@
 import discord
 from discord import Color, Embed
 from discord.ext.commands import Command, Group, HelpCommand
-from utils.paginator import Paginator
+from helpers.paginator import Paginator
 
 from .views import HelpCommandMenu
 

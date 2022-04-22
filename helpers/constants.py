@@ -23,3 +23,10 @@ REPLIES = [
     "Nuh-uh.",
     "Not in my house!",
 ]
+
+FAIL_REPLIES = (
+                "I looked far and wide but nothing was found.",
+                "I could not find anything related to your query.",
+                "Could not find anything. Sorry.",
+                "I didn't find anything related to your query.",
+            )

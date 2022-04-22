@@ -1,6 +1,6 @@
 import discord
 from discord.ext.commands import Cog, Context, command
-from utils.bot import Bonbons
+from helpers.bot import Bonbons
 
 
 class Bot(Cog):
