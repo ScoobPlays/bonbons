@@ -41,7 +41,7 @@ class CustomHelpCommand(HelpCommand):
         )
 
     async def paginate(
-        self, title: str, description: str, data, *, per_page: int, prefix: str = "b"
+        self, title: str, description: str, data, *, per_page: int
     ) -> None:
         embeds = []
 
@@ -63,7 +63,7 @@ class CustomHelpCommand(HelpCommand):
         for index, embed in enumerate(embeds):
             embed.title += f" Page {index+1}/{len(embeds)}"
             embed.set_footer(
-                text=f"Use {prefix}help [command] for more info on a command."
+                text=f"Use b!help [command] for more info on a command." # unsure on how I would make the prefix dynamic
             )
 
         view = Paginator(self.context, embeds, embed=True)
@@ -71,7 +71,7 @@ class CustomHelpCommand(HelpCommand):
         view.msg = await self.send(embed=embeds[0], view=view)
 
     async def send_help_embed(
-        self, title: str, description: str, _commands, prefix: str = "b"
+        self, title: str, description: str, _commands,
     ) -> None:
 
         for command in _commands:
@@ -101,7 +101,7 @@ class CustomHelpCommand(HelpCommand):
                 )
 
         await self.paginate(
-            title, description, self.commands, per_page=7, prefix=prefix
+            title, description, self.commands, per_page=7, prefix="b!"
         )
 
         self.commands = []
