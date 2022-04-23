@@ -9,7 +9,7 @@ BUTTON_ROW = 1
 
 
 class HelpCommandDropdown(Select):
-    def __init__(self, ctx: Context, bot: Bonbons, embed: Embed) -> None:
+    def __init__(self, ctx: Context, embed: Embed) -> None:
         super().__init__(
             placeholder="Select a category..",
             min_values=1,
