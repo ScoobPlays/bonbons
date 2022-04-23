@@ -1,11 +1,12 @@
 import copy
-from typing import Union
 from datetime import datetime
+from typing import Union
 
 import discord
 from discord.ext import commands
 
 from helpers.bot import Bonbons
+
 
 class Pastas(commands.Cog):
 
@@ -30,7 +31,11 @@ class Pastas(commands.Cog):
         if name is not None:
             db = self.db[str(ctx.guild.id)]
 
-            pasta = await db.find_one({"name": name}) or await db.find_one({"name": name.lower()}) or await db.find_one({"_id": name})
+            pasta = (
+                await db.find_one({"name": name})
+                or await db.find_one({"name": name.lower()})
+                or await db.find_one({"_id": name})
+            )
 
             if pasta is not None:
                 return await ctx.send(pasta["content"])
@@ -115,14 +120,16 @@ class Pastas(commands.Cog):
 
         db = self.db[str(ctx.guild.id)]
         pastas = []
-        
+
         async for pasta in db.find():
             pastas.append(pasta["name"])
 
         if len(pastas) == 0:
             return await ctx.send("There are no pastas in this server.")
 
-        await ctx.send(f'```\nPastas for {ctx.guild.name} | ID: {ctx.guild.id} | Total pastas: {len(pastas)}\n------------------------------------------------------------------------\n{", ".join(pastas)}```')
+        await ctx.send(
+            f'```\nPastas for {ctx.guild.name} | ID: {ctx.guild.id} | Total pastas: {len(pastas)}\n------------------------------------------------------------------------\n{", ".join(pastas)}```'
+        )
         # i don't know any other way to do this without making it long
 
     @pasta.command(name="delete", aliases=("remove",))
@@ -132,7 +139,11 @@ class Pastas(commands.Cog):
 
         db = self.db[str(ctx.guild.id)]
 
-        pasta = await db.find_one({"name": name}) or await db.find_one({"name": name.lower()}) or await db.find_one({"name": name.upper()})
+        pasta = (
+            await db.find_one({"name": name})
+            or await db.find_one({"name": name.lower()})
+            or await db.find_one({"name": name.upper()})
+        )
 
         if pasta is not None:
             if pasta["owner"] == ctx.author.id:
@@ -162,8 +173,10 @@ class Pastas(commands.Cog):
             msg = copy.copy(message)
 
             if ctx.prefix:
-                new_content = msg.content[len(ctx.prefix):]
-                pasta = await db.find_one({"name": new_content}) or await db.find_one({"name": new_content.lower()})
+                new_content = msg.content[len(ctx.prefix) :]
+                pasta = await db.find_one({"name": new_content}) or await db.find_one(
+                    {"name": new_content.lower()}
+                )
 
                 if pasta is None:
                     return await self.bot.process_commands(msg)
@@ -174,5 +187,5 @@ class Pastas(commands.Cog):
 
 
 async def setup(bot: Bonbons) -> None:
-    print('Loaded: Pastas')
+    print("Loaded: Pastas")
     await bot.add_cog(Pastas(bot))

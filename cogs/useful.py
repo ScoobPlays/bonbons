@@ -5,9 +5,11 @@ import time
 
 import discord
 from discord.ext import commands
+
 from helpers.bot import Bonbons
 from helpers.constants import FAIL_REPLIES, REPLIES
-from helpers.utils import SphinxObjectFileReader, RTFMView
+from helpers.utils import RTFMView, SphinxObjectFileReader
+
 
 class Useful(commands.Cog, description="Commands that I think are useful to me."):
     def __init__(self, bot):

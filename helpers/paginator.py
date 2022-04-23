@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 
 BUTTON_ROW = 1
+
+
 class Paginator(discord.ui.View):
     def __init__(
         self,

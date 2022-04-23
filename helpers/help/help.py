@@ -2,7 +2,8 @@ from typing import Mapping, Optional
 
 import discord
 from discord import Color, Embed
-from discord.ext.commands import Command, Group, HelpCommand, Cog
+from discord.ext.commands import Cog, Command, Group, HelpCommand
+
 from helpers.paginator import Paginator
 
 from .views import HelpCommandMenu
@@ -20,7 +21,9 @@ class CustomHelpCommand(HelpCommand):
     async def send(self, **kwargs):
         return await self.get_destination().send(**kwargs)
 
-    async def send_bot_help(self, mapping: Mapping[Optional[Cog], list[Command]]) -> None:
+    async def send_bot_help(
+        self, mapping: Mapping[Optional[Cog], list[Command]]
+    ) -> None:
 
         embed = Embed(
             title="Help Menu",
@@ -57,7 +60,7 @@ class CustomHelpCommand(HelpCommand):
         for index, embed in enumerate(embeds):
             embed.title += f"Page {index+1}/{len(embeds)}"
             embed.set_footer(
-                text=f"Use b!help [command] for more info on a command." # unsure on how I would make the prefix dynamic
+                text=f"Use b!help [command] for more info on a command."  # unsure on how I would make the prefix dynamic
             )
 
         view = Paginator(self.context, embeds, embed=True)
@@ -65,7 +68,10 @@ class CustomHelpCommand(HelpCommand):
         view.msg = await self.send(embed=embeds[0], view=view)
 
     async def send_help_embed(
-        self, title: str, description: str, commands,
+        self,
+        title: str,
+        description: str,
+        commands,
     ) -> None:
 
         initial_commands = []
@@ -80,8 +86,9 @@ class CustomHelpCommand(HelpCommand):
                     name = subcommand.qualified_name
                     help = subcommand.description or subcommand.help or "No help found."
 
-                    initial_commands.append((f"{subcommand.parent.name} {name} {signature}", help))
-
+                    initial_commands.append(
+                        (f"{subcommand.parent.name} {name} {signature}", help)
+                    )
 
             if command.parent or command.hidden or not command.enabled:
                 continue
@@ -97,9 +104,7 @@ class CustomHelpCommand(HelpCommand):
         )
 
     async def send_group_help(self, group: Group) -> None:
-        await self.send_help_embed(
-            "Group Help", group.description, group.commands
-        )
+        await self.send_help_embed("Group Help", group.description, group.commands)
 
     async def send_cog_help(self, cog: Group) -> None:
         await self.send_help_embed(

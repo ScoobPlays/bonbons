@@ -1,9 +1,10 @@
 from io import BytesIO
 from zlib import decompressobj
 
-from discord.ui import View, button, Button
+from discord import Embed, Interaction, MessageReference
 from discord.ext.commands import Context
-from discord import MessageReference, Embed, Interaction
+from discord.ui import Button, View, button
+
 
 class SphinxObjectFileReader:
     BUFSIZE = 16 * 1024

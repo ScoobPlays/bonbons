@@ -2,8 +2,8 @@ from discord import Color, Embed, Interaction, SelectOption
 from discord.ext.commands import Command, Context, Group
 from discord.ui import Select, View
 
-from helpers.paginator import HelpMenuPaginator
 from helpers.bot import Bonbons
+from helpers.paginator import HelpMenuPaginator
 
 BUTTON_ROW = 1
 
@@ -22,16 +22,18 @@ class HelpCommandDropdown(Select):
 
     def add_options(self) -> None:
         self.append_option(
-            SelectOption(emoji="🏠", label="Home", description="Go back to the main help page.")
+            SelectOption(
+                emoji="🏠", label="Home", description="Go back to the main help page."
+            )
         )
-        
+
         for cog in self.ctx.bot.cogs:
 
             cog = self.ctx.bot.get_cog(cog)
 
             if cog.qualified_name in self.ctx.bot.ignored_cogs:
                 continue
-            
+
             if hasattr(cog, "emoji"):
                 self.append_option(
                     SelectOption(
@@ -47,9 +49,10 @@ class HelpCommandDropdown(Select):
                         description=cog.description,
                     )
                 )
-                
+
     def sort_commands(
-        self, commands: list[Command],
+        self,
+        commands: list[Command],
     ) -> None:
 
         initial_commands = []
@@ -64,8 +67,9 @@ class HelpCommandDropdown(Select):
                     name = subcommand.qualified_name
                     help = subcommand.description or subcommand.help or "No help found."
 
-                    initial_commands.append((f"{subcommand.parent.name} {name} {signature}", help))
-
+                    initial_commands.append(
+                        (f"{subcommand.parent.name} {name} {signature}", help)
+                    )
 
             if command.parent or command.hidden or not command.enabled:
                 continue
@@ -79,7 +83,13 @@ class HelpCommandDropdown(Select):
         return initial_commands
 
     async def paginate(
-        self, title: str, description: str, commands: list[Command], *, per_page: int, interaction: Interaction
+        self,
+        title: str,
+        description: str,
+        commands: list[Command],
+        *,
+        per_page: int,
+        interaction: Interaction,
     ) -> None:
         embeds = []
 
@@ -101,7 +111,7 @@ class HelpCommandDropdown(Select):
         for index, embed in enumerate(embeds):
             embed.title += f"Page {index+1}/{len(embeds)}"
             embed.set_footer(
-                text=f"Use b!help [command] for more info on a command." # unsure on how I would make the prefix dynamic
+                text=f"Use b!help [command] for more info on a command."  # unsure on how I would make the prefix dynamic
             )
 
         view = HelpMenuPaginator(self.ctx, embeds, embed=True)
@@ -110,7 +120,6 @@ class HelpCommandDropdown(Select):
         view.msg = await interaction.edit_original_message(
             content=None, embed=embeds[0], view=view
         )
-
 
     async def callback(self, interaction) -> None:
 

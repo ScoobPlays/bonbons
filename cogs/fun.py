@@ -7,6 +7,7 @@ import aiohttp
 import discord
 from discord.ext import commands
 from simpleeval import simple_eval
+
 from helpers.bot import Bonbons
 from helpers.constants import Config
 from helpers.paginator import Paginator
