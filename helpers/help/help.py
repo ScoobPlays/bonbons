@@ -30,7 +30,7 @@ class CustomHelpCommand(HelpCommand):
             description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.\n\nUse the dropdown below to navigate through my modules. If you need help with a specific command, use `{self.context.clean_prefix}help [command]`.",
             color=Color.og_blurple(),
         )
-        view = HelpCommandMenu(self.context, self.context.bot, embed)
+        view = HelpCommandMenu(self.context, embed)
 
         view.msg = await self.send(
             embed=embed,
