@@ -116,7 +116,6 @@ class CustomHelpCommand(HelpCommand):
             "Category Help",
             cog.description,
             cog.walk_commands(),
-            self.context.clean_prefix,
         )
 
     async def send_command_help(self, command: Command) -> None:
