@@ -105,7 +105,7 @@ class CustomHelpCommand(HelpCommand):
             initial_commands.append((f"{name} {signature}", help))
 
         await self.paginate(
-            title, description, initial_commands, per_page=7, prefix="b!"
+            title, description, initial_commands, per_page=7
         )
 
     async def send_group_help(self, group: Group) -> None:
