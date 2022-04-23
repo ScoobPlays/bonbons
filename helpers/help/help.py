@@ -1,5 +1,5 @@
 from typing import Mapping, Optional
-
+from textwrap import dedent
 import discord
 from discord import Color, Embed
 from discord.ext.commands import Cog, Command, Group, HelpCommand
@@ -25,9 +25,14 @@ class CustomHelpCommand(HelpCommand):
         self, mapping: Mapping[Optional[Cog], list[Command]]
     ) -> None:
 
+        description = f"""
+        Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.
+        Use the dropdown below to navigate through my modules. If you need help with a specific command, use `{self.context.clean_prefix}help [command]`.
+        """
+
         embed = Embed(
             title="Help Menu",
-            description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.\n\nUse the dropdown below to navigate through my modules. If you need help with a specific command, use `{self.context.clean_prefix}help [command]`.",
+            description=dedent(description),
             color=Color.og_blurple(),
         )
         view = HelpCommandMenu(self.context, embed)

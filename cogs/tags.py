@@ -160,7 +160,7 @@ class Pastas(commands.Cog):
         if isinstance(message.channel, discord.DMChannel):
             return await self.bot.process_commands(message)
 
-        ctx = await self.bot.get_context(message=message)
+        ctx = await self.bot.get_context(message)
 
         db = self.db[str(ctx.guild.id)]
 
