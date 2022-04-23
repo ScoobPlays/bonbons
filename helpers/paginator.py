@@ -2,8 +2,6 @@ import discord
 from discord.ext import commands
 
 BUTTON_ROW = 1
-
-
 class Paginator(discord.ui.View):
     def __init__(
         self,
@@ -11,7 +9,7 @@ class Paginator(discord.ui.View):
         messages: list,
         *,
         embed: bool = False,
-        timeout: int = 60,
+        timeout: int = 120,
     ):
         super().__init__(timeout=timeout)
         self.messages = messages
@@ -72,7 +70,7 @@ class HelpMenuPaginator(discord.ui.View):
         messages: list,
         *,
         embed: bool = False,
-        timeout: int = 60,
+        timeout: int = 120,
     ):
         super().__init__(timeout=timeout)
         self.messages = messages

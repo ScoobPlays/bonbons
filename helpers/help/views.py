@@ -1,4 +1,4 @@
-from discord import Color, Embed, SelectOption
+from discord import Color, Embed, Interaction, SelectOption
 from discord.ext.commands import Command, Context, Group
 from discord.ui import Select, View
 
@@ -18,108 +18,99 @@ class HelpCommandDropdown(Select):
         )
         self.ctx = ctx
         self.embed = embed
-        self._commands = []
-        self.embeds = []
-        self.bot = bot
+        self.add_options()
 
-        self.initialize()
-
-    def initialize(self) -> None:
-        for cog in self.bot.cogs:
-
-            cog = self.bot.get_cog(cog)
-
-            if cog.qualified_name in self.bot.ignored_cogs:
-                continue
-
-            self.append_option(
-                SelectOption(
-                    label=cog.qualified_name,
-                    description=cog.description,
-                )
-            )
-
+    def add_options(self) -> None:
         self.append_option(
-            SelectOption(label="Home", description="Go back to the main help page.")
+            SelectOption(emoji="🏠", label="Home", description="Go back to the main help page.")
         )
+        
+        for cog in self.ctx.bot.cogs:
 
-    async def get_embed(self, title: str, description: str, _commands) -> list:
-        for command in _commands:
-            if isinstance(command, Group):
-                for cmd in command.commands:
-                    self._commands.append(
-                        {
-                            "name": f"{command.name} {cmd.name}",
-                            "brief": cmd.description or cmd.help or "...",
-                        }
+            cog = self.ctx.bot.get_cog(cog)
+
+            if cog.qualified_name in self.ctx.bot.ignored_cogs:
+                continue
+            
+            if hasattr(cog, "emoji"):
+                self.append_option(
+                    SelectOption(
+                        emoji=cog.emoji,
+                        label=cog.qualified_name,
+                        description=cog.description,
                     )
-
-                self._commands.append(
-                    {
-                        "name": command.name,
-                        "brief": command.description or command.help,
-                    }
                 )
-                break
-
-            if isinstance(command, Command):
-                self._commands.append(
-                    {
-                        "name": command.name,
-                        "brief": command.description or command.help or "...",
-                    }
+            else:
+                self.append_option(
+                    SelectOption(
+                        label=cog.qualified_name,
+                        description=cog.description,
+                    )
                 )
-
-        return self._commands
-
-    async def paginate(
-        self,
-        title: str,
-        description: str,
-        data,
-        per_page: int,
-        interaction,
+                
+    def sort_commands(
+        self, commands: list[Command],
     ) -> None:
 
-        embeds = []
-        prefix = self.ctx.prefix
+        initial_commands = []
 
-        for i in range(0, len(data), per_page):
+        for command in commands:
+            if isinstance(command, Group):
+                for subcommand in command.commands:
+                    if subcommand.hidden or not subcommand.enabled:
+                        continue
+
+                    signature = subcommand.signature
+                    name = subcommand.qualified_name
+                    help = subcommand.description or subcommand.help or "No help found."
+
+                    initial_commands.append((f"{subcommand.parent.name} {name} {signature}", help))
+
+
+            if command.parent or command.hidden or not command.enabled:
+                continue
+
+            signature = command.signature
+            name = command.qualified_name
+            help = command.description or command.help or "No help found."
+
+            initial_commands.append((f"{name} {signature}", help))
+
+        return initial_commands
+
+    async def paginate(
+        self, title: str, description: str, commands: list[Command], *, per_page: int, interaction: Interaction
+    ) -> None:
+        embeds = []
+
+        for number in range(0, len(commands), per_page):
             embed = Embed(
                 title=title,
                 description=description,
                 colour=Color.og_blurple(),
             )
-            for res in data[i : i + per_page]:
+            for command in commands[number : number + per_page]:
                 embed.add_field(
-                    name=res["name"],
-                    value=res["brief"],
+                    name=command[0],
+                    value=command[1],
                     inline=False,
                 )
 
             embeds.append(embed)
 
         for index, embed in enumerate(embeds):
-            embed.title += f" Page {index+1}/{len(embeds)}"
+            embed.title += f"Page {index+1}/{len(embeds)}"
             embed.set_footer(
-                text=f"Use {prefix}help [command] for more info on a command."
+                text=f"Use b!help [command] for more info on a command." # unsure on how I would make the prefix dynamic
             )
 
-        view = HelpMenuPaginator(self.ctx, embeds, timeout=60, embed=True)
+        view = HelpMenuPaginator(self.ctx, embeds, embed=True)
         view.add_item(self)
-
-        if self.ctx.author.id != interaction.user.id:
-            view.msg = await interaction.response.send_message(
-                content=None, embed=embeds[0], view=view, ephemeral=True
-            )
-            embeds = None
-            return
 
         view.msg = await interaction.edit_original_message(
             content=None, embed=embeds[0], view=view
         )
 
-        embeds = None
 
     async def callback(self, interaction) -> None:
 
@@ -135,17 +126,16 @@ class HelpCommandDropdown(Select):
         await self.paginate(
             "Category Help",
             cog.description,
-            await self.get_embed("Category Help", cog.description, cog.get_commands()),
-            7,
-            interaction,
+            self.sort_commands(cog.walk_commands()),
+            per_page=7,
+            interaction=interaction,
         )
-        self._commands = []
 
 
 class HelpCommandMenu(View):
-    def __init__(self, ctx: Context, bot: Bonbons, embed: Embed) -> None:
+    def __init__(self, ctx: Context, embed: Embed) -> None:
         super().__init__(timeout=None)
-        self.add_item(HelpCommandDropdown(ctx, bot, embed))
+        self.add_item(HelpCommandDropdown(ctx, embed))
         self.ctx = ctx
 
     async def interaction_check(self, interaction) -> bool:
