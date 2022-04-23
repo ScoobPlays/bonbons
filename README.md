@@ -1,9 +1,12 @@
 ## Bonbons
 A multi-purpose discord bot.
 
-### Most used features
-- Code Evaluation
-- Docs (credit: [Rapptz/RoboDanny](https://github.com/Rapptz/RoboDanny/))
+### Notable contributors
+- [Kraots](https://github.com/kraots/)
+- [Genocide](https://github.com/thegenocides/)
+- [Cosmo](https://github.com/NotCosmo)
+- [Acey](https://github.com/aceydocodes)
 
 ### License
+
 Copyright © 2021, [sifte](https://github.com/sifte). Released under the [MIT License](https://github.com/sifte/bonbons/blob/master/LICENSE).
