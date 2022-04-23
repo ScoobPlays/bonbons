@@ -30,8 +30,8 @@ class CustomHelpCommand(HelpCommand):
 
         embed = Embed(
             title="Help Menu",
-            description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.\n\nUse the dropdown below to navigate through my modules.",
-            color=Color.blurple(),
+            description=f"Hello! I am bonbons, I was made by sift#0410 around <t:1631859987:R>.\n\nUse the dropdown below to navigate through my modules. If you need help with a specific command, use `{self.context.clean_prefix}help [command]`.",
+            color=Color.og_blurple(),
         )
         view = HelpCommandMenu(self.context, self.context.bot, embed)
 
@@ -49,7 +49,7 @@ class CustomHelpCommand(HelpCommand):
             embed = discord.Embed(
                 title=title,
                 description=description,
-                colour=discord.Color.greyple(),
+                colour=discord.Color.og_blurple(),
             )
             for res in data[i : i + per_page]:
                 embed.add_field(
@@ -120,7 +120,7 @@ class CustomHelpCommand(HelpCommand):
         )
 
     async def send_command_help(self, command: Command) -> None:
-        embed = Embed(title="Command Help", color=Color.blurple())
+        embed = Embed(title="Command Help", color=Color.og_blurple())
         description = command.description or command.help or "..."
 
         embed.description = (

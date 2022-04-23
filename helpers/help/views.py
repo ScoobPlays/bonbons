@@ -88,7 +88,7 @@ class HelpCommandDropdown(Select):
             embed = Embed(
                 title=title,
                 description=description,
-                colour=Color.greyple(),
+                colour=Color.og_blurple(),
             )
             for res in data[i : i + per_page]:
                 embed.add_field(
