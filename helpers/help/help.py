@@ -92,7 +92,7 @@ class CustomHelpCommand(HelpCommand):
                     help = subcommand.description or subcommand.help or "No help found."
 
                     initial_commands.append(
-                        (f"{subcommand.parent.name} {name} {signature}", help)
+                        (f"{name} {signature}", help)
                     )
 
             if command.parent or command.hidden or not command.enabled:
