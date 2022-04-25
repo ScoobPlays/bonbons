@@ -1,11 +1,13 @@
+from os import environ
+
 class Config:
-    TOKEN = "ODg4MzA5OTE1NjIwMzcyNDkx.YUQ1Ew.0gOzmOkqqTqJXHanOj6B1WtTF1U"
-    HOST = "mashape-community-urban-dictionary.p.rapidapi.com"
-    MONGO = "mongodb+srv://kayle:kaylebetter@cluster0.s0wqa.mongodb.net/discord?retryWrites=true&w=majority"
-    KEY = "c8b299ee91msha4c1921cebbedabp1f70a0jsnc4c1cc4b9c5c"
+    TOKEN = environ["TOKEN"]
+    HOST = environ["DEFINE_API_URI"]
+    MONGO = environ["MONGO_URI"]
+    KEY = environ["API_KEY"]
 
 
-REPLIES = [
+REPLIES = [ 
     "Noooooo!!",
     "Nope.",
     "I'm sorry Dave, I'm afraid I can't do that.",
