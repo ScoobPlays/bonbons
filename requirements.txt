@@ -8,5 +8,3 @@ easy_pil
 motor
 dnspython
 tabulate
-pynacl
-youtube_dl
