@@ -1,9 +1,6 @@
 ## Bonbons
 A multi-purpose discord bot.
 
-### Notable contributors
-- [Kraots](https://github.com/kraots/)
-
 ### Credits
 Some of the code in this repository was taken from the repositories below:
 - [`python-discord/bot`](https://github.com/python-discord/bot)
